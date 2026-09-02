@@ -14,9 +14,9 @@ macOS 15+, iOS 18+, Swift 6.
 
 ## What it is for
 
-An agent that only talks is easy. One that *acts* — runs things, writes things, spends money, and
-does it on a machine somebody cares about — is where the hard parts are, and they are all in the
-same place: between the model asking and the thing happening. This is a runtime for that gap.
+An agent that only talks is easy. One that *acts* — writes things, changes things, spends money,
+and does it somewhere the consequences are real — is where the hard parts are, and they are all in
+the same place: between the model asking and the thing happening. This is a runtime for that gap.
 
 **Safety is proven locally, never asserted.** Every call is classified before it runs, and the
 classification comes from evidence this process established — a resolved path, a parsed URL, a
@@ -200,9 +200,8 @@ All additive:
 No UI. `AgentToolDetail` is a value type describing what a tool wants shown — labels, fields, lists
 — and drawing it is yours.
 
-No transports, no shell, and no filesystem access outside the scratch workspace. A tool that
-reaches a remote machine belongs to the app that owns the connection, which is what `additional:`
-and `AgentToolServices` exist for.
+No transports, no shell, and no filesystem access outside the scratch workspace. Tools of your own
+go in through `additional:` and reach whatever your app owns through `AgentToolServices`.
 
 ## Localization
 
