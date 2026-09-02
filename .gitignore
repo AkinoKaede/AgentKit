@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Swift build output
+.build/
+.swiftpm/
+DerivedData/
+*.xcresult
