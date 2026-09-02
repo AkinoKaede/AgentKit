@@ -145,19 +145,36 @@ public nonisolated struct ScratchSearchOutcome: Hashable, Sendable {
     public var isTruncated: Bool
 }
 
-/// One exact-text replacement, matched against the file as it was before any edit in
+/// One replacement, matched against the file as it was before any replacement in
 /// the same call was applied.
-public nonisolated struct ScratchEdit: Hashable, Sendable {
+public nonisolated struct ScratchReplacement: Hashable, Sendable {
     public init(
         oldText: String,
-        newText: String
+        newText: String,
+        isRegularExpression: Bool = false,
+        count: Int? = nil
     ) {
         self.oldText = oldText
         self.newText = newText
+        self.isRegularExpression = isRegularExpression
+        self.count = count
     }
 
+    /// Literal text, or an ICU pattern when `isRegularExpression`.
     public var oldText: String
+    /// Literal text, or an `NSRegularExpression` template — `$1` for a capture
+    /// group — when `isRegularExpression`.
     public var newText: String
+    public var isRegularExpression = false
+    /// How many occurrences this replacement claims.
+    ///
+    /// `nil` is the careful default and the behavior this tool had before the
+    /// field existed: the match must be unique, and anything ambiguous fails the
+    /// whole call. `0` means every occurrence, and `n` means the first `n` in
+    /// document order — fewer than `n` is an error rather than a partial apply,
+    /// because a replacement that silently did less than it said is the one
+    /// outcome nobody can reason about.
+    public var count: Int? = nil
 }
 
 public nonisolated struct ScratchWriteOutcome: Hashable, Sendable {
@@ -182,10 +199,11 @@ public nonisolated struct ScratchWriteOutcome: Hashable, Sendable {
     public var usage: ScratchUsage
 }
 
-public nonisolated struct ScratchEditOutcome: Hashable, Sendable {
+public nonisolated struct ScratchReplaceOutcome: Hashable, Sendable {
     public init(
         path: String,
-        editsApplied: Int,
+        entriesApplied: Int,
+        replacementsApplied: Int,
         diff: UnifiedDiff,
         bytes: Int,
         sha256: String,
@@ -193,7 +211,8 @@ public nonisolated struct ScratchEditOutcome: Hashable, Sendable {
         usage: ScratchUsage
     ) {
         self.path = path
-        self.editsApplied = editsApplied
+        self.entriesApplied = entriesApplied
+        self.replacementsApplied = replacementsApplied
         self.diff = diff
         self.bytes = bytes
         self.sha256 = sha256
@@ -202,11 +221,45 @@ public nonisolated struct ScratchEditOutcome: Hashable, Sendable {
     }
 
     public var path: String
-    public var editsApplied: Int
+    /// Entries in the request. One of them may have rewritten many regions.
+    public var entriesApplied: Int
+    /// Regions actually rewritten, which is what `count` bounds.
+    public var replacementsApplied: Int
     public var diff: UnifiedDiff
     public var bytes: Int
     public var sha256: String
     public var lineEnding: LineEnding
+    public var usage: ScratchUsage
+}
+
+/// The result of moving bytes from one place in the workspace to another.
+public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
+    public init(
+        from: String,
+        to: String,
+        kind: ScratchEntryKind,
+        files: Int,
+        bytes: Int,
+        didOverwrite: Bool,
+        usage: ScratchUsage
+    ) {
+        self.from = from
+        self.to = to
+        self.kind = kind
+        self.files = files
+        self.bytes = bytes
+        self.didOverwrite = didOverwrite
+        self.usage = usage
+    }
+
+    public var from: String
+    public var to: String
+    public var kind: ScratchEntryKind
+    /// Regular files involved. One for a file, and the whole subtree for a
+    /// directory.
+    public var files: Int
+    public var bytes: Int
+    public var didOverwrite: Bool
     public var usage: ScratchUsage
 }
 
@@ -221,7 +274,7 @@ public nonisolated struct ScratchEditOutcome: Hashable, Sendable {
 ///
 /// An `actor`, and that is load-bearing rather than incidental. Pi serializes file
 /// mutations through an explicit per-path queue (`file-mutation-queue.ts`); here the
-/// actor already serializes every operation against every other, so `apply(_:to:)`
+/// actor already serializes every operation against every other, so `replace(_:in:)`
 /// is atomic across its read and its write for free. That is what lets every scratch
 /// tool stay `.parallel` — a batch containing one of them does not have to drag its
 /// whole turn serial to be safe.
@@ -244,7 +297,11 @@ public actor AgentScratchWorkspace {
         public static let searchQueryCharacters = 4_096
         public static let searchLineBytes = 1_024
         public static let searchResults = 100
-        public static let edits = 32
+        public static let replacements = 32
+        /// The ceiling on one replacement's `count`, and on how many regions it
+        /// may collect when asked for all of them. A pattern matching more than
+        /// this is one nobody meant to write.
+        public static let matchesPerReplacement = 10_000
     }
 
     private let conversationID: UUID
@@ -465,20 +522,27 @@ public actor AgentScratchWorkspace {
         )
     }
 
-    /// Exact-text replacement, following Pi's `edit` tool.
+    /// Replacement inside one staged file, following Pi's `edit` tool and widened
+    /// with a pattern mode and an occurrence count.
     ///
     /// Every `oldText` is matched against the file as it was *before* this call, not
-    /// against the result of the preceding edit — so the model never has to simulate
-    /// its own changes to write the second one. Matches must be unique and must not
-    /// overlap; anything ambiguous fails the whole call rather than applying part of
-    /// it, because a half-applied edit is the one outcome nobody can reason about.
-    public func apply(_ edits: [ScratchEdit], to path: String) throws -> ScratchEditOutcome {
-        guard !edits.isEmpty else {
-            throw AgentToolError.invalidArguments("edits must contain at least one replacement.")
+    /// against the result of the preceding entry — so the model never has to simulate
+    /// its own changes to write the second one. Regions must not overlap, and an
+    /// entry that leaves `count` unset must name exactly one of them; anything
+    /// ambiguous fails the whole call rather than applying part of it, because a
+    /// half-applied change is the one outcome nobody can reason about.
+    public func replace(
+        _ replacements: [ScratchReplacement], in path: String
+    ) throws -> ScratchReplaceOutcome {
+        guard !replacements.isEmpty else {
+            throw AgentToolError.invalidArguments("replacements must contain at least one entry.")
         }
-        guard edits.count <= Limits.edits else {
+        guard replacements.count <= Limits.replacements else {
             throw AgentToolError.invalidArguments(
-                "edits contains \(edits.count) replacements, past the limit of \(Limits.edits)."
+                """
+                replacements contains \(replacements.count) entries, past the limit of \
+                \(Limits.replacements).
+                """
             )
         }
         let file = try data(at: path)
@@ -494,47 +558,80 @@ public actor AgentScratchWorkspace {
         let bom = file.data.starts(with: [0xEF, 0xBB, 0xBF]) ? "\u{FEFF}" : ""
         let original = LineEnding.normalizedToLF(raw)
 
-        var located: [(range: Range<String.Index>, replacement: String)] = []
-        for edit in edits {
-            let needle = LineEnding.normalizedToLF(edit.oldText)
-            guard !needle.isEmpty else {
-                throw AgentToolError.invalidArguments("old_text must not be empty.")
-            }
-            located.append(
-                (
-                    try Self.locate(needle, in: original, path: path),
-                    LineEnding.normalizedToLF(edit.newText)
-                ))
+        var located: [Located] = []
+        for replacement in replacements {
+            located += try Self.locate(replacement, in: original, path: path)
         }
         located.sort { $0.range.lowerBound < $1.range.lowerBound }
         for (previous, next) in zip(located, located.dropFirst())
         where next.range.lowerBound < previous.range.upperBound {
             throw AgentToolError.invalidArguments(
                 """
-                Two edits of \(path) match overlapping regions. Merge changes that touch \
-                the same block into one edit.
+                Two replacements of \(path) match overlapping regions. Merge changes that \
+                touch the same block into one entry.
                 """
             )
         }
 
         var updated = ""
         var cursor = original.startIndex
-        for (range, replacement) in located {
-            updated += original[cursor..<range.lowerBound]
-            updated += replacement
-            cursor = range.upperBound
+        for entry in located {
+            updated += original[cursor..<entry.range.lowerBound]
+            updated += entry.text
+            cursor = entry.range.upperBound
         }
         updated += original[cursor...]
 
         guard updated != original else {
-            throw AgentToolError.invalidArguments("The edits of \(path) produced no change.")
+            throw AgentToolError.invalidArguments("The replacements of \(path) produced no change.")
         }
         let diff = try UnifiedDiff.between(original, updated, fromPath: path, toPath: path)
         let encoded = Data((bom + ending.restore(updated)).utf8)
         let written = try write(path, data: encoded)
-        return ScratchEditOutcome(
-            path: path, editsApplied: located.count, diff: diff, bytes: written.bytes,
+        return ScratchReplaceOutcome(
+            path: path, entriesApplied: replacements.count,
+            replacementsApplied: located.count, diff: diff, bytes: written.bytes,
             sha256: written.sha256, lineEnding: ending, usage: written.usage
+        )
+    }
+
+    /// Copies a scratch file, or a whole subtree, to another path in the workspace.
+    ///
+    /// The point is that the bytes never enter the transcript: duplicating a staged
+    /// file before a risky change would otherwise mean reading it out and writing it
+    /// back, which costs two full copies of the document in tokens.
+    @discardableResult
+    public func copy(
+        _ from: String, to: String, overwrite: Bool = false
+    ) throws -> ScratchTransferOutcome {
+        let plan = try transferPlan(from: from, to: to, overwrite: overwrite)
+        try checkQuota(in: plan.root, addingFiles: plan.files, bytes: plan.bytes)
+        if plan.replaces { try FileManager.default.removeItem(at: plan.destination) }
+        try FileManager.default.createDirectory(
+            at: plan.destination.deletingLastPathComponent(), withIntermediateDirectories: true
+        )
+        try FileManager.default.copyItem(at: plan.source, to: plan.destination)
+        return ScratchTransferOutcome(
+            from: from, to: to, kind: plan.kind, files: plan.files, bytes: plan.bytes,
+            didOverwrite: plan.replaces, usage: try measure(in: plan.root)
+        )
+    }
+
+    /// Moves or renames a scratch file or subtree. Byte totals are unchanged unless
+    /// the move replaced a file.
+    @discardableResult
+    public func move(
+        _ from: String, to: String, overwrite: Bool = false
+    ) throws -> ScratchTransferOutcome {
+        let plan = try transferPlan(from: from, to: to, overwrite: overwrite)
+        if plan.replaces { try FileManager.default.removeItem(at: plan.destination) }
+        try FileManager.default.createDirectory(
+            at: plan.destination.deletingLastPathComponent(), withIntermediateDirectories: true
+        )
+        try FileManager.default.moveItem(at: plan.source, to: plan.destination)
+        return ScratchTransferOutcome(
+            from: from, to: to, kind: plan.kind, files: plan.files, bytes: plan.bytes,
+            didOverwrite: plan.replaces, usage: try measure(in: plan.root)
         )
     }
 
@@ -563,6 +660,132 @@ public actor AgentScratchWorkspace {
             }
         }
         try FileManager.default.removeItem(at: url)
+    }
+
+    // MARK: - Transfers
+
+    /// Everything `copy` and `move` need to know before either touches the disk.
+    private struct TransferPlan {
+        var root: URL
+        var source: URL
+        var destination: URL
+        var kind: ScratchEntryKind
+        var files: Int
+        var bytes: Int
+        /// True when an existing regular file at the destination will be removed
+        /// first. A directory destination is never replaced.
+        var replaces: Bool
+    }
+
+    /// Validates a transfer completely before either operation begins.
+    ///
+    /// Both directions go through `resolve(_:in:)`, so `..`, absolute paths and
+    /// traversal through a symlink are already refused. What is added here is what
+    /// only a transfer can get wrong: a destination inside its own source, a subtree
+    /// whose depth would exceed the limit once re-rooted, and a destination that
+    /// already holds something.
+    private func transferPlan(
+        from: String, to: String, overwrite: Bool
+    ) throws -> TransferPlan {
+        let root = try root()
+        let sourcePath = try Self.normalize(from)
+        let destinationPath = try Self.normalize(to)
+        guard sourcePath != destinationPath else {
+            throw AgentToolError.invalidArguments("from and to name the same path.")
+        }
+        guard !destinationPath.hasPrefix(sourcePath + "/") else {
+            throw AgentToolError.invalidArguments("\(to) is inside \(from).")
+        }
+        let source = try resolve(from, in: root)
+        let destination = try resolve(to, in: root)
+
+        guard let sourceValues = try? source.resourceValues(forKeys: [.isDirectoryKey]) else {
+            throw AgentToolError.scratchNotFound(from)
+        }
+        let kind: ScratchEntryKind = sourceValues.isDirectory == true ? .directory : .file
+        let inventory = try Self.inventory(of: source, kind: kind, path: from)
+
+        // Re-rooting a subtree can push it past the depth limit even though both
+        // arguments were fine on their own.
+        for relative in inventory.relativePaths {
+            _ = try Self.normalize(relative.isEmpty ? to : "\(to)/\(relative)")
+        }
+
+        var replaces = false
+        if let existing = try? destination.resourceValues(forKeys: [.isDirectoryKey]) {
+            guard existing.isDirectory != true else {
+                throw AgentToolError.invalidArguments(
+                    """
+                    \(to) is an existing directory. Replacing one would delete everything \
+                    beneath it, which no scratch tool does; choose another destination.
+                    """
+                )
+            }
+            guard overwrite else {
+                throw AgentToolError.invalidArguments(
+                    "\(to) already exists. Pass overwrite to replace it."
+                )
+            }
+            replaces = true
+        }
+        return TransferPlan(
+            root: root, source: source, destination: destination, kind: kind,
+            files: inventory.files, bytes: inventory.bytes, replaces: replaces
+        )
+    }
+
+    /// What a subtree holds, refusing anything a transfer must not duplicate.
+    ///
+    /// `walk` skips a symlink silently, which is right for a listing and wrong here:
+    /// `copyItem` would recreate the link, and an alias inside the workspace makes
+    /// two paths the same file — which is exactly what breaks both the quota
+    /// arithmetic and the atomicity `replace(_:in:)` claims.
+    private static func inventory(
+        of url: URL, kind: ScratchEntryKind, path: String
+    ) throws -> (files: Int, bytes: Int, relativePaths: [String]) {
+        let keys: Set<URLResourceKey> = [
+            .isDirectoryKey, .isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey,
+        ]
+        guard kind == .directory else {
+            let values = try url.resourceValues(forKeys: keys)
+            guard values.isRegularFile == true, values.isSymbolicLink != true else {
+                throw AgentToolError.scratchNotFound(path)
+            }
+            return (1, values.fileSize ?? 0, [""])
+        }
+
+        var files = 0
+        var bytes = 0
+        var relativePaths: [String] = []
+        var pending: [(url: URL, relative: String)] = [(url, "")]
+        while let entry = pending.popLast() {
+            let children = try FileManager.default.contentsOfDirectory(
+                at: entry.url, includingPropertiesForKeys: Array(keys),
+                options: [.skipsPackageDescendants]
+            )
+            for child in children {
+                let relative =
+                    entry.relative.isEmpty
+                    ? child.lastPathComponent : "\(entry.relative)/\(child.lastPathComponent)"
+                let values = try child.resourceValues(forKeys: keys)
+                guard values.isSymbolicLink != true else {
+                    throw AgentToolError.scratchPathEscapes
+                }
+                if values.isDirectory == true {
+                    relativePaths.append(relative)
+                    pending.append((child, relative))
+                } else if values.isRegularFile == true {
+                    files += 1
+                    bytes += values.fileSize ?? 0
+                    relativePaths.append(relative)
+                } else {
+                    // A socket, a device node — nothing this workspace put there,
+                    // and nothing it will duplicate.
+                    throw AgentToolError.scratchPathEscapes
+                }
+            }
+        }
+        return (files, bytes, relativePaths.isEmpty ? [""] : relativePaths)
     }
 
     /// Called when the conversation this workspace belongs to is deleted.
@@ -642,7 +865,7 @@ public actor AgentScratchWorkspace {
     ///
     /// Containment alone would already stop an escape. This is the stricter rule
     /// because an alias *inside* the workspace makes two paths the same file, which
-    /// quietly breaks both the quota arithmetic and the atomicity `apply(_:to:)`
+    /// quietly breaks both the quota arithmetic and the atomicity `replace(_:in:)`
     /// claims.
     private static func assertNoSymlink(in url: URL, below root: URL) throws {
         let rootDepth = root.standardizedFileURL.pathComponents.count
@@ -679,6 +902,28 @@ public actor AgentScratchWorkspace {
         guard existing != nil || usage.entries < Limits.entries else {
             throw AgentToolError.scratchQuotaExceeded(
                 "The scratch workspace already holds its limit of \(Limits.entries) files."
+            )
+        }
+    }
+
+    /// The same ceilings, asked about a whole subtree before any of it is copied.
+    private func checkQuota(in root: URL, addingFiles files: Int, bytes: Int) throws {
+        let usage = try measure(in: root)
+        let projected = usage.bytes + bytes
+        guard projected <= Limits.totalBytes else {
+            throw AgentToolError.scratchQuotaExceeded(
+                """
+                The scratch workspace would reach \(projected) of \(Limits.totalBytes) bytes. \
+                Delete what is no longer needed.
+                """
+            )
+        }
+        guard usage.entries + files <= Limits.entries else {
+            throw AgentToolError.scratchQuotaExceeded(
+                """
+                The scratch workspace would hold \(usage.entries + files) files, past its limit \
+                of \(Limits.entries).
+                """
             )
         }
     }
@@ -786,26 +1031,59 @@ public actor AgentScratchWorkspace {
 
     // MARK: - Matching
 
-    /// Finds the one region `needle` names, or explains why it named none or several.
+    /// One located region and the text that will stand in its place.
     ///
+    /// The text travels with the range because a pattern replacement differs per
+    /// match: `$1` means whatever *that* match captured.
+    private struct Located {
+        var range: Range<String.Index>
+        var text: String
+    }
+
+    /// Finds every region one entry names, or explains why it named the wrong number
+    /// of them.
+    private static func locate(
+        _ replacement: ScratchReplacement, in haystack: String, path: String
+    ) throws -> [Located] {
+        if let count = replacement.count {
+            guard count >= 0, count <= Limits.matchesPerReplacement else {
+                throw AgentToolError.invalidArguments(
+                    "count must be between 0 and \(Limits.matchesPerReplacement)."
+                )
+            }
+        }
+        return replacement.isRegularExpression
+            ? try matchPattern(replacement, in: haystack, path: path)
+            : try matchLiteral(replacement, in: haystack, path: path)
+    }
+
     /// Exact first. The fallback is line-aligned rather than character-aligned: a
     /// window of lines whose normalized forms equal the normalized needle's. That
     /// covers the failure this fallback exists for — a model retyping a block with
     /// tidied quotes, dashes or trailing whitespace — without the index-mapping a
     /// character-level fuzzy match would need to translate a position in normalized
     /// text back into the original.
-    private static func locate(
-        _ needle: String, in haystack: String, path: String
-    ) throws -> Range<String.Index> {
-        let exact = ranges(of: needle, in: haystack)
-        if exact.count == 1 { return exact[0] }
-        if exact.count > 1 {
-            throw AgentToolError.invalidArguments(
-                """
-                old_text occurs \(exact.count) times in \(path). Extend it with surrounding \
-                lines until it names exactly one region.
-                """
+    private static func matchLiteral(
+        _ replacement: ScratchReplacement, in haystack: String, path: String
+    ) throws -> [Located] {
+        let needle = LineEnding.normalizedToLF(replacement.oldText)
+        guard !needle.isEmpty else {
+            throw AgentToolError.invalidArguments("old_text must not be empty.")
+        }
+        let text = LineEnding.normalizedToLF(replacement.newText)
+        let wanted = replacement.count
+
+        let exact = ranges(of: needle, in: haystack, limit: searchLimit(for: wanted))
+        if !exact.isEmpty {
+            return try select(
+                exact, count: wanted, path: path,
+                ambiguity: """
+                    old_text occurs \(exact.count) times in \(path). Extend it with surrounding \
+                    lines until it names exactly one region, or set count to say how many to \
+                    replace.
+                    """
             )
+            .map { Located(range: $0, text: text) }
         }
 
         let (lines, _) = UnifiedDiff.split(haystack)
@@ -815,25 +1093,142 @@ public actor AgentScratchWorkspace {
         }
         let normalizedLines = lines.map(normalizedForMatch)
         let normalizedNeedle = needleLines.map(normalizedForMatch)
-        var matches: [Int] = []
+        // Greedy and non-overlapping, matching how the exact search advances past
+        // each hit. Two windows sharing a line are one region asked about twice, not
+        // two regions to rewrite.
+        var starts: [Int] = []
+        var next = 0
         for start in 0...(lines.count - needleLines.count)
-        where Array(normalizedLines[start..<(start + needleLines.count)]) == normalizedNeedle {
-            matches.append(start)
+        where start >= next
+            && Array(normalizedLines[start..<(start + needleLines.count)]) == normalizedNeedle
+        {
+            starts.append(start)
+            next = start + needleLines.count
         }
-        guard matches.count == 1, let start = matches.first else {
-            throw matches.isEmpty
-                ? noMatch(path)
-                : AgentToolError.invalidArguments(
+        let candidates = starts.map {
+            lineRange(
+                $0..<($0 + needleLines.count), in: haystack, lines: lines,
+                includingTrailingNewline: needleEndsWithNewline
+            )
+        }
+        return try select(
+            candidates, count: wanted, path: path,
+            ambiguity: """
+                old_text matches \(candidates.count) regions of \(path) once punctuation and \
+                trailing whitespace are ignored. Extend it until it names exactly one, or set \
+                count to say how many to replace.
+                """
+        )
+        .map { Located(range: $0, text: text) }
+    }
+
+    /// Pattern matching over the whole normalized file, so a pattern may span lines.
+    ///
+    /// `^` and `$` bind to lines rather than to the file, which is how a change to a
+    /// config is actually described. Matching is case-sensitive; a pattern that wants
+    /// otherwise says `(?i)`. The normalized fallback above does not apply here — a
+    /// pattern is exact by construction, and forgiving its punctuation would mean
+    /// matching something other than what it says.
+    private static func matchPattern(
+        _ replacement: ScratchReplacement, in haystack: String, path: String
+    ) throws -> [Located] {
+        let expression: NSRegularExpression
+        do {
+            expression = try NSRegularExpression(
+                pattern: replacement.oldText, options: [.anchorsMatchLines]
+            )
+        } catch {
+            throw AgentToolError.invalidArguments("old_text is not a valid regular expression.")
+        }
+        let template = LineEnding.normalizedToLF(replacement.newText)
+        let whole = NSRange(haystack.startIndex..<haystack.endIndex, in: haystack)
+
+        var found: [Located] = []
+        var matchedNothing = false
+        expression.enumerateMatches(in: haystack, range: whole) { match, _, stop in
+            guard let match else { return }
+            // A pattern that can match the empty string would splice new_text between
+            // characters rather than replace anything, and there is no length at
+            // which to stop.
+            guard match.range.length > 0 else {
+                matchedNothing = true
+                stop.pointee = true
+                return
+            }
+            guard let range = Range(match.range, in: haystack) else { return }
+            found.append(
+                Located(
+                    range: range,
+                    text: expression.replacementString(
+                        for: match, in: haystack, offset: 0, template: template
+                    )
+                ))
+            if found.count > Limits.matchesPerReplacement { stop.pointee = true }
+        }
+        guard !matchedNothing else {
+            throw AgentToolError.invalidArguments(
+                "old_text matched an empty string in \(path). Narrow the pattern."
+            )
+        }
+
+        let selected = try select(
+            found.map(\.range), count: replacement.count, path: path,
+            ambiguity: """
+                old_text matches \(found.count) regions of \(path). Narrow the pattern until it \
+                names exactly one, or set count to say how many to replace.
+                """
+        )
+        // `select` keeps document order and only ever returns a prefix, so the
+        // matching replacement texts are the same prefix of `found`.
+        return Array(found.prefix(selected.count))
+    }
+
+    /// Turns however many regions were found into exactly the set the entry asked
+    /// for, or into the error that says which way the number was wrong.
+    private static func select(
+        _ found: [Range<String.Index>], count: Int?, path: String, ambiguity: String
+    ) throws -> [Range<String.Index>] {
+        guard !found.isEmpty else { throw noMatch(path) }
+        switch count {
+        case nil:
+            guard found.count == 1 else { throw AgentToolError.invalidArguments(ambiguity) }
+            return found
+        case 0:
+            guard found.count <= Limits.matchesPerReplacement else {
+                throw AgentToolError.invalidArguments(
                     """
-                    old_text matches \(matches.count) regions of \(path) once punctuation and \
-                    trailing whitespace are ignored. Extend it until it names exactly one.
+                    old_text matches more than \(Limits.matchesPerReplacement) regions of \
+                    \(path). Narrow it.
                     """
                 )
+            }
+            return found
+        case let wanted?:
+            guard found.count >= wanted else {
+                throw AgentToolError.invalidArguments(
+                    """
+                    count is \(wanted) but old_text matches \(found.count) \
+                    \(found.count == 1 ? "region" : "regions") of \(path).
+                    """
+                )
+            }
+            return Array(found.prefix(wanted))
         }
-        return lineRange(
-            start..<(start + needleLines.count), in: haystack, lines: lines,
-            includingTrailingNewline: needleEndsWithNewline
-        )
+    }
+
+    /// How many matches are worth collecting for a given `count`.
+    ///
+    /// Two is all an unbounded entry needs to know — one is a match, more than one is
+    /// ambiguous — and stopping there keeps a one-character `old_text` against a
+    /// large file from collecting a range per occurrence. Asking for all of them
+    /// collects one past the ceiling, so exceeding it is an error rather than a
+    /// silent truncation.
+    private static func searchLimit(for count: Int?) -> Int {
+        switch count {
+        case nil: 2
+        case 0: Limits.matchesPerReplacement + 1
+        case let wanted?: wanted
+        }
     }
 
     private static func noMatch(_ path: String) -> AgentToolError {
@@ -845,13 +1240,12 @@ public actor AgentScratchWorkspace {
         )
     }
 
-    private static func ranges(of needle: String, in haystack: String) -> [Range<String.Index>] {
+    private static func ranges(
+        of needle: String, in haystack: String, limit: Int
+    ) -> [Range<String.Index>] {
         var found: [Range<String.Index>] = []
         var searchFrom = haystack.startIndex
-        // Two is all any caller needs to know: one is a match, more than one is
-        // ambiguous. Stopping there keeps a one-character `old_text` against a large
-        // file from collecting a range per occurrence.
-        while found.count < 2,
+        while found.count < limit,
             let range = haystack.range(of: needle, range: searchFrom..<haystack.endIndex)
         {
             found.append(range)

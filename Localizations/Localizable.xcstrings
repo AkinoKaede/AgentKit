@@ -71,12 +71,32 @@
         }
       }
     },
+    "%lld files" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld个文件"
+          }
+        }
+      }
+    },
     "%lld matching lines in %lld files" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "在%2$lld个文件中找到%1$lld个匹配行"
+          }
+        }
+      }
+    },
+    "%lld replacements applied" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已应用%lld处替换"
           }
         }
       }
@@ -375,6 +395,16 @@
         }
       }
     },
+    "Copied" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已复制"
+          }
+        }
+      }
+    },
     "Created" : {
       "localizations" : {
         "zh-Hans" : {
@@ -401,6 +431,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已删除"
+          }
+        }
+      }
+    },
+    "Destination" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "目标"
           }
         }
       }
@@ -466,6 +506,16 @@
       }
     },
     "File" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件"
+          }
+        }
+      }
+    },
+    "Files" : {
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -651,6 +701,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最低"
+          }
+        }
+      }
+    },
+    "Moved" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已移动"
           }
         }
       }
@@ -865,6 +925,16 @@
         }
       }
     },
+    "Replaced" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已替换"
+          }
+        }
+      }
+    },
     "Request" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1061,6 +1131,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已跳过%lld个二进制文件"
+          }
+        }
+      }
+    },
+    "Source" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来源"
           }
         }
       }

@@ -76,6 +76,19 @@ nonisolated
         ])
     }
 
+    /// Attaches a JSON Schema `description` to a fragment.
+    ///
+    /// A tool's one-line `summary` is otherwise the only prose the model gets, which
+    /// is enough for a property whose name says everything and not enough for one
+    /// whose meaning is a convention — "omit for exactly one, 0 for every
+    /// occurrence". `description` is a standard keyword every provider dialect
+    /// forwards, and `AgentJSONSchemaValidator` ignores it.
+    public static func described(_ schema: AgentJSONValue, _ text: String) -> AgentJSONValue {
+        guard var object = schema.objectValue else { return schema }
+        object["description"] = .string(text)
+        return .object(object)
+    }
+
     public static func object(
         properties: [String: AgentJSONValue], required: [String]
     ) -> AgentJSONValue {

@@ -216,29 +216,58 @@ public nonisolated struct ScratchWriteTool: AgentToolDefinition, AgentToolSchema
     }
 }
 
-public nonisolated struct ScratchEditTool: AgentToolDefinition, AgentToolSchemaBuilding {
+public nonisolated struct ScratchReplaceTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public init(
         workspace: AgentScratchWorkspace
     ) {
         self.workspace = workspace
     }
 
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.scratch_edit", present: present)
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.scratch_replace", present: present
+    )
     public let workspace: AgentScratchWorkspace
 
     public var descriptor: AgentToolDescriptor {
         let replacement = Self.object(
             properties: [
-                "old_text": Self.string(max: 128 * 1_024),
-                "new_text": Self.string(max: 128 * 1_024),
+                "old_text": Self.described(
+                    Self.string(max: 128 * 1_024),
+                    "Text to find. A regular expression when regex is true."
+                ),
+                "new_text": Self.described(
+                    Self.string(max: 128 * 1_024),
+                    """
+                    Text to put in its place; empty deletes the region. When regex is true this \
+                    is a template, so $1 is the first capture group and a literal dollar sign is \
+                    written \\$.
+                    """
+                ),
+                "regex": Self.described(
+                    Self.boolean(),
+                    """
+                    Match old_text as a regular expression. ^ and $ bind to lines, matching is \
+                    case-sensitive unless the pattern says (?i), and a pattern may span lines.
+                    """
+                ),
+                "count": Self.described(
+                    Self.integer(min: 0, max: AgentScratchWorkspace.Limits.matchesPerReplacement),
+                    """
+                    How many occurrences to replace: omit to require exactly one, 0 for every \
+                    occurrence, or n for the first n. Fewer than n is an error and nothing is \
+                    written.
+                    """
+                ),
             ], required: ["old_text", "new_text"]
         )
         return Self.descriptor(
-            "scratch_edit", "Change a scratch file by exact text replacement.",
+            "scratch_replace", "Change a scratch file by text or pattern replacement.",
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
-                "edits": Self.array(items: replacement, max: AgentScratchWorkspace.Limits.edits),
-            ], required: ["path", "edits"], target: .local, safety: .locallyContained,
+                "replacements": Self.array(
+                    items: replacement, max: AgentScratchWorkspace.Limits.replacements
+                ),
+            ], required: ["path", "replacements"], target: .local, safety: .locallyContained,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "pencil", activity: .semanticArgument(key: "path", fallback: .scratchFile),
@@ -251,19 +280,163 @@ public nonisolated struct ScratchEditTool: AgentToolDefinition, AgentToolSchemaB
         -> AgentToolResult
     {
         let arguments = try Arguments(invocation)
-        let outcome = try await workspace.apply(
-            arguments.scratchEdits(), to: arguments.string("path")
+        let outcome = try await workspace.replace(
+            arguments.scratchReplacements(), in: arguments.string("path")
         )
         return Self.result(
             invocation,
             .object([
-                "path": .string(outcome.path), "edits_applied": .number(Double(outcome.editsApplied)),
+                "path": .string(outcome.path), "edits_applied": .number(Double(outcome.entriesApplied)),
+                "replacements_applied": .number(Double(outcome.replacementsApplied)),
                 "first_changed_line": outcome.diff.firstChangedLine.map { .number(Double($0)) } ?? .null,
                 "diff": .string(outcome.diff.text), "diff_truncated": .bool(outcome.diff.isTruncated),
                 "bytes": .number(Double(outcome.bytes)), "sha256": .string(outcome.sha256),
                 "line_ending": .string(outcome.lineEnding.rawValue),
                 "total_bytes": .number(Double(outcome.usage.bytes)),
             ]), truncated: outcome.diff.isTruncated)
+    }
+}
+
+/// `scratch_copy` and `scratch_move` differ only in whether the source survives, so
+/// they share everything but a name, a verb and one call.
+public nonisolated protocol ScratchTransferToolDefinition: AgentToolDefinition,
+    AgentToolSchemaBuilding
+{
+    static var name: String { get }
+    static var summary: String { get }
+    static var symbol: String { get }
+    static var actionKind: AgentToolDescriptor.Presentation.ActionKind { get }
+    var workspace: AgentScratchWorkspace { get }
+
+    func transfer(
+        _ from: String, to: String, overwrite: Bool
+    ) async throws -> ScratchTransferOutcome
+}
+nonisolated
+
+    extension ScratchTransferToolDefinition
+{
+    public var descriptor: AgentToolDescriptor {
+        Self.descriptor(
+            Self.name, Self.summary,
+            properties: [
+                "from": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
+                "to": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
+                "overwrite": Self.described(
+                    Self.boolean(),
+                    """
+                    Replace an existing file at the destination. An existing directory is never \
+                    replaced, whatever this says.
+                    """
+                ),
+            ], required: ["from", "to"], target: .local, safety: .locallyContained,
+            concurrency: .parallel,
+            presentation: .init(
+                symbol: Self.symbol, activity: .semanticArgument(key: "from", fallback: .scratchEntry),
+                output: .json, actionKind: Self.actionKind
+            )
+        )
+    }
+
+    public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws
+        -> AgentToolResult
+    {
+        let arguments = try Arguments(invocation)
+        let outcome = try await transfer(
+            arguments.string("from"), to: arguments.string("to"),
+            overwrite: arguments.optionalBool("overwrite") ?? false
+        )
+        return Self.result(
+            invocation,
+            .object([
+                "from": .string(outcome.from), "to": .string(outcome.to),
+                "kind": .string(outcome.kind.rawValue), "files": .number(Double(outcome.files)),
+                "bytes": .number(Double(outcome.bytes)), "overwritten": .bool(outcome.didOverwrite),
+                "total_bytes": .number(Double(outcome.usage.bytes)),
+                "entry_count": .number(Double(outcome.usage.entries)),
+            ]))
+    }
+
+    public static func present(
+        _ input: AgentToolDetailInput
+    ) -> [AgentToolDetail.Item] {
+        typealias F = AgentToolDetailFormatting
+        return F.objectItems(input) { object in
+            var items: [AgentToolDetail.Item] = []
+            F.appendField(&items, "Source", object["from"]?.stringValue, locale: input.locale, monospaced: true)
+            F.appendField(
+                &items, "Destination", object["to"]?.stringValue, locale: input.locale, monospaced: true)
+            F.appendField(
+                &items, "Kind",
+                object["kind"]?.stringValue.map { F.kindLabel($0, locale: input.locale) },
+                locale: input.locale
+            )
+            items.append(
+                F.field(
+                    "Result",
+                    object["overwritten"]?.boolValue == true
+                        ? F.localized("Replaced", locale: input.locale)
+                        : F.localized(name == "scratch_copy" ? "Copied" : "Moved", locale: input.locale),
+                    locale: input.locale
+                ))
+            if let files = object["files"]?.integerValue {
+                items.append(
+                    F.field(
+                        "Files",
+                        String(localized: "\(files) files", bundle: .module, locale: input.locale),
+                        locale: input.locale
+                    ))
+            }
+            F.appendBytes(&items, "Size", object["bytes"], locale: input.locale)
+            F.appendBytes(&items, "Workspace usage", object["total_bytes"], locale: input.locale)
+            return items
+        }
+    }
+}
+
+public nonisolated struct ScratchCopyTool: ScratchTransferToolDefinition {
+    public init(
+        workspace: AgentScratchWorkspace
+    ) {
+        self.workspace = workspace
+    }
+
+    public static let name = "scratch_copy"
+    public static let summary = "Copy a scratch file or directory to another scratch path."
+    public static let symbol = "doc.on.doc"
+    public static let actionKind = AgentToolDescriptor.Presentation.ActionKind.copy
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.scratch_copy", present: present
+    )
+    public let workspace: AgentScratchWorkspace
+
+    public func transfer(
+        _ from: String, to: String, overwrite: Bool
+    ) async throws -> ScratchTransferOutcome {
+        try await workspace.copy(from, to: to, overwrite: overwrite)
+    }
+}
+
+public nonisolated struct ScratchMoveTool: ScratchTransferToolDefinition {
+    public init(
+        workspace: AgentScratchWorkspace
+    ) {
+        self.workspace = workspace
+    }
+
+    public static let name = "scratch_move"
+    public static let summary = "Move or rename a scratch file or directory."
+    public static let symbol = "arrow.right"
+    public static let actionKind = AgentToolDescriptor.Presentation.ActionKind.move
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.scratch_move", present: present
+    )
+    public let workspace: AgentScratchWorkspace
+
+    public func transfer(
+        _ from: String, to: String, overwrite: Bool
+    ) async throws -> ScratchTransferOutcome {
+        try await workspace.move(from, to: to, overwrite: overwrite)
     }
 }
 
@@ -536,7 +709,7 @@ nonisolated
 }
 nonisolated
 
-    extension ScratchEditTool
+    extension ScratchReplaceTool
 {
     public static func present(
         _ input: AgentToolDetailInput
@@ -545,7 +718,20 @@ nonisolated
         return F.objectItems(input) { object in
             var items: [AgentToolDetail.Item] = []
             F.appendField(&items, "Path", object["path"]?.stringValue, locale: input.locale, monospaced: true)
-            if let count = object["edits_applied"]?.integerValue {
+            // `replacements_applied` is absent from cards written before one entry
+            // could rewrite several regions, where the two counts were the same
+            // number.
+            if let count = object["replacements_applied"]?.integerValue {
+                items.append(
+                    F.field(
+                        "Changes",
+                        String(
+                            localized: "\(count) replacements applied", bundle: .module,
+                            locale: input.locale
+                        ),
+                        locale: input.locale
+                    ))
+            } else if let count = object["edits_applied"]?.integerValue {
                 items.append(
                     F.field(
                         "Changes", String(localized: "\(count) edits applied", bundle: .module, locale: input.locale),

@@ -7,7 +7,7 @@ Everything with an opinion about what your app actually does — where it connec
 reach, how it draws a tool card — is yours to supply.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.2.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.3.0")
 ```
 
 macOS 15+, iOS 18+, Swift 6.
@@ -113,7 +113,7 @@ offering the model a tool that could only fail.
 
 | Group | Tools | Needs |
 | --- | --- | --- |
-| `.scratch` | `scratch_list` `scratch_read` `scratch_search` `scratch_write` `scratch_edit` `scratch_diff` `scratch_delete` | `AgentScratchWorkspace` |
+| `.scratch` | `scratch_list` `scratch_read` `scratch_search` `scratch_write` `scratch_replace` `scratch_copy` `scratch_move` `scratch_diff` `scratch_delete` | `AgentScratchWorkspace` |
 | `.web` | `fetch` `web_search`, and `scratch_fetch` when `.scratch` is on too | `AgentWebFetching`; `web_search` also needs `AgentWebSearching` — see below |
 | `.userInteraction` | `request_user_input` `request_user_secret` | nothing — the handler comes from the run |
 | `.planning` | `present_plan` | a workspace and an `AgentPlanRecorder` |

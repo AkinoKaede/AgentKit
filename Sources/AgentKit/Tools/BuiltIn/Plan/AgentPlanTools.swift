@@ -21,7 +21,7 @@ public nonisolated struct PresentPlanTool: AgentToolDefinition, AgentToolSchemaB
             AgentPlanModeHook.presentPlanToolName,
             """
             Put a finished plan to the user and end the turn. Pass the scratch path you drafted it \
-            at, not the text: write it with scratch_write and revise it with scratch_edit. Call this \
+            at, not the text: write it with scratch_write and revise it with scratch_replace. Call this \
             on its own and last. Do not call it to think out loud; use request_user_input for that.
             """,
             properties: [

@@ -100,20 +100,47 @@ public nonisolated struct Arguments: Sendable {
         }
     }
 
+    /// The `replacements` array of `scratch_replace`.
+    ///
     /// `new_text` may legitimately be empty — that is how a block is deleted — so it
     /// is read for presence rather than through `string(_:)`, which rejects empty.
-    public func scratchEdits() throws -> [ScratchEdit] {
-        guard let rows = object["edits"]?.arrayValue, !rows.isEmpty else {
-            throw AgentToolError.invalidArguments("edits must be a non-empty array.")
+    /// Every failure names the entry it came from, because a batch of thirty-two
+    /// that fails anonymously is one the model has to bisect by hand.
+    public func scratchReplacements() throws -> [ScratchReplacement] {
+        guard let rows = object["replacements"]?.arrayValue, !rows.isEmpty else {
+            throw AgentToolError.invalidArguments("replacements must be a non-empty array.")
         }
-        return try rows.map { row in
+        return try rows.enumerated().map { index, row in
+            let position = index + 1
             guard let fields = row.objectValue,
                 let oldText = fields["old_text"]?.stringValue,
                 let newText = fields["new_text"]?.stringValue
             else {
-                throw AgentToolError.invalidArguments("Each edit requires old_text and new_text.")
+                throw AgentToolError.invalidArguments(
+                    "Replacement \(position) requires old_text and new_text."
+                )
             }
-            return ScratchEdit(oldText: oldText, newText: newText)
+            let isRegularExpression = fields["regex"]?.boolValue ?? false
+            if isRegularExpression,
+                (try? NSRegularExpression(pattern: oldText)) == nil
+            {
+                throw AgentToolError.invalidArguments(
+                    "Replacement \(position) has an old_text that is not a valid regular expression."
+                )
+            }
+            let count = fields["count"]?.integerValue
+            if let count, count < 0 || count > AgentScratchWorkspace.Limits.matchesPerReplacement {
+                throw AgentToolError.invalidArguments(
+                    """
+                    Replacement \(position) has a count of \(count); it must be between 0 and \
+                    \(AgentScratchWorkspace.Limits.matchesPerReplacement).
+                    """
+                )
+            }
+            return ScratchReplacement(
+                oldText: oldText, newText: newText,
+                isRegularExpression: isRegularExpression, count: count
+            )
         }
     }
 }

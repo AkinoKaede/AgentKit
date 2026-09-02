@@ -74,7 +74,7 @@ public nonisolated struct AgentPlanModeHook: AgentLoopHook {
 
         // `context.descriptor` is post-preflight, so the rest rides evidence the
         // pipeline already proved locally rather than anything the model or a
-        // remote server asserted. `scratch_write` and `scratch_edit` are
+        // remote server asserted. `scratch_write` and `scratch_replace` are
         // contained; a remote write, a private-network `fetch`, and every MCP
         // tool are not.
         guard !context.descriptor.safety.isAllowedWhilePlanning else { return .proceed }
@@ -156,7 +156,7 @@ public nonisolated struct AgentPlanContractInjection: AgentContextTransforming {
         attempt those, and never describe an action as taken — you have taken none.
 
         Draft the plan in the scratch workspace with scratch_write, and revise it there with \
-        scratch_edit rather than rewriting it. That way a revision costs a diff instead of \
+        scratch_replace rather than rewriting it. That way a revision costs a diff instead of \
         another copy of the document.
 
         When a choice is genuinely the user's — which of two approaches to take, a tradeoff \

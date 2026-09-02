@@ -16,8 +16,12 @@
 	<string>%lld应用的编辑</string>
 	<key>%lld entries</key>
 	<string>%lld条目</string>
+	<key>%lld files</key>
+	<string>%lld个文件</string>
 	<key>%lld matching lines in %lld files</key>
 	<string>在%2$lld个文件中找到%1$lld个匹配行</string>
+	<key>%lld replacements applied</key>
+	<string>已应用%lld处替换</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>%1$lld个任务·已完成%2$lld个</string>
 	<key>A skill may be at most %lld KB.</key>
@@ -70,12 +74,16 @@
 	<string>内容类型</string>
 	<key>Conversation</key>
 	<string>对话</string>
+	<key>Copied</key>
+	<string>已复制</string>
 	<key>Created</key>
 	<string>已创建</string>
 	<key>Critical</key>
 	<string>严重</string>
 	<key>Deleted</key>
 	<string>已删除</string>
+	<key>Destination</key>
+	<string>目标</string>
 	<key>Diff</key>
 	<string>差异</string>
 	<key>Directory</key>
@@ -89,6 +97,8 @@
 	<key>Extra High</key>
 	<string>极高</string>
 	<key>File</key>
+	<string>文件</string>
+	<key>Files</key>
 	<string>文件</string>
 	<key>Files are identical</key>
 	<string>文件为相同的</string>
@@ -126,6 +136,8 @@
 	<string>中</string>
 	<key>Minimal</key>
 	<string>最低</string>
+	<key>Moved</key>
+	<string>已移动</string>
 	<key>No</key>
 	<string>否</string>
 	<key>No Chat model is configured.</key>
@@ -168,6 +180,8 @@
 	<string>问题不可用</string>
 	<key>Reasoning</key>
 	<string>推理</string>
+	<key>Replaced</key>
+	<string>已替换</string>
 	<key>Request</key>
 	<string>请求</string>
 	<key>Result</key>
@@ -208,6 +222,8 @@
 	<string>跳过</string>
 	<key>Skipped %lld binary files</key>
 	<string>已跳过%lld个二进制文件</string>
+	<key>Source</key>
+	<string>来源</string>
 	<key>Status</key>
 	<string>状态</string>
 	<key>Streamable HTTP</key>

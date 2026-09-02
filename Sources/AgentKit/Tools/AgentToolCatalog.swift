@@ -4,8 +4,8 @@ import Foundation
 ///
 /// Selection is by group rather than by name because the tools inside one are
 /// only useful together: `scratch_read` without `scratch_write` is a directory
-/// nothing can put anything in, and `scratch_edit` without `scratch_diff` is an
-/// edit nobody can check. An app that genuinely wants a subset of a group can
+/// nothing can put anything in, and `scratch_replace` without `scratch_diff` is
+/// a change nobody can check. An app that genuinely wants a subset of a group can
 /// still take the group and filter the registry — see
 /// `AgentToolRegistry.filtering(_:)` — but that is an unusual thing to want, and
 /// the ordinary choice is which capabilities the agent has at all.
@@ -19,7 +19,8 @@ public nonisolated struct AgentToolGroup: RawRepresentable, Hashable, Sendable {
     public init(_ rawValue: String) { self.rawValue = rawValue }
 
     /// `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`,
-    /// `scratch_edit`, `scratch_diff`, `scratch_delete`. Needs a workspace.
+    /// `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`,
+    /// `scratch_delete`. Needs a workspace.
     public static let scratch = Self("scratch")
     /// `fetch`, `web_search`, `scratch_fetch`. Needs a fetcher; `web_search`
     /// additionally needs a searcher and `scratch_fetch` a workspace.
@@ -157,7 +158,11 @@ public nonisolated enum AgentToolCatalog {
 
     /// Every presenter the built-in catalog owns, for a host composing the
     /// registry that renders historical cards — see `AgentToolPresenterRegistry`.
-    public static var builtInPresenters: [AgentToolDetailPresenter] { definitions.map(\.presenter) }
+    /// Renamed tools' old IDs are included: a card outlives the name it was
+    /// written under.
+    public static var builtInPresenters: [AgentToolDetailPresenter] {
+        definitions.map(\.presenter) + legacyPresenters
+    }
 
     private static let definitions: [Registration] =
         webTools + userTools + scratchTools + planningTools + taskTools + skillTools
@@ -200,9 +205,21 @@ public nonisolated enum AgentToolCatalog {
         .init(ScratchReadTool.self) { $0.scratch.map(ScratchReadTool.init(workspace:)) },
         .init(ScratchSearchTool.self) { $0.scratch.map(ScratchSearchTool.init(workspace:)) },
         .init(ScratchWriteTool.self) { $0.scratch.map(ScratchWriteTool.init(workspace:)) },
-        .init(ScratchEditTool.self) { $0.scratch.map(ScratchEditTool.init(workspace:)) },
+        .init(ScratchReplaceTool.self) { $0.scratch.map(ScratchReplaceTool.init(workspace:)) },
+        .init(ScratchCopyTool.self) { $0.scratch.map(ScratchCopyTool.init(workspace:)) },
+        .init(ScratchMoveTool.self) { $0.scratch.map(ScratchMoveTool.init(workspace:)) },
         .init(ScratchDiffTool.self) { $0.scratch.map(ScratchDiffTool.init(workspace:)) },
         .init(ScratchDeleteTool.self) { $0.scratch.map(ScratchDeleteTool.init(workspace:)) },
+    ]
+
+    /// Presenters for tools that have since been renamed.
+    ///
+    /// A card records the presenter ID it was written with, so the ID has to outlive
+    /// the tool name — a transcript from before `scratch_edit` became
+    /// `scratch_replace` would otherwise fall back to generic key/value fields years
+    /// later. Nothing constructs these; they are only ever looked up.
+    private static let legacyPresenters: [AgentToolDetailPresenter] = [
+        AgentToolDetailPresenter(id: "builtin.scratch_edit", present: ScratchReplaceTool.present)
     ]
 
     private static let planningTools: [Registration] = [
