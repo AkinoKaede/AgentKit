@@ -6,3 +6,6 @@
 .swiftpm/
 DerivedData/
 *.xcresult
+
+# Resolved only matters for a root package; an adopter resolves its own.
+Package.resolved

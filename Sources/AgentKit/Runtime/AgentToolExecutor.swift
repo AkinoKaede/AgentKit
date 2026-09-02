@@ -139,7 +139,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         runID: UUID,
         permissionMode: AgentPermissionMode,
         userIntent: String,
-        interjection: @escaping @Sendable () async -> Void = {}
+        interjection: (@Sendable () async -> Void)? = nil
     ) {
         self.tools = tools
         self.approval = approval
@@ -151,7 +151,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         self.runID = runID
         self.permissionMode = permissionMode
         self.userIntent = userIntent
-        self.interjection = interjection
+        self.interjection = interjection ?? {}
     }
 
     public func plan(

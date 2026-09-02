@@ -9,8 +9,8 @@ public nonisolated struct AgentToolExecutionContext: Sendable {
         services: AgentToolServices = AgentToolServices(),
         preflightMetadata: [String: AgentJSONValue],
         authorize: @escaping @Sendable (AgentApprovalRequest) async -> AgentApprovalDecision,
-        report: @escaping @Sendable (AgentToolResult) -> Void = { _ in },
-        whenUserInterjects: @escaping @Sendable () async -> Void = {}
+        report: (@Sendable (AgentToolResult) -> Void)? = nil,
+        whenUserInterjects: (@Sendable () async -> Void)? = nil
     ) {
         self.runID = runID
         self.userIntent = userIntent
@@ -19,8 +19,8 @@ public nonisolated struct AgentToolExecutionContext: Sendable {
         self.services = services
         self.preflightMetadata = preflightMetadata
         self.authorize = authorize
-        self.report = report
-        self.whenUserInterjects = whenUserInterjects
+        self.report = report ?? { _ in }
+        self.whenUserInterjects = whenUserInterjects ?? {}
     }
 
     public var runID: UUID

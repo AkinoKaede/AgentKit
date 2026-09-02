@@ -10,10 +10,9 @@ struct BalancedEmitterTests {
         let output = StringOutput()
         let emitter = BalancedEmitter(
             configuration: .init(duration: .seconds(1), frequency: 4),
-            sleep: { _ in await Task.yield() }
-        ) { text in
-            await output.append(text)
-        }
+            sleep: { _ in await Task.yield() },
+            onEmit: { text in await output.append(text) }
+        )
 
         await emitter.add("abcdefgh")
         try await emitter.wait()
@@ -27,10 +26,9 @@ struct BalancedEmitterTests {
         let output = StringOutput()
         let emitter = BalancedEmitter(
             configuration: .init(duration: .seconds(1), frequency: 8),
-            sleep: { _ in await Task.yield() }
-        ) { text in
-            await output.append(text)
-        }
+            sleep: { _ in await Task.yield() },
+            onEmit: { text in await output.append(text) }
+        )
 
         await emitter.update(.init(duration: .seconds(1), frequency: 2))
         await emitter.add("abcdefgh")
@@ -44,10 +42,9 @@ struct BalancedEmitterTests {
         let output = StringOutput()
         let emitter = BalancedEmitter(
             configuration: .init(duration: .seconds(1), frequency: 4),
-            sleep: { _ in await Task.yield() }
-        ) { text in
-            await output.append(text)
-        }
+            sleep: { _ in await Task.yield() },
+            onEmit: { text in await output.append(text) }
+        )
 
         await emitter.add("")
         try await emitter.wait()
@@ -61,10 +58,9 @@ struct BalancedEmitterTests {
         let gate = EmitterSleepGate()
         let emitter = BalancedEmitter(
             configuration: .init(duration: .seconds(1), frequency: 4),
-            sleep: { _ in try await gate.sleep() }
-        ) { text in
-            await output.append(text)
-        }
+            sleep: { _ in try await gate.sleep() },
+            onEmit: { text in await output.append(text) }
+        )
 
         await emitter.add("abcdefgh")
         await gate.waitUntilSleeping()
@@ -92,6 +88,11 @@ struct BalancedEmitterTests {
         await #expect(throws: CancellationError.self) {
             try await waiter.value
         }
+        // The wait's cancellation handler cancels the emitter on an unstructured
+        // task, so returning here can leave the drain still unwinding. Close it
+        // explicitly: a test that ends with a live task inside an actor it has
+        // just released is a test that fails somewhere else.
+        await emitter.cancel()
         #expect(await output.values.count <= 1)
     }
 

@@ -97,12 +97,12 @@ public actor AgentApprovalBroker: AgentApprovalHandling {
         reviewer: (any SecurityReviewing)?,
         manualApproval: @escaping ManualApproval,
         reviewTimeout: Duration = .seconds(30),
-        event: @escaping @Sendable (AgentEvent) -> Void = { _ in }
+        event: (@Sendable (AgentEvent) -> Void)? = nil
     ) {
         self.reviewer = reviewer
         self.manualApproval = manualApproval
         self.reviewTimeout = reviewTimeout
-        self.event = event
+        self.event = event ?? { _ in }
     }
 
     public func authorize(

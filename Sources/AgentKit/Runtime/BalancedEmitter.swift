@@ -28,13 +28,21 @@ public actor BalancedEmitter {
     private let sleep: Sleep
     private let onEmit: Emit
 
+    /// `sleep` and the other closure parameters in this package take `nil`
+    /// rather than a defaulted closure literal.
+    ///
+    /// A closure written as a default argument is compiled into a generator the
+    /// *caller's* module invokes, and one holding an `async throws` closure
+    /// miscompiles across a module boundary — the allocator aborts on the first
+    /// call. Resolving the default inside the initializer keeps the literal in
+    /// the module that owns it.
     public init(
         configuration: Configuration,
-        sleep: @escaping Sleep = { try await Task.sleep(for: $0) },
+        sleep: Sleep? = nil,
         onEmit: @escaping Emit
     ) {
         self.configuration = configuration
-        self.sleep = sleep
+        self.sleep = sleep ?? { try await Task.sleep(for: $0) }
         self.onEmit = onEmit
     }
 
