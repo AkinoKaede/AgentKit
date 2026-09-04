@@ -154,11 +154,21 @@ a model or a remote server said can override it afterwards.
 
 ## Providers
 
-`AgentProviderClient` speaks OpenAI Responses, OpenAI Chat Completions, Anthropic Messages, and
-Gemini (including Vertex). Every OpenAI-compatible gateway is the OpenAI kind with a different base
-URL. `ModelCatalogClient` lists a provider's models; `ModelCapabilityResolver` fills in what the
-listing did not say. If you would rather not use any of it, `AgentModelStreaming` is a
-single-method protocol and the runtime knows nothing else about the boundary.
+`AgentProviderClient` speaks four `ModelAPIFormat`s — Chat Completions, Responses, Messages, and
+generateContent (including Vertex, whose address is derived from a project and a location). They are
+named for the protocol rather than for whoever published it first, because every compatible gateway
+serves one of the four at an address of its own.
+
+A `ModelProvider` carries one `url`: the complete address a request goes to, with `{model}` where
+the model id belongs. This package appends no path and applies no default, so the stored value *is*
+where requests land — deciding whether a pasted URL already carried `/v1` is the caller's job, and
+guessing at it is the single most common source of "why does my custom endpoint 404". A blank URL is
+a provider pointed nowhere, and it fails as one. `ModelCatalogClient.models(for:at:secret:)` takes
+its listing address for the same reason.
+
+`ModelCapabilityResolver` fills in what a listing did not say. If you would rather not use any of
+it, `AgentModelStreaming` is a single-method protocol and the runtime knows nothing else about the
+boundary.
 
 ## Permission modes
 

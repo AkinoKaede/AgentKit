@@ -14,17 +14,17 @@ public nonisolated enum ProviderNetworking {
         secret: String,
         omittingEmptyCredential: Bool = false
     ) async throws {
-        switch provider.kind {
-        case .openAI:
+        switch provider.apiFormat {
+        case .chatCompletions, .responses:
             if !omittingEmptyCredential || !secret.isEmpty {
                 request.setValue("Bearer \(secret)", forHTTPHeaderField: "Authorization")
             }
-        case .anthropic:
+        case .messages:
             request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
             if !omittingEmptyCredential || !secret.isEmpty {
                 request.setValue(secret, forHTTPHeaderField: "x-api-key")
             }
-        case .google:
+        case .generateContent:
             if provider.usesVertex {
                 let token = try await GoogleServiceAccountAuth.shared.accessToken(
                     serviceAccountJSON: secret

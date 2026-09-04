@@ -294,7 +294,7 @@ public nonisolated enum ModelCapabilityResolver {
         for effort: ReasoningEffort,
         provider: ModelProvider
     ) -> String {
-        provider.kind == .google ? effort.wireName.uppercased() : effort.wireName
+        provider.apiFormat == .generateContent ? effort.wireName.uppercased() : effort.wireName
     }
 
     // MARK: - Bundled Pi catalog
@@ -417,8 +417,9 @@ public nonisolated enum ModelCapabilityResolver {
         }
 
         private static func piProviderID(for provider: ModelProvider) -> String? {
-            let url = provider.resolvedBaseURL.lowercased()
+            let url = provider.url.lowercased()
             let hosts: [(String, String)] = [
+                ("api.openai.com", "openai"),
                 ("openrouter.ai", "openrouter"),
                 ("api.deepseek.com", "deepseek"),
                 ("api.groq.com", "groq"),
@@ -427,11 +428,14 @@ public nonisolated enum ModelCapabilityResolver {
                 ("api.moonshot.ai", "moonshotai"),
             ]
             if let match = hosts.first(where: { url.contains($0.0) }) { return match.1 }
-            switch provider.kind {
-            case .anthropic: return "anthropic"
-            case .google: return provider.usesVertex ? "google-vertex" : "google"
-            case .openAI:
-                return url.contains("api.openai.com") ? "openai" : nil
+            // Falling back on the API format is a guess, and a narrow one: it
+            // is only right where a shape has effectively one first party.
+            // Chat Completions and Responses have dozens, so they answer `nil`
+            // and the model keeps whatever the listing reported.
+            switch provider.apiFormat {
+            case .messages: return "anthropic"
+            case .generateContent: return provider.usesVertex ? "google-vertex" : "google"
+            case .chatCompletions, .responses: return nil
             }
         }
 

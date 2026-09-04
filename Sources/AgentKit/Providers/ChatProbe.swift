@@ -75,7 +75,7 @@ public nonisolated struct ChatProbe: Sendable {
     // MARK: - Where
 
     private static func url(for model: AIModel, on provider: ModelProvider) throws -> URL {
-        let resolved = provider.resolvedRequestURL(model: model.id)
+        let resolved = provider.requestURL(model: model.id)
         guard let url = URL(string: resolved) else { throw ModelCatalogError.badURL(resolved) }
         return url
     }
@@ -85,8 +85,8 @@ public nonisolated struct ChatProbe: Sendable {
     public static func body(for model: AIModel, on provider: ModelProvider) throws -> Data {
         let object: [String: Any]
 
-        switch provider.kind {
-        case .openAI where provider.usesResponsesAPI:
+        switch provider.apiFormat {
+        case .responses:
             // The Responses API accepts a bare string, but compatible gateways
             // are not uniformly permissive: some require `input` to be the
             // canonical list of input items. The list form works with OpenAI as
@@ -103,7 +103,7 @@ public nonisolated struct ChatProbe: Sendable {
                 ],
             ]
 
-        case .openAI:
+        case .chatCompletions:
             // No output cap. `max_tokens` and `max_completion_tokens` are not
             // interchangeable across OpenAI's own model generations, and sending
             // the wrong one is a 400 that would read as "this model is broken".
@@ -113,7 +113,7 @@ public nonisolated struct ChatProbe: Sendable {
                 "messages": [["role": "user", "content": prompt]],
             ]
 
-        case .anthropic:
+        case .messages:
             // `max_tokens` is required here, unlike everywhere else. Generous
             // rather than minimal: a thinking model given 16 tokens spends them
             // all before it starts answering.
@@ -123,7 +123,7 @@ public nonisolated struct ChatProbe: Sendable {
                 "messages": [["role": "user", "content": prompt]],
             ]
 
-        case .google:
+        case .generateContent:
             // The model is named in the URL, not the body.
             object = ["contents": [["role": "user", "parts": [["text": prompt]]]]]
         }

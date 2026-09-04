@@ -29,19 +29,23 @@ public nonisolated struct ModelCatalogClient: Sendable {
     ///
     /// Paginates where the vendor paginates, and stops at `pageLimit` pages so
     /// a server that always says "there's more" cannot spin forever.
-    public func models(for provider: ModelProvider, secret: String) async throws -> [AIModel] {
+    /// `listing` is the address to `GET`, composed by the caller for the same
+    /// reason `ModelProvider.url` is: this package does not guess how a base
+    /// URL and an endpoint path fit together.
+    public func models(
+        for provider: ModelProvider, at listing: String, secret: String
+    ) async throws -> [AIModel] {
         guard !provider.usesVertexEndpoint else {
             throw ModelCatalogError.unsupportedForVertex
         }
-        let base = provider.resolvedModelsURL ?? ""
-        guard let url = URL(string: base) else { throw ModelCatalogError.badURL(base) }
+        guard let url = URL(string: listing) else { throw ModelCatalogError.badURL(listing) }
 
-        switch provider.kind {
-        case .openAI:
+        switch provider.apiFormat {
+        case .chatCompletions, .responses:
             return try await openAIModels(at: url, provider: provider, secret: secret)
-        case .anthropic:
+        case .messages:
             return try await anthropicModels(at: url, provider: provider, secret: secret)
-        case .google:
+        case .generateContent:
             return try await googleModels(at: url, provider: provider, secret: secret)
         }
     }
@@ -181,7 +185,7 @@ public nonisolated struct ModelCatalogClient: Sendable {
     /// kept, since silence is not a refusal.
     public static func parseGooglePage(
         _ data: Data,
-        provider: ModelProvider = ModelProvider(name: "Google", kind: .google)
+        provider: ModelProvider = ModelProvider(name: "Gemini", apiFormat: .generateContent)
     ) throws -> CatalogPage {
         guard let envelope = try? JSONDecoder().decode(GoogleEnvelope.self, from: data) else {
             throw ModelCatalogError.decoding

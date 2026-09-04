@@ -14,7 +14,7 @@ struct AgentProviderAdapterTests {
         let message = AgentTranscriptMessage(role: .user, text: "Explain", images: [image])
 
         var responses = ModelProvider(name: "Responses")
-        responses.usesResponsesAPI = true
+        responses.apiFormat = .responses
         let responsesBody = Self.body(
             responses, webSearch: false, tools: [], messages: [message]
         )
@@ -30,7 +30,7 @@ struct AgentProviderAdapterTests {
         #expect(chatContent.contains { $0["type"] as? String == "image_url" })
 
         let anthropicBody = Self.body(
-            ModelProvider(name: "Anthropic", kind: .anthropic), webSearch: false,
+            ModelProvider(name: "Anthropic", apiFormat: .messages), webSearch: false,
             tools: [], messages: [message]
         )
         let anthropicMessages = try #require(
@@ -42,7 +42,7 @@ struct AgentProviderAdapterTests {
         #expect(anthropicContent.contains { $0["type"] as? String == "image" })
 
         let googleBody = Self.body(
-            ModelProvider(name: "Google", kind: .google), webSearch: false,
+            ModelProvider(name: "Google", apiFormat: .generateContent), webSearch: false,
             tools: [], messages: [message]
         )
         let contents = try #require(googleBody["contents"] as? [[String: Any]])
@@ -52,8 +52,8 @@ struct AgentProviderAdapterTests {
 
     @Test
     func commandGeneratorRequestUsesBufferedJSONInsteadOfSSE() throws {
-        var provider = ModelProvider(name: "OpenAI")
-        provider.usesResponsesAPI = true
+        var provider = ModelProvider(name: "Gateway", url: "https://example.test/v1/responses")
+        provider.apiFormat = .responses
         let client = AgentProviderClient(
             provider: provider, model: AIModel(id: "gpt-test"), secret: "test"
         )
@@ -98,7 +98,7 @@ struct AgentProviderAdapterTests {
         )
 
         var responsesProvider = provider
-        responsesProvider.usesResponsesAPI = true
+        responsesProvider.apiFormat = .responses
         let request = AgentModelRequest(systemPrompt: "Review", messages: [], tools: [])
         let lowBody = AgentProviderClient(
             provider: responsesProvider, model: lowModel, secret: "test", reasoning: .low
@@ -114,7 +114,7 @@ struct AgentProviderAdapterTests {
     @Test
     func responsesRequestsAutomaticReasoningSummary() throws {
         var provider = ModelProvider(name: "OpenAI")
-        provider.usesResponsesAPI = true
+        provider.apiFormat = .responses
         let body = AgentProviderClient(
             provider: provider, model: Self.reasoningModel(id: "gpt-reasoning"),
             secret: "test", reasoning: .high
@@ -128,7 +128,7 @@ struct AgentProviderAdapterTests {
     @Test
     func anthropicAdaptiveThinkingAndGoogleThoughtsAreRequested() throws {
         let anthropicBody = AgentProviderClient(
-            provider: ModelProvider(name: "Anthropic", kind: .anthropic),
+            provider: ModelProvider(name: "Anthropic", apiFormat: .messages),
             model: Self.reasoningModel(id: "claude-sonnet-4-6"),
             secret: "test", reasoning: .high
         ).body(AgentModelRequest(systemPrompt: "test", messages: [], tools: []))
@@ -138,7 +138,7 @@ struct AgentProviderAdapterTests {
         #expect(thinking["budget_tokens"] == nil)
 
         let googleBody = AgentProviderClient(
-            provider: ModelProvider(name: "Google", kind: .google),
+            provider: ModelProvider(name: "Google", apiFormat: .generateContent),
             model: Self.reasoningModel(id: "gemini-reasoning"),
             secret: "test", reasoning: .high
         ).body(AgentModelRequest(systemPrompt: "test", messages: [], tools: []))
@@ -173,7 +173,7 @@ struct AgentProviderAdapterTests {
     @Test
     func responsesUsesNativeNamespacesForDeclarationsReplayAndCalls() throws {
         var provider = ModelProvider(name: "OpenAI")
-        provider.usesResponsesAPI = true
+        provider.apiFormat = .responses
         let tool = Self.namespacedTool
         let assistant = AgentTranscriptMessage(
             role: .assistant,
@@ -241,7 +241,7 @@ struct AgentProviderAdapterTests {
         #expect((openAICall["function"] as? [String: Any])?["name"] as? String == wire)
 
         let anthropicBody = Self.body(
-            ModelProvider(name: "Anthropic", kind: .anthropic), webSearch: false,
+            ModelProvider(name: "Anthropic", apiFormat: .messages), webSearch: false,
             tools: [tool], messages: [assistant, result]
         )
         #expect((anthropicBody["tools"] as? [[String: Any]])?.first?["name"] as? String == wire)
@@ -250,7 +250,7 @@ struct AgentProviderAdapterTests {
         #expect(anthropicCall["name"] as? String == wire)
 
         let googleBody = Self.body(
-            ModelProvider(name: "Google", kind: .google), webSearch: false,
+            ModelProvider(name: "Google", apiFormat: .generateContent), webSearch: false,
             tools: [tool], messages: [assistant, result]
         )
         let googleGroups = try #require(googleBody["tools"] as? [[String: Any]])
@@ -576,7 +576,7 @@ struct AgentProviderAdapterTests {
         let providerItem = try #require(reasoningEvents.firstProviderItem)
 
         var provider = ModelProvider(name: "Responses")
-        provider.usesResponsesAPI = true
+        provider.apiFormat = .responses
         let assistant = AgentTranscriptMessage(
             role: .assistant,
             toolCalls: [
@@ -719,7 +719,7 @@ struct AgentProviderAdapterTests {
             providerItems: [item]
         )
         let body = Self.body(
-            ModelProvider(name: "Anthropic", kind: .anthropic),
+            ModelProvider(name: "Anthropic", apiFormat: .messages),
             webSearch: false, tools: [], messages: [assistant]
         )
         let messages = try #require(body["messages"] as? [[String: Any]])
@@ -807,7 +807,7 @@ struct AgentProviderAdapterTests {
             ]
         )
         let body = Self.body(
-            ModelProvider(name: "Google", kind: .google),
+            ModelProvider(name: "Google", apiFormat: .generateContent),
             webSearch: false, tools: [], messages: [assistant]
         )
         let contents = try #require(body["contents"] as? [[String: Any]])
@@ -821,7 +821,7 @@ struct AgentProviderAdapterTests {
     @Test
     func nativeSearchToolIsSentOnlyWhenAsked() throws {
         var anthropic = ModelProvider(name: "Anthropic")
-        anthropic.kind = .anthropic
+        anthropic.apiFormat = .messages
 
         let off = Self.body(anthropic, webSearch: false, tools: [Self.lookupTool])
         let offTools = try #require(off["tools"] as? [[String: Any]])
@@ -841,7 +841,7 @@ struct AgentProviderAdapterTests {
     @Test
     func nativeSearchSurvivesAnEmptyLocalToolList() throws {
         var anthropic = ModelProvider(name: "Anthropic")
-        anthropic.kind = .anthropic
+        anthropic.apiFormat = .messages
         let anthropicTools = try #require(
             Self.body(anthropic, webSearch: true, tools: [])["tools"] as? [[String: Any]]
         )
@@ -849,7 +849,7 @@ struct AgentProviderAdapterTests {
         #expect(anthropicTools[0]["type"] as? String == "web_search_20250305")
 
         var responses = ModelProvider(name: "Responses")
-        responses.usesResponsesAPI = true
+        responses.apiFormat = .responses
         let responseTools = try #require(
             Self.body(responses, webSearch: true, tools: [])["tools"] as? [[String: Any]]
         )
@@ -876,7 +876,7 @@ struct AgentProviderAdapterTests {
     @Test
     func googleSendsSearchAsItsOwnToolGroup() throws {
         var provider = ModelProvider(name: "Google")
-        provider.kind = .google
+        provider.apiFormat = .generateContent
 
         let tools = try #require(
             Self.body(provider, webSearch: true, tools: [Self.lookupTool])["tools"]
@@ -1039,7 +1039,7 @@ struct AgentProviderAdapterTests {
             ).firstProviderItem
         )
         var provider = ModelProvider(name: "Responses")
-        provider.usesResponsesAPI = true
+        provider.apiFormat = .responses
         let body = AgentProviderClient(
             provider: provider, model: AIModel(id: "gpt-test"), secret: "test"
         ).body(
@@ -1130,6 +1130,78 @@ struct AgentProviderAdapterTests {
             provider: provider, model: AIModel(id: "model-test"), secret: "test",
             webSearch: webSearch
         ).body(AgentModelRequest(systemPrompt: "test", messages: messages, tools: tools))
+    }
+
+    // MARK: - Addressing
+
+    /// The whole contract of `url`: substitution, and nothing else.
+    ///
+    /// No path is appended and no default is applied, which is what lets a
+    /// caller show the stored value as "where requests go" without the two
+    /// drifting apart.
+    @Test
+    func requestURLSubstitutesTheModelAndInventsNothing() {
+        var provider = ModelProvider(name: "Gateway", url: "https://example.test/v1/chat/completions")
+        #expect(provider.requestURL(model: "m-1") == "https://example.test/v1/chat/completions")
+        #expect(provider.requestURL() == "https://example.test/v1/chat/completions")
+
+        provider.apiFormat = .generateContent
+        provider.url = "https://example.test/v1beta/models/{model}:generateContent"
+        #expect(
+            provider.requestURL(model: "m-1")
+                == "https://example.test/v1beta/models/m-1:generateContent"
+        )
+        #expect(
+            provider.requestURL()
+                == "https://example.test/v1beta/models/{model}:generateContent"
+        )
+    }
+
+    /// A provider with no URL points nowhere, and says so by failing rather
+    /// than by quietly reaching some vendor's public endpoint.
+    @Test
+    func aBlankURLResolvesToNothingRatherThanToADefault() {
+        let provider = ModelProvider(name: "Unfinished")
+        #expect(provider.requestURL(model: "m-1").isEmpty)
+        #expect(throws: (any Error).self) {
+            try AgentProviderClient(
+                provider: provider, model: AIModel(id: "m-1"), secret: "test"
+            ).buildRequest(
+                AgentModelRequest(systemPrompt: "test", messages: [], tools: []),
+                streaming: true
+            )
+        }
+    }
+
+    /// Vertex is the one address this package still derives, because it is
+    /// assembled from a project and a location rather than typed. Nothing in
+    /// the app drives it any more, so this test is what keeps it honest.
+    @Test
+    func vertexDerivesItsOwnAddressAndDeclinesTheCatalog() async {
+        var provider = ModelProvider(name: "Vertex", apiFormat: .generateContent)
+        provider.url = "https://ignored.test/v1"
+        provider.usesVertex = true
+        provider.vertex = VertexConfig(
+            projectID: "demo-project", location: "us-central1",
+            credentialRef: "ref", clientEmail: "robot@demo-project.iam.gserviceaccount.com"
+        )
+
+        #expect(provider.usesVertexEndpoint)
+        #expect(
+            provider.requestURL(model: "gemini-test")
+                == "https://us-central1-aiplatform.googleapis.com/v1/projects/demo-project"
+                + "/locations/us-central1/publishers/google/models/gemini-test:generateContent"
+        )
+
+        await #expect(throws: ModelCatalogError.unsupportedForVertex) {
+            try await ModelCatalogClient().models(
+                for: provider, at: "https://ignored.test/v1/models", secret: "{}"
+            )
+        }
+
+        // The flag is inert on a shape Vertex does not serve.
+        provider.apiFormat = .chatCompletions
+        #expect(!provider.usesVertexEndpoint)
     }
 }
 

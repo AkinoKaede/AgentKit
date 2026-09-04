@@ -1,73 +1,29 @@
 import Foundation
 
-/// Which wire protocol an endpoint speaks.
+/// Which request and response shape an endpoint speaks.
 ///
-/// Three, not thirty. OpenRouter, DeepSeek, Groq, Together and Ollama are all
-/// `.openAI` with a different base URL, so listing them as kinds would be
-/// listing the same protocol five times and then owing an entry to whoever
-/// launches next week.
+/// Four, not thirty, and named for the protocol rather than for whoever
+/// published it first. OpenRouter, DeepSeek, Groq, Together and Ollama all
+/// serve `.chatCompletions`; listing them as separate kinds would be listing
+/// one protocol five times and then owing an entry to whoever launches next
+/// week. Naming them after a vendor has the same problem in the other
+/// direction — most endpoints speaking a shape are not the vendor that
+/// introduced it.
 ///
-/// Ordered the way they are shown, and `.openAI` first because it is both the
-/// most common and the one every compatible gateway needs.
-public nonisolated enum ModelProviderKind: String, Codable, Sendable, CaseIterable, Identifiable {
-    case openAI
-    case anthropic
-    case google
+/// Ordered the way they are shown, and `.chatCompletions` first because it is
+/// both the most common and the one every compatible gateway needs.
+public nonisolated enum ModelAPIFormat: String, Codable, Sendable, CaseIterable, Identifiable {
+    case chatCompletions
+    case responses
+    case messages
+    case generateContent
 
     public nonisolated var id: String { rawValue }
-
-    public var displayName: String {
-        switch self {
-        case .openAI: "OpenAI"
-        case .anthropic: "Anthropic"
-        case .google: "Google"
-        }
-    }
-
-    public var symbol: String {
-        switch self {
-        case .openAI: "circle.hexagongrid"
-        case .anthropic: "sparkle"
-        case .google: "diamond"
-        }
-    }
-
-    /// Carries the version segment, exactly as the provider's own documentation
-    /// prints it.
-    ///
-    /// The alternative — storing `https://api.openai.com` and appending `/v1`
-    /// ourselves — is the single most common source of "why does my custom
-    /// endpoint 404" in clients of this shape, because the user pastes what
-    /// their gateway told them to and it ends up doubled or missing.
-    public var defaultBaseURL: String {
-        switch self {
-        case .openAI: "https://api.openai.com/v1"
-        case .anthropic: "https://api.anthropic.com/v1"
-        case .google: "https://generativelanguage.googleapis.com/v1beta"
-        }
-    }
-
-    /// Appended to the base URL to list models. All three spell it the same.
-    public var modelsPath: String { "/models" }
-
-    /// What the API path field shows as its placeholder.
-    ///
-    /// `usesResponsesAPI` only moves this for `.openAI`; the parameter is taken
-    /// for all three so callers do not have to know which kinds care.
-    public func defaultAPIPath(usesResponsesAPI: Bool) -> String {
-        switch self {
-        case .openAI: usesResponsesAPI ? "/responses" : "/chat/completions"
-        case .anthropic: "/messages"
-        // The only default that needs the token — Google addresses the model in
-        // the path rather than in the body.
-        case .google: "/models/\(ModelProvider.modelToken):generateContent"
-        }
-    }
 }
 
 /// Google Vertex AI, which is a different way of reaching the same models.
 ///
-/// Not a fourth `ModelProviderKind`, because the request and response bodies are
+/// Not a fifth `ModelAPIFormat`, because the request and response bodies are
 /// Gemini's — only the address and the credential change. Kept as a stored
 /// struct beside a `usesVertex` flag rather than as an `Optional`, so turning
 /// the toggle off and on again does not erase a project id that was typed.
@@ -122,12 +78,10 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
     public init(
         id: UUID = UUID(),
         name: String,
-        kind: ModelProviderKind = .openAI,
+        apiFormat: ModelAPIFormat = .chatCompletions,
         isEnabled: Bool = true,
-        baseURL: String = "",
-        apiPath: String = "",
+        url: String = "",
         credentialRef: String = "",
-        usesResponsesAPI: Bool = false,
         usesVertex: Bool = false,
         vertex: VertexConfig = VertexConfig(),
         models: [AIModel] = [],
@@ -135,39 +89,42 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
     ) {
         self.id = id
         self.name = name
-        self.kind = kind
+        self.apiFormat = apiFormat
         self.isEnabled = isEnabled
-        self.baseURL = baseURL
-        self.apiPath = apiPath
+        self.url = url
         self.credentialRef = credentialRef
-        self.usesResponsesAPI = usesResponsesAPI
         self.usesVertex = usesVertex
         self.vertex = vertex
         self.models = models
         self.modelsFetchedAt = modelsFetchedAt
     }
 
-    /// The one substitution an API path may contain. Only Google's default
-    /// needs it, but any path may use it.
+    /// The one substitution a URL may contain. Only `.generateContent`
+    /// ordinarily needs it — that shape addresses the model in the path rather
+    /// than in the body — but any URL may use it.
     public static let modelToken = "{model}"
 
     public var id: UUID = UUID()
-    /// What the user calls this. Free text, because two providers can be the
-    /// same kind — "Work OpenAI" and "Personal OpenAI" is an ordinary setup.
+    /// What the user calls this. Free text, because two providers can speak the
+    /// same format — "Work" and "Personal" is an ordinary setup.
     public var name: String
-    public var kind: ModelProviderKind = .openAI
+    public var apiFormat: ModelAPIFormat = .chatCompletions
     /// A disabled provider keeps its configuration but stops offering its
     /// models anywhere. Deleting to silence one would mean retyping the key.
     public var isEnabled: Bool = true
-    /// Blank means `kind.defaultBaseURL`. Blank rather than pre-filled, so the
-    /// field reads as an override rather than as something to get right.
-    public var baseURL: String = ""
-    /// Blank means `kind.defaultAPIPath(usesResponsesAPI:)`.
-    public var apiPath: String = ""
+    /// The complete address a chat request goes to, with `{model}` where the
+    /// model id belongs.
+    ///
+    /// Composed by the caller. This type appends no path and applies no
+    /// default, so what is stored is where requests land — the single most
+    /// common source of "why does my custom endpoint 404" is a client that
+    /// tries to be clever about whether the pasted URL already carried `/v1`,
+    /// and the way not to have that bug is not to guess. A blank URL is not a
+    /// provider pointed somewhere sensible; it is a provider pointed nowhere,
+    /// and it fails as one.
+    public var url: String = ""
     public var credentialRef: String = ""
-    /// `.openAI` only: `/responses` instead of `/chat/completions`.
-    public var usesResponsesAPI: Bool = false
-    /// `.google` only.
+    /// `.generateContent` only — see `usesVertexEndpoint`.
     public var usesVertex: Bool = false
     public var vertex: VertexConfig = VertexConfig()
     public var models: [AIModel] = []
@@ -175,36 +132,22 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
 
     // MARK: - Resolution
 
-    public var usesVertexEndpoint: Bool { usesVertex && kind == .google }
+    /// The flag is inert on any other shape: Vertex serves Gemini's bodies, so
+    /// pointing it at a Chat Completions provider describes nothing that exists.
+    public var usesVertexEndpoint: Bool { usesVertex && apiFormat == .generateContent }
 
     public var effectiveCredentialRef: String {
         usesVertexEndpoint ? vertex.credentialRef : credentialRef
     }
 
-    public var resolvedBaseURL: String {
-        let typed = baseURL.trimmingCharacters(in: .whitespaces)
-        let value = typed.isEmpty ? kind.defaultBaseURL : typed
-        // A pasted URL very often carries a trailing slash, and every path
-        // below starts with one.
-        return value.hasSuffix("/") ? String(value.dropLast()) : value
-    }
-
-    public var resolvedAPIPath: String {
-        let typed = apiPath.trimmingCharacters(in: .whitespaces)
-        guard !typed.isEmpty else { return kind.defaultAPIPath(usesResponsesAPI: usesResponsesAPI) }
-        return typed.hasPrefix("/") ? typed : "/" + typed
-    }
-
-    /// The URL a chat request actually goes to.
+    /// The URL a chat request actually goes to: `url` with the model id filled
+    /// in, or — for Vertex — the address derived from the project and location,
+    /// which is not typed anywhere and so cannot be stored in `url`.
     ///
-    /// The editor shows this and the client builds from it, so the caption
-    /// under the fields cannot drift away from where requests land — which is
-    /// the entire point of showing it.
-    ///
-    /// `model` is optional because the editor has to draw this line before any
+    /// `model` is optional because an editor has to draw this line before any
     /// model is picked; the token is left in place then, which reads correctly
     /// as "your model id goes here".
-    public func resolvedRequestURL(model: String? = nil) -> String {
+    public func requestURL(model: String? = nil) -> String {
         let modelID = model ?? Self.modelToken
 
         if usesVertexEndpoint {
@@ -212,14 +155,7 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
                 + "/locations/\(vertex.location)/publishers/google/models/\(modelID):generateContent"
         }
 
-        let path = resolvedAPIPath.replacingOccurrences(of: Self.modelToken, with: modelID)
-        return resolvedBaseURL + path
-    }
-
-    /// Where `Fetch Models` goes. `nil` for Vertex — see `canFetchModels`.
-    public var resolvedModelsURL: String? {
-        guard !usesVertexEndpoint else { return nil }
-        return resolvedBaseURL + kind.modelsPath
+        return url.replacingOccurrences(of: Self.modelToken, with: modelID)
     }
 
     // MARK: - State
@@ -228,29 +164,20 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
         usesVertexEndpoint ? vertex.isComplete : !credentialRef.isEmpty
     }
 
-    /// Vertex is excluded deliberately, not for lack of an endpoint: its
-    /// publisher listing returns Model Garden entries — third-party and
-    /// deployable models mixed in — rather than the models this project can
-    /// call, so a fetch would fill the list with things that do not work.
-    public var canFetchModels: Bool {
-        guard hasCredential else { return false }
-        return !usesVertexEndpoint
-    }
-
     /// Whether this wire protocol has anywhere to *put* a server-side search
     /// tool. A hard fact about the request body, not a guess.
     ///
     /// Chat Completions has nowhere. OpenAI's `web_search_options` exists there
-    /// only on the two `*-search-preview` SKUs, while `.openAI` is also every
-    /// compatible gateway this app talks to — OpenRouter, DeepSeek, Groq,
-    /// Together, Ollama. Sending them an option they have never heard of turns
-    /// a working setup into a 400 for a feature nobody asked for. Nothing
-    /// overrides this, including the user, because overriding it would produce
-    /// a request with no search tool in it at all.
+    /// only on the two `*-search-preview` SKUs, while `.chatCompletions` is
+    /// also every compatible gateway this package talks to — OpenRouter,
+    /// DeepSeek, Groq, Together, Ollama. Sending them an option they have never
+    /// heard of turns a working setup into a 400 for a feature nobody asked
+    /// for. Nothing overrides this, including the user, because overriding it
+    /// would produce a request with no search tool in it at all.
     public var acceptsNativeWebSearchTool: Bool {
-        switch kind {
-        case .anthropic, .google: true
-        case .openAI: usesResponsesAPI
+        switch apiFormat {
+        case .responses, .messages, .generateContent: true
+        case .chatCompletions: false
         }
     }
 
@@ -259,10 +186,10 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
     /// A guess, unlike `acceptsNativeWebSearchTool`, and `WebSearchMode` exists
     /// so the user can overrule it either way.
     ///
-    /// The wire protocol alone is not enough, which is the part that had to be
+    /// The API format alone is not enough, which is the part that had to be
     /// learned. A server tool exists at the intersection of *this vendor's API*
-    /// and *this vendor's model*, and a gateway breaks that pairing: point an
-    /// OpenAI-shaped `/responses` endpoint at Claude and it will accept
+    /// and *this vendor's model*, and a gateway breaks that pairing: point a
+    /// `.responses` endpoint at Claude and it will accept
     /// `{"type": "web_search"}` and forward it as an ordinary function
     /// declaration. The model then calls `web_search` as a tool, nothing here
     /// has one registered — because native mode deliberately withholds the
@@ -282,12 +209,14 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
             return false
         }
         let id = model.id.lowercased()
-        switch kind {
-        case .anthropic:
+        switch apiFormat {
+        case .messages:
             return id.contains("claude") || id.contains("deepseek")
-        case .google:
+        case .generateContent:
             return id.contains("gemini")
-        case .openAI:
+        // `.chatCompletions` never reaches here — `acceptsNativeWebSearchTool`
+        // has already refused it — but the switch owes every shape an answer.
+        case .responses, .chatCompletions:
             return id.contains("gpt") || id.contains("deepseek")
                 || id.range(of: #"(^|[-_/])o[3-9]([-._/]|$)"#, options: .regularExpression) != nil
         }
@@ -460,7 +389,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
         case toolCall, reasoning
         /// The provider runs the search on its own servers when asked, rather
         /// than the model calling one of our tools. Whether that offer is
-        /// actually taken up also depends on the provider kind — see
+        /// actually taken up also depends on the API format — see
         /// `ModelProvider.supportsNativeWebSearch`.
         case webSearch
 

@@ -208,8 +208,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     public func buildRequest(
         _ input: AgentModelRequest, streaming: Bool
     ) throws -> URLRequest {
-        var urlString = provider.resolvedRequestURL(model: model.id)
-        if provider.kind == .google, streaming {
+        var urlString = provider.requestURL(model: model.id)
+        if provider.apiFormat == .generateContent, streaming {
             urlString = urlString.replacingOccurrences(
                 of: ":generateContent", with: ":streamGenerateContent"
             )
@@ -246,8 +246,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         )
         let normalizedReasoning = reasoningResolution.clamp(reasoning)
         let reasoningValue = reasoningResolution.wireValue(for: normalizedReasoning)
-        switch provider.kind {
-        case .openAI where provider.usesResponsesAPI:
+        switch provider.apiFormat {
+        case .responses:
             var tools = Self.responsesToolObjects(request.tools)
             if webSearch { tools.append(["type": "web_search"]) }
             var body: [String: Any] = [
@@ -260,7 +260,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 body["reasoning"] = ["effort": reasoningValue, "summary": "auto"]
             }
             return body
-        case .openAI:
+        case .chatCompletions:
             // No search here, whatever the model claims. `web_search_options`
             // exists on two `*-search-preview` SKUs, while this branch is also
             // every OpenAI-compatible gateway — see
@@ -285,7 +285,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             if !tools.isEmpty { body["tools"] = tools.map { ["type": "function", "function": $0] } }
             if let reasoningValue { body["reasoning_effort"] = reasoningValue }
             return body
-        case .anthropic:
+        case .messages:
             var tools: [[String: Any]] = request.tools.map {
                 Self.providerToolObject($0, name: toolNames.wireName(for: $0.qualifiedName))
             }.map { tool in
@@ -315,7 +315,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 }
             }
             return body
-        case .google:
+        case .generateContent:
             let declarations = request.tools.map {
                 Self.providerToolObject($0, name: toolNames.wireName(for: $0.qualifiedName))
             }
@@ -375,8 +375,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         // the JSON payload (`type`) and leaves the SSE `event:` field unset.
         // Compatible gateways commonly do the same for every provider.
         let eventType = Self.streamEventType(event, root: root)
-        switch provider.kind {
-        case .openAI where provider.usesResponsesAPI:
+        switch provider.apiFormat {
+        case .responses:
             if eventType == "response.completed",
                 root["response"] as? [String: Any] == nil
             {
@@ -386,13 +386,13 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 eventType, root, callIDs: &responseCallIDs,
                 callNames: &responseCallNames
             )
-        case .openAI:
+        case .chatCompletions:
             return Self.parseChat(root, callIDs: &chatCallIDs, wireNames: wireNames)
-        case .anthropic:
+        case .messages:
             return Self.parseAnthropic(
                 eventType, root, state: &anthropicState, wireNames: wireNames
             )
-        case .google: return Self.parseGoogle(root, wireNames: wireNames)
+        case .generateContent: return Self.parseGoogle(root, wireNames: wireNames)
         }
     }
 
@@ -402,14 +402,14 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         _ data: Data, wireNames: [String: String]
     ) throws -> [AgentModelStreamEvent] {
         if let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            switch provider.kind {
-            case .openAI where provider.usesResponsesAPI:
+            switch provider.apiFormat {
+            case .responses:
                 return Self.parseCompletedResponses(root)
-            case .openAI:
+            case .chatCompletions:
                 return Self.parseChat(root, wireNames: wireNames)
-            case .anthropic:
+            case .messages:
                 return Self.parseCompletedAnthropic(root, wireNames: wireNames)
-            case .google:
+            case .generateContent:
                 return Self.parseGoogle(root, wireNames: wireNames)
             }
         }

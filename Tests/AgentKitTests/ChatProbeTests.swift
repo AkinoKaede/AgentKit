@@ -7,7 +7,7 @@ struct ChatProbeTests {
     @Test
     func responsesProbeUsesInputItemList() throws {
         var provider = ModelProvider(name: "OpenAI")
-        provider.usesResponsesAPI = true
+        provider.apiFormat = .responses
 
         let data = try ChatProbe.body(for: AIModel(id: "gpt-5.6-sol"), on: provider)
         let root = try #require(
