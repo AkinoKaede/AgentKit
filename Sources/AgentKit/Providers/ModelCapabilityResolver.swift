@@ -417,7 +417,11 @@ public nonisolated enum ModelCapabilityResolver {
         }
 
         private static func piProviderID(for provider: ModelProvider) -> String? {
-            let url = provider.url.lowercased()
+            // Either address names the host; `baseURL` is blank for a caller
+            // that never lists models, so fall through to the endpoint.
+            let url =
+                (provider.baseURL.isEmpty ? provider.inferenceURL : provider.baseURL)
+                .lowercased()
             let hosts: [(String, String)] = [
                 ("api.openai.com", "openai"),
                 ("openrouter.ai", "openrouter"),

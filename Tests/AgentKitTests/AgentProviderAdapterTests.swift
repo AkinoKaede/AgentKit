@@ -52,7 +52,7 @@ struct AgentProviderAdapterTests {
 
     @Test
     func commandGeneratorRequestUsesBufferedJSONInsteadOfSSE() throws {
-        var provider = ModelProvider(name: "Gateway", url: "https://example.test/v1/responses")
+        var provider = ModelProvider(name: "Gateway", inferenceURL: "https://example.test/v1/responses")
         provider.apiFormat = .responses
         let client = AgentProviderClient(
             provider: provider, model: AIModel(id: "gpt-test"), secret: "test"
@@ -1141,12 +1141,12 @@ struct AgentProviderAdapterTests {
     /// drifting apart.
     @Test
     func requestURLSubstitutesTheModelAndInventsNothing() {
-        var provider = ModelProvider(name: "Gateway", url: "https://example.test/v1/chat/completions")
+        var provider = ModelProvider(name: "Gateway", inferenceURL: "https://example.test/v1/chat/completions")
         #expect(provider.requestURL(model: "m-1") == "https://example.test/v1/chat/completions")
         #expect(provider.requestURL() == "https://example.test/v1/chat/completions")
 
         provider.apiFormat = .generateContent
-        provider.url = "https://example.test/v1beta/models/{model}:generateContent"
+        provider.inferenceURL = "https://example.test/v1beta/models/{model}:generateContent"
         #expect(
             provider.requestURL(model: "m-1")
                 == "https://example.test/v1beta/models/m-1:generateContent"
@@ -1157,12 +1157,27 @@ struct AgentProviderAdapterTests {
         )
     }
 
+    /// `/models` hangs off `baseURL`, and a query keeps its place at the end.
+    @Test
+    func theModelListingHangsOffTheBaseURL() {
+        var provider = ModelProvider(name: "Gateway", baseURL: "https://example.test/v1")
+        #expect(provider.resolvedModelsURL == "https://example.test/v1/models")
+
+        provider.baseURL = "https://example.test/v1?key=abc"
+        #expect(provider.resolvedModelsURL == "https://example.test/v1/models?key=abc")
+
+        provider.baseURL = ""
+        #expect(provider.resolvedModelsURL == nil)
+        #expect(!provider.canFetchModels)
+    }
+
     /// A provider with no URL points nowhere, and says so by failing rather
     /// than by quietly reaching some vendor's public endpoint.
     @Test
     func aBlankURLResolvesToNothingRatherThanToADefault() {
         let provider = ModelProvider(name: "Unfinished")
         #expect(provider.requestURL(model: "m-1").isEmpty)
+        #expect(provider.resolvedModelsURL == nil)
         #expect(throws: (any Error).self) {
             try AgentProviderClient(
                 provider: provider, model: AIModel(id: "m-1"), secret: "test"
@@ -1179,7 +1194,7 @@ struct AgentProviderAdapterTests {
     @Test
     func vertexDerivesItsOwnAddressAndDeclinesTheCatalog() async {
         var provider = ModelProvider(name: "Vertex", apiFormat: .generateContent)
-        provider.url = "https://ignored.test/v1"
+        provider.inferenceURL = "https://ignored.test/v1"
         provider.usesVertex = true
         provider.vertex = VertexConfig(
             projectID: "demo-project", location: "us-central1",
@@ -1193,10 +1208,9 @@ struct AgentProviderAdapterTests {
                 + "/locations/us-central1/publishers/google/models/gemini-test:generateContent"
         )
 
+        #expect(provider.resolvedModelsURL == nil)
         await #expect(throws: ModelCatalogError.unsupportedForVertex) {
-            try await ModelCatalogClient().models(
-                for: provider, at: "https://ignored.test/v1/models", secret: "{}"
-            )
+            try await ModelCatalogClient().models(for: provider, secret: "{}")
         }
 
         // The flag is inert on a shape Vertex does not serve.

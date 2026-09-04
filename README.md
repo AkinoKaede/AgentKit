@@ -7,7 +7,7 @@ Everything with an opinion about what your app actually does — where it connec
 reach, how it draws a tool card — is yours to supply.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.3.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.5.0")
 ```
 
 macOS 15+, iOS 18+, Swift 6.
@@ -159,12 +159,16 @@ generateContent (including Vertex, whose address is derived from a project and a
 named for the protocol rather than for whoever published it first, because every compatible gateway
 serves one of the four at an address of its own.
 
-A `ModelProvider` carries one `url`: the complete address a request goes to, with `{model}` where
-the model id belongs. This package appends no path and applies no default, so the stored value *is*
-where requests land — deciding whether a pasted URL already carried `/v1` is the caller's job, and
-guessing at it is the single most common source of "why does my custom endpoint 404". A blank URL is
-a provider pointed nowhere, and it fails as one. `ModelCatalogClient.models(for:at:secret:)` takes
-its listing address for the same reason.
+A `ModelProvider` carries two addresses. `inferenceURL` is the complete address a request goes to,
+with `{model}` where the model id belongs; this package appends no path to it and applies no
+default, so the stored value *is* where requests land — deciding whether a pasted URL already
+carried `/v1` is the caller's job, and guessing at it is the single most common source of "why does
+my custom endpoint 404". A blank one is a provider pointed nowhere, and it fails as one.
+
+`baseURL` is that address with its endpoint segment removed, and it is what `ModelCatalogClient`
+hangs `/models` off. Removing the segment is the caller's job too, because only the caller knows
+which part it appended — `/v1/chat/completions` and `/v1beta/models/{model}:generateContent` do not
+put their endpoints in comparable places.
 
 `ModelCapabilityResolver` fills in what a listing did not say. If you would rather not use any of
 it, `AgentModelStreaming` is a single-method protocol and the runtime knows nothing else about the

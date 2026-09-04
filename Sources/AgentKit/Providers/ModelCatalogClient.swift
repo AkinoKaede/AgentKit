@@ -29,15 +29,11 @@ public nonisolated struct ModelCatalogClient: Sendable {
     ///
     /// Paginates where the vendor paginates, and stops at `pageLimit` pages so
     /// a server that always says "there's more" cannot spin forever.
-    /// `listing` is the address to `GET`, composed by the caller for the same
-    /// reason `ModelProvider.url` is: this package does not guess how a base
-    /// URL and an endpoint path fit together.
-    public func models(
-        for provider: ModelProvider, at listing: String, secret: String
-    ) async throws -> [AIModel] {
+    public func models(for provider: ModelProvider, secret: String) async throws -> [AIModel] {
         guard !provider.usesVertexEndpoint else {
             throw ModelCatalogError.unsupportedForVertex
         }
+        let listing = provider.resolvedModelsURL ?? ""
         guard let url = URL(string: listing) else { throw ModelCatalogError.badURL(listing) }
 
         switch provider.apiFormat {

@@ -80,7 +80,8 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
         name: String,
         apiFormat: ModelAPIFormat = .chatCompletions,
         isEnabled: Bool = true,
-        url: String = "",
+        inferenceURL: String = "",
+        baseURL: String = "",
         credentialRef: String = "",
         usesVertex: Bool = false,
         vertex: VertexConfig = VertexConfig(),
@@ -91,7 +92,8 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
         self.name = name
         self.apiFormat = apiFormat
         self.isEnabled = isEnabled
-        self.url = url
+        self.inferenceURL = inferenceURL
+        self.baseURL = baseURL
         self.credentialRef = credentialRef
         self.usesVertex = usesVertex
         self.vertex = vertex
@@ -119,10 +121,20 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
     /// default, so what is stored is where requests land — the single most
     /// common source of "why does my custom endpoint 404" is a client that
     /// tries to be clever about whether the pasted URL already carried `/v1`,
-    /// and the way not to have that bug is not to guess. A blank URL is not a
+    /// and the way not to have that bug is not to guess. A blank endpoint is not a
     /// provider pointed somewhere sensible; it is a provider pointed nowhere,
     /// and it fails as one.
-    public var url: String = ""
+    public var inferenceURL: String = ""
+    /// The address a model listing hangs off — `inferenceURL` with its
+    /// endpoint segment removed, which only the caller can do because only the
+    /// caller knows which part of the address it appended.
+    ///
+    /// A second field rather than a substring taken here, for the reason the
+    /// endpoint is stored whole: `/v1/chat/completions` and
+    /// `/v1beta/models/{model}:generateContent` do not have their endpoints in
+    /// comparable places, and a client that guesses at the boundary lists from
+    /// `…/models/gemini-x/models`. Blank means this endpoint offers no listing.
+    public var baseURL: String = ""
     public var credentialRef: String = ""
     /// `.generateContent` only — see `usesVertexEndpoint`.
     public var usesVertex: Bool = false
@@ -140,9 +152,10 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
         usesVertexEndpoint ? vertex.credentialRef : credentialRef
     }
 
-    /// The URL a chat request actually goes to: `url` with the model id filled
-    /// in, or — for Vertex — the address derived from the project and location,
-    /// which is not typed anywhere and so cannot be stored in `url`.
+    /// The URL a chat request actually goes to: `inferenceURL` with the
+    /// model id filled in, or — for Vertex — the address derived from the
+    /// project and location, which is not typed anywhere and so could not be
+    /// stored as an endpoint.
     ///
     /// `model` is optional because an editor has to draw this line before any
     /// model is picked; the token is left in place then, which reads correctly
@@ -155,13 +168,34 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
                 + "/locations/\(vertex.location)/publishers/google/models/\(modelID):generateContent"
         }
 
-        return url.replacingOccurrences(of: Self.modelToken, with: modelID)
+        return inferenceURL.replacingOccurrences(of: Self.modelToken, with: modelID)
+    }
+
+    /// Where `Fetch Models` goes.
+    ///
+    /// `nil` for Vertex, and deliberately so rather than for want of an
+    /// endpoint: its publisher listing returns Model Garden entries —
+    /// third-party and deployable models mixed in — rather than the models this
+    /// package can call, so a fetch would fill the list with things that do not
+    /// work.
+    public var resolvedModelsURL: String? {
+        let base = baseURL.trimmingCharacters(in: .whitespaces)
+        guard !base.isEmpty, !usesVertexEndpoint else { return nil }
+        // A query belongs after the path, not behind it. `?key=…` is a real way
+        // to authenticate against a listing, and appending to the whole string
+        // would bury `/models` inside the parameter.
+        guard let query = base.firstIndex(of: "?") else { return base + "/models" }
+        return base[base.startIndex..<query] + "/models" + base[query...]
     }
 
     // MARK: - State
 
     public var hasCredential: Bool {
         usesVertexEndpoint ? vertex.isComplete : !credentialRef.isEmpty
+    }
+
+    public var canFetchModels: Bool {
+        hasCredential && resolvedModelsURL != nil
     }
 
     /// Whether this wire protocol has anywhere to *put* a server-side search
