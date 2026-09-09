@@ -22,6 +22,31 @@ struct AgentLocalizationTests {
     }
 
     @Test
+    func modelRoleDetailsFollowThePackageLanguage() {
+        let usesChinese = AIRole.chat.displayName == "对话"
+        let descriptions: [(AIRole, String, String)] = [
+            (
+                .chat,
+                "Used for chat, tools, and the Assistant sidebar.",
+                "用于对话、工具和助手侧边栏。"
+            ),
+            (
+                .commandGenerator,
+                "Turns the current terminal input into one command. Choose a fast model.",
+                "将当前终端输入整理为一条命令。请选择速度较快的模型。"
+            ),
+            (
+                .securityReview,
+                "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.",
+                "在自动批准前检查命令。请选择一个不同于对话模型的快速模型；“与对话模型相同”无法提供独立复核。"
+            ),
+        ]
+        for (role, english, chinese) in descriptions {
+            #expect(role.detail == (usesChinese ? chinese : english))
+        }
+    }
+
+    @Test
     func runtimeErrorsAreLocalized() {
         let message = AgentRuntimeError.turnBudgetExceeded.localizedDescription
         // `errorDescription` reads `.current`, so this asserts only that the

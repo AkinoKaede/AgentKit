@@ -544,7 +544,8 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
         case .commandGenerator:
             String(
                 localized:
-                    "Turns the current terminal input into one command. Choose a fast model."
+                    "Turns the current terminal input into one command. Choose a fast model.",
+                bundle: .module
             )
         // Names two models outright. This one runs on every command Approve for
         // Me would execute, so it sits in the latency path — a deliberate
@@ -553,7 +554,8 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
         case .securityReview:
             String(
                 localized:
-                    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion."
+                    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.",
+                bundle: .module
             )
         }
     }
