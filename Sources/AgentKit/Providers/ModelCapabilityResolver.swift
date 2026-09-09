@@ -497,7 +497,7 @@ public nonisolated enum ModelCapabilityResolver {
                 return result
             }
             if imageGeneration.matches(id) {
-                if !reported.contains(.kind) { result.kind = .image }
+                if !reported.contains(.kind) { result.kind = .imageGeneration }
                 if !reported.contains(.input) { result.input = [.text, .image] }
                 if !reported.contains(.output) { result.output = [.text, .image] }
                 if !reported.contains(.abilities) { result.abilities = [] }

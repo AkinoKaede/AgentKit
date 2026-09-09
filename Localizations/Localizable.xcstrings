@@ -605,6 +605,16 @@
         }
       }
     },
+    "Image Generation" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图片生成"
+          }
+        }
+      }
+    },
     "Imported as “%@”." : {
       "localizations" : {
         "zh-Hans" : {
@@ -825,16 +835,6 @@
         }
       }
     },
-    "Other" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "其他"
-          }
-        }
-      }
-    },
     "Overwritten" : {
       "localizations" : {
         "zh-Hans" : {
@@ -941,6 +941,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请求"
+          }
+        }
+      }
+    },
+    "Rerank" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重排序"
           }
         }
       }
@@ -1841,6 +1851,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "视频"
+          }
+        }
+      }
+    },
+    "Video Generation" : {
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "视频生成"
           }
         }
       }

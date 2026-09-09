@@ -116,6 +116,8 @@
 	<string>高</string>
 	<key>Image</key>
 	<string>图像</string>
+	<key>Image Generation</key>
+	<string>图片生成</string>
 	<key>Imported as “%@”.</key>
 	<string>已导入为“%@”。</string>
 	<key>Kind</key>
@@ -160,8 +162,6 @@
 	<string>关闭</string>
 	<key>Original HTML</key>
 	<string>原始HTML</string>
-	<key>Other</key>
-	<string>其他</string>
 	<key>Overwritten</key>
 	<string>覆盖</string>
 	<key>PDF</key>
@@ -184,6 +184,8 @@
 	<string>已替换</string>
 	<key>Request</key>
 	<string>请求</string>
+	<key>Rerank</key>
+	<string>重排序</string>
 	<key>Result</key>
 	<string>结果</string>
 	<key>Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.</key>
@@ -364,6 +366,8 @@
 	<string>Vertex列出的是Model Garden条目，而非此项目可调用的模型。请添加你实际使用的模型。</string>
 	<key>Video</key>
 	<string>视频</string>
+	<key>Video Generation</key>
+	<string>视频生成</string>
 	<key>Web Search</key>
 	<string>网页搜索</string>
 	<key>Web search run by the model provider.</key>

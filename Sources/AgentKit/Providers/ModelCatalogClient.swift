@@ -306,10 +306,10 @@ nonisolated private struct CatalogRow: Decodable {
         model.contextLength = contextLength ?? maxInputTokens ?? inputTokenLimit
         model.maxOutputTokens = maxOutputTokens ?? maxTokens ?? outputTokenLimit
 
-        if type != nil {
+        if let kind = AIModel.Kind(reportedType: type) {
             reported.insert(.kind)
+            model.kind = kind
         }
-        model.kind = AIModel.Kind(wire: type)
 
         if let input = modalities?.input {
             reported.insert(.input)

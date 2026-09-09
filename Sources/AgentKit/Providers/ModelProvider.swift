@@ -361,11 +361,11 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             || ownedBy.lowercased().contains(q)
     }
 
-    /// What a model is *for*. `other` exists so an unrecognised `type` string
-    /// can be kept rather than thrown away or silently called a chat model —
-    /// this list meets gateways that invent values.
+    /// What a model is for. Unrecognised endpoint types default to chat.
     public nonisolated enum Kind: String, Codable, Sendable, CaseIterable, Identifiable {
-        case chat, embedding, image, other
+        case chat, embedding, rerank
+        case imageGeneration = "image_generation"
+        case videoGeneration = "video_generation"
 
         public nonisolated var id: String { rawValue }
 
@@ -373,20 +373,23 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             switch self {
             case .chat: String(localized: "Chat", bundle: .module)
             case .embedding: String(localized: "Embedding", bundle: .module)
-            case .image: String(localized: "Image", bundle: .module)
-            case .other: String(localized: "Other", bundle: .module)
+            case .rerank: String(localized: "Rerank", bundle: .module)
+            case .imageGeneration: String(localized: "Image Generation", bundle: .module)
+            case .videoGeneration: String(localized: "Video Generation", bundle: .module)
             }
         }
 
-        /// Lenient on purpose: an unknown string is `.other`, never a throw.
-        /// Absent — which is most of the wire — means `.chat`, since that is
-        /// what an endpoint that does not classify its models is serving.
+        /// Missing and unknown types default to chat. Catalog parsing can still
+        /// infer a more specific purpose when the endpoint did not report one.
         public init(wire: String?) {
-            guard let wire, !wire.isEmpty else {
-                self = .chat
-                return
-            }
-            self = Kind(rawValue: wire.lowercased()) ?? .other
+            self = Kind(reportedType: wire) ?? .chat
+        }
+
+        /// Only recognised purposes are authoritative. Anthropic's `"model"`
+        /// identifies the object, so it must not prevent capability inference.
+        init?(reportedType: String?) {
+            guard let reportedType else { return nil }
+            self.init(rawValue: reportedType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
         }
     }
 
