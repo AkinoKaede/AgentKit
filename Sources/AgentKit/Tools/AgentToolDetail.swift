@@ -307,7 +307,7 @@ public nonisolated enum AgentToolDetailFormatting {
     }
 
     public static func byteCount(_ count: Int) -> String {
-        ByteCountFormatter.string(fromByteCount: Int64(count), countStyle: .file)
+        AgentByteCountFormatter.string(fromByteCount: Int64(count))
     }
 
     public static func displayDate(_ raw: String) -> String {
