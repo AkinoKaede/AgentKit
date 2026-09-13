@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ failed (%lld): %@</key>
+	<string>%1$@失敗（%2$lld）：%3$@</string>
+	<key>%@ is not a valid URL.</key>
+	<string>%@不是有效的URL。</string>
+	<key>%@ is not a valid token endpoint.</key>
+	<string>%@不是有效的權杖端點。</string>
+	<key>%@ is not an http or https URL.</key>
+	<string>%@不是HTTP或HTTPS URL。</string>
+	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
+	<string>%@在規劃時不可用：尚未達成任何約定，因此沒有需要追蹤的工作。請先完成計畫並呼叫present_plan。</string>
+	<key>%lld edits applied</key>
+	<string>已套用%lld項編輯</string>
+	<key>%lld entries</key>
+	<string>%lld個項目</string>
+	<key>%lld files</key>
+	<string>%lld個檔案</string>
+	<key>%lld matching lines in %lld files</key>
+	<string>在%2$lld個檔案中找到%1$lld個相符的行</string>
+	<key>%lld replacements applied</key>
+	<string>已套用%lld處取代</string>
+	<key>%lld tasks · %lld completed</key>
+	<string>%1$lld個任務·已完成%2$lld個</string>
+	<key>A skill may be at most %lld KB.</key>
+	<string>技能最大為%lld KB。</string>
+	<key>A skill name may be at most %lld characters.</key>
+	<string>技能名稱最多%lld個字元。</string>
+	<key>A skill name may not begin or end with a hyphen.</key>
+	<string>技能名稱不能以連字元開頭或結尾。</string>
+	<key>A skill name may not contain two hyphens in a row.</key>
+	<string>技能名稱不能包含連續兩個連字元。</string>
+	<key>A skill name may use only lowercase letters, digits, and hyphens.</key>
+	<string>技能名稱只能使用小寫字母、數字和連字元。</string>
+	<key>A skill needs a description saying what it does and when to use it.</key>
+	<string>技能需要一段描述，說明它做什麼以及何時使用。</string>
+	<key>A skill needs a name.</key>
+	<string>技能需要一個名稱。</string>
+	<key>A truncated model response contained tool calls; none were executed.</key>
+	<string>截斷的模型回應中包含工具呼叫，均未執行。</string>
+	<key>Answer</key>
+	<string>回答</string>
+	<key>Answered in %lld ms</key>
+	<string>於%lld毫秒內回覆</string>
+	<key>Approve for me</key>
+	<string>替我核准</string>
+	<key>Ask for approval</key>
+	<string>要求核准</string>
+	<key>Attachments</key>
+	<string>附件</string>
+	<key>Audio</key>
+	<string>音訊</string>
+	<key>Automatic</key>
+	<string>自動</string>
+	<key>Case sensitive</key>
+	<string>區分大小寫</string>
+	<key>Changes</key>
+	<string>變動</string>
+	<key>Chat</key>
+	<string>對話</string>
+	<key>Command Generator</key>
+	<string>指令產生器</string>
+	<key>Completed without output</key>
+	<string>已完成，無輸出</string>
+	<key>Connecting</key>
+	<string>正在連線</string>
+	<key>Consumer</key>
+	<string>消費者</string>
+	<key>Content</key>
+	<string>內容</string>
+	<key>Content type</key>
+	<string>內容型別</string>
+	<key>Conversation</key>
+	<string>對話</string>
+	<key>Copied</key>
+	<string>已複製</string>
+	<key>Created</key>
+	<string>已建立</string>
+	<key>Critical</key>
+	<string>嚴重</string>
+	<key>Deleted</key>
+	<string>已刪除</string>
+	<key>Destination</key>
+	<string>目標</string>
+	<key>Diff</key>
+	<string>差異</string>
+	<key>Directory</key>
+	<string>目錄</string>
+	<key>Embedding</key>
+	<string>嵌入</string>
+	<key>Empty file</key>
+	<string>空檔案</string>
+	<key>Exited</key>
+	<string>已結束</string>
+	<key>Extra High</key>
+	<string>極高</string>
+	<key>File</key>
+	<string>檔案</string>
+	<key>Files</key>
+	<string>檔案</string>
+	<key>Files are identical</key>
+	<string>檔案內容相同</string>
+	<key>From</key>
+	<string>從</string>
+	<key>Full access</key>
+	<string>完整存取權限</string>
+	<key>Google answered the sign-in without a token.</key>
+	<string>Google已完成登入回應，但未傳回權杖。</string>
+	<key>Google refused the sign-in — %@</key>
+	<string>Google拒絕登入：%@</string>
+	<key>HTTP %lld</key>
+	<string>HTTP %lld</string>
+	<key>High</key>
+	<string>高</string>
+	<key>Image</key>
+	<string>影像</string>
+	<key>Image Generation</key>
+	<string>影像產生</string>
+	<key>Imported as “%@”.</key>
+	<string>已匯入為「%@」。</string>
+	<key>Kind</key>
+	<string>型別</string>
+	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
+	<string>舊版傳輸方式，使用GET串流和個別的POST端點。</string>
+	<key>Line endings</key>
+	<string>行尾字元</string>
+	<key>Lines</key>
+	<string>行數</string>
+	<key>Low</key>
+	<string>低</string>
+	<key>Markdown</key>
+	<string>Markdown</string>
+	<key>Max</key>
+	<string>最高</string>
+	<key>Medium</key>
+	<string>中</string>
+	<key>Minimal</key>
+	<string>最低</string>
+	<key>Moved</key>
+	<string>已移動</string>
+	<key>No</key>
+	<string>否</string>
+	<key>No Chat model is configured.</key>
+	<string>尚未設定對話模型。</string>
+	<key>No differences</key>
+	<string>無差異</string>
+	<key>No matches</key>
+	<string>沒有相符項目</string>
+	<key>No model is configured for conversation titles.</key>
+	<string>尚未為對話標題設定模型。</string>
+	<key>No model list at this address. Check the base URL.</key>
+	<string>此位址沒有模型清單，請檢查基底URL。</string>
+	<key>No readable page content</key>
+	<string>沒有可讀的網頁內容</string>
+	<key>No results</key>
+	<string>無結果</string>
+	<key>None</key>
+	<string>無</string>
+	<key>Off</key>
+	<string>關閉</string>
+	<key>Original HTML</key>
+	<string>原始HTML</string>
+	<key>Overwritten</key>
+	<string>已覆寫</string>
+	<key>PDF</key>
+	<string>PDF</string>
+	<key>Path</key>
+	<string>路徑</string>
+	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
+	<string>計畫模式已開啟，因此未執行%@——它會更改本應用外部的內容。請先讀取所需資訊，在草稿工作區擬定計畫並呼叫present_plan，由使用者決定是否執行。</string>
+	<key>Plan presented from %@</key>
+	<string>已從%@提交計畫</string>
+	<key>Purpose</key>
+	<string>目的</string>
+	<key>Question</key>
+	<string>問題</string>
+	<key>Question unavailable</key>
+	<string>問題不可用</string>
+	<key>Reasoning</key>
+	<string>推理</string>
+	<key>Replaced</key>
+	<string>已取代</string>
+	<key>Request</key>
+	<string>請求</string>
+	<key>Rerank</key>
+	<string>重新排序</string>
+	<key>Result</key>
+	<string>結果</string>
+	<key>Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.</key>
+	<string>在自動核准前檢查指令。請選擇一個不同於對話模型的快速模型；「與對話模型相同」無法提供獨立複核。</string>
+	<key>Running</key>
+	<string>執行中</string>
+	<key>SHA-256</key>
+	<string>SHA-256</string>
+	<key>SSE (legacy)</key>
+	<string>SSE（舊版）</string>
+	<key>Same as Chat</key>
+	<string>與對話模型相同</string>
+	<key>Scratch path</key>
+	<string>草稿路徑</string>
+	<key>Secret received securely</key>
+	<string>已安全接收機密資訊</string>
+	<key>Security Review</key>
+	<string>安全審查</string>
+	<key>Security Review failed; the action was not executed. %@</key>
+	<string>安全審查失敗，操作未執行。%@</string>
+	<key>Security Review is unavailable; the action was not executed.</key>
+	<string>安全審查不可用，操作未執行。</string>
+	<key>Security Review returned an invalid decision.</key>
+	<string>安全審查退回無效決定。</string>
+	<key>Security Review timed out; the action was not executed.</key>
+	<string>安全審查超時，操作未執行。</string>
+	<key>Showing %lld of %lld matching lines</key>
+	<string>正在顯示%1$lld/%2$lld個匹配行</string>
+	<key>Signing failed: %@.</key>
+	<string>簽名失敗：%@。</string>
+	<key>Size</key>
+	<string>大小</string>
+	<key>Skill</key>
+	<string>技能</string>
+	<key>Skipped</key>
+	<string>跳過</string>
+	<key>Skipped %lld binary files</key>
+	<string>已略過%lld個二進位檔案</string>
+	<key>Source</key>
+	<string>來源</string>
+	<key>Status</key>
+	<string>狀態</string>
+	<key>Streamable HTTP</key>
+	<string>可流式HTTP</string>
+	<key>Symlink</key>
+	<string>符號連結</string>
+	<key>System prompt</key>
+	<string>系統提示</string>
+	<key>Text</key>
+	<string>文字</string>
+	<key>Text is identical; line endings differ: %@ → %@</key>
+	<string>文字內容相同，但行尾字元不同：%1$@→%2$@</string>
+	<key>That is not a service account key. It needs client_email and private_key.</key>
+	<string>這不是有效的服務帳戶金鑰，其中必須包含client_email和private_key。</string>
+	<key>The Chat model has no available credential.</key>
+	<string>對話模型沒有可用認證資訊。</string>
+	<key>The agent reached its tool-call limit.</key>
+	<string>代理已達到工具呼叫上限。</string>
+	<key>The agent reached its turn limit.</key>
+	<string>代理已達到輪次上限。</string>
+	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>應用在記錄此工具呼叫結果前已停止。操作是否完成尚不確定；再次執行前請檢查目前狀態。</string>
+	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>應用在此工具完成前停止了等待。操作是否完成尚不確定；再次執行前請檢查目前狀態。</string>
+	<key>The conversation is too large to summarize.</key>
+	<string>對話過長，無法產生摘要。</string>
+	<key>The conversation no longer exists.</key>
+	<string>此對話已不存在。</string>
+	<key>The conversation-title model has no available credential.</key>
+	<string>對話標題模型沒有可用認證資訊。</string>
+	<key>The current transport, using one endpoint for POST and GET.</key>
+	<string>目前傳輸方式，使用同一端點處理POST和GET。</string>
+	<key>The description is longer than %lld characters.</key>
+	<string>描述超過%lld個字元。</string>
+	<key>The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead.</key>
+	<string>差異區域跨越%1$lld行，超過%2$lld行的差異限制。請分別讀取兩側的有限範圍以縮小差異。</string>
+	<key>The endpoint answered %lld.</key>
+	<string>端點傳回了%lld。</string>
+	<key>The endpoint answered, but not with a model list.</key>
+	<string>端點已回應，但未傳回模型清單。</string>
+	<key>The endpoint did not answer with HTTP.</key>
+	<string>端點未以HTTP回應。</string>
+	<key>The endpoint rejected this key.</key>
+	<string>端點拒絕了此金鑰。</string>
+	<key>The event stream sent a line that exceeded the size limit.</key>
+	<string>事件流中的一行超過了大小限制。</string>
+	<key>The file declared no name; “%@” was used.</key>
+	<string>檔案未宣告名稱，已使用「%@」。</string>
+	<key>The fork could not be created because its identifier already exists.</key>
+	<string>無法建立分支，因為其識別碼已存在。</string>
+	<key>The message is no longer available to edit.</key>
+	<string>該訊息已無法編輯。</string>
+	<key>The model did not return a usable summary.</key>
+	<string>模型未傳回可用的摘要。</string>
+	<key>The model endpoint URL is invalid.</key>
+	<string>模型端點URL無效。</string>
+	<key>The model endpoint did not return HTTP.</key>
+	<string>模型端點未傳回HTTP回應。</string>
+	<key>The model endpoint returned %lld: %@</key>
+	<string>模型端點傳回%1$lld：%2$@</string>
+	<key>The model endpoint returned an unsupported response format.</key>
+	<string>模型端點傳回了不支援的回應格式。</string>
+	<key>The model provider failed to complete the response.</key>
+	<string>模型供應商未能完成回應。</string>
+	<key>The model response exceeded the size limit.</key>
+	<string>模型回應超過了大小限制。</string>
+	<key>The model returned an invalid conversation title.</key>
+	<string>模型傳回了無效的對話標題。</string>
+	<key>The model returned an invalid tool call.</key>
+	<string>模型傳回了無效的工具呼叫。</string>
+	<key>The model returned malformed JSON arguments for %@.</key>
+	<string>模型為%@傳回了格式錯誤的JSON參數。</string>
+	<key>The private key could not be read: %@.</key>
+	<string>無法讀取私密金鑰：%@。</string>
+	<key>The run was cancelled before this tool ran.</key>
+	<string>此工具執行前的執行已被取消。</string>
+	<key>The secret is not valid for this host, tool, or purpose.</key>
+	<string>此機密資訊不適用於該主機、工具或用途。</string>
+	<key>The secret is unavailable or has already been used.</key>
+	<string>此機密資訊不可用或已被使用。</string>
+	<key>The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.</key>
+	<string>伺服器對流式HTTP請求傳回了%lld。它可能僅支援舊版SSE傳輸，請嘗試切換傳輸方式。</string>
+	<key>The server answered %lld.</key>
+	<string>伺服器傳回了%lld。</string>
+	<key>The server closed the stream before answering.</key>
+	<string>伺服器在回覆前關閉流。</string>
+	<key>The server did not answer with HTTP.</key>
+	<string>伺服器未以HTTP回應。</string>
+	<key>The server never answered %@.</key>
+	<string>伺服器一律未回應%@。</string>
+	<key>The server's answer to %@ was not valid MCP.</key>
+	<string>伺服器對%@的回應不是有效的MCP內容。</string>
+	<key>The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport.</key>
+	<string>資料流已開啟，但未提供POST端點。這可能是流式HTTP伺服器，請嘗試切換傳輸方式。</string>
+	<key>The token endpoint did not answer with HTTP.</key>
+	<string>權杖端點未以HTTP回應。</string>
+	<key>The tool call did not produce a result.</key>
+	<string>工具呼叫沒有產生結果。</string>
+	<key>There is not enough history to compact yet.</key>
+	<string>沒有足夠的歷史可以壓縮。</string>
+	<key>This file has no --- frontmatter block, so it is not a skill.</key>
+	<string>此檔案沒有---frontmatter區塊，因此不是技能。</string>
+	<key>This file is not readable text.</key>
+	<string>此檔案不是可讀的文字。</string>
+	<key>This folder has no SKILL.md.</key>
+	<string>此資料夾中沒有SKILL.md。</string>
+	<key>This skill is empty</key>
+	<string>此技能為空</string>
+	<key>This tool is not available in this run.</key>
+	<string>此工具在此執行中不可用。</string>
+	<key>Title</key>
+	<string>標題</string>
+	<key>To</key>
+	<string>改為</string>
+	<key>Tool input was rejected: %@</key>
+	<string>工具輸入被拒絕：%@</string>
+	<key>Tool results</key>
+	<string>工具結果</string>
+	<key>Tool schemas</key>
+	<string>工具結構描述</string>
+	<key>Tools</key>
+	<string>工具</string>
+	<key>Truncated</key>
+	<string>已截斷</string>
+	<key>Turns the current terminal input into one command. Choose a fast model.</key>
+	<string>將目前終端輸入整理為一條指令。請選擇速度較快的模型。</string>
+	<key>URL</key>
+	<string>URL</string>
+	<key>Unknown tool: %@</key>
+	<string>未知工具：%@</string>
+	<key>Unnamed entry</key>
+	<string>未命名條目</string>
+	<key>Untitled result</key>
+	<string>無標題結果</string>
+	<key>Used for chat, tools, and the Assistant sidebar.</key>
+	<string>用於對話、工具和助手側邊欄。</string>
+	<key>Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.</key>
+	<string>Vertex列出的是Model Garden條目，而非此專案可呼叫的模型。請新增你實際使用的模型。</string>
+	<key>Video</key>
+	<string>影片</string>
+	<key>Video Generation</key>
+	<string>影片產生</string>
+	<key>Web Search</key>
+	<string>網頁搜尋</string>
+	<key>Web search run by the model provider.</key>
+	<string>由模型供應商執行的網頁搜尋。</string>
+	<key>Workspace</key>
+	<string>工作區</string>
+	<key>Workspace is empty</key>
+	<string>工作區為空</string>
+	<key>Workspace usage</key>
+	<string>工作區使用情況</string>
+	<key>Yes</key>
+	<string>是</string>
+	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
+	<string>allowed-tools僅作參考保留，技能永遠不會預先核准任何工具。</string>
+	<key>no reason given</key>
+	<string>沒有給出理由</string>
+	<key>not a PKCS#8 RSA private key</key>
+	<string>不是PKCS#8 RSA私密金鑰</string>
+	<key>not base64 PEM</key>
+	<string>不是Base64編碼的PEM</string>
+	<key>the key data ends early</key>
+	<string>金鑰資料不完整</string>
+	<key>unknown reason</key>
+	<string>未知原因</string>
+</dict>
+</plist>

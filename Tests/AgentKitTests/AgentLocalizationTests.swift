@@ -12,6 +12,7 @@ import Testing
 @Suite
 struct AgentLocalizationTests {
     private let chinese = Locale(identifier: "zh-Hans")
+    private let traditionalChinese = Locale(identifier: "zh-Hant")
 
     @Test
     func toolCardVocabularyResolvesFromThePackageBundle() {
@@ -19,6 +20,12 @@ struct AgentLocalizationTests {
         #expect(localized != "Scratch path")
         let hasHan = localized.unicodeScalars.contains { (0x4E00...0x9FFF).contains($0.value) }
         #expect(hasHan)
+    }
+
+    @Test
+    func traditionalChineseResolvesFromItsOwnPackageBundle() {
+        #expect(AgentLocalization.string("Scratch path", locale: traditionalChinese) == "草稿路徑")
+        #expect(AgentLocalization.string("Scratch path", locale: chinese) == "草稿路径")
     }
 
     @Test
@@ -57,31 +64,35 @@ struct AgentLocalizationTests {
     }
 
     @Test
-    func everyCatalogEntryHasAFinishedChineseTranslation() throws {
-        let url = try #require(
-            Bundle.module.url(forResource: "Localizable", withExtension: "xcstrings")
-        )
+    func everyCatalogEntryHasFinishedChineseTranslations() throws {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .deletingLastPathComponent()
+            .appending(path: "Localizations/Localizable.xcstrings")
         let catalog = try JSONSerialization.jsonObject(with: Data(contentsOf: url))
         let strings = try #require(
             (catalog as? [String: Any])?["strings"] as? [String: [String: Any]]
         )
         #expect(!strings.isEmpty)
 
-        var untranslated: [String] = []
-        for (key, entry) in strings {
-            guard
-                let localizations = entry["localizations"] as? [String: Any],
-                let chinese = localizations["zh-Hans"] as? [String: Any]
-            else {
+        for language in ["zh-Hans", "zh-Hant"] {
+            var untranslated: [String] = []
+            for (key, entry) in strings {
+                guard
+                    let localizations = entry["localizations"] as? [String: Any],
+                    let chinese = localizations[language] as? [String: Any]
+                else {
+                    untranslated.append(key)
+                    continue
+                }
+                // A plural key carries `variations` instead of one `stringUnit`.
+                if Self.isTranslated(chinese["stringUnit"]) { continue }
+                if chinese["variations"] != nil { continue }
                 untranslated.append(key)
-                continue
             }
-            // A plural key carries `variations` instead of one `stringUnit`.
-            if Self.isTranslated(chinese["stringUnit"]) { continue }
-            if chinese["variations"] != nil { continue }
-            untranslated.append(key)
+            #expect(untranslated.isEmpty, "Untranslated \(language): \(untranslated.sorted().prefix(5))")
         }
-        #expect(untranslated.isEmpty, "Untranslated: \(untranslated.sorted().prefix(5))")
     }
 
     private static func isTranslated(_ unit: Any?) -> Bool {

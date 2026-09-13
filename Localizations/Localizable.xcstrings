@@ -1,133 +1,205 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%@ failed (%lld): %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@失败（%2$lld）：%3$@"
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ failed (%lld): %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@失败（%2$lld）：%3$@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@失敗（%2$lld）：%3$@"
           }
         }
       }
     },
-    "%@ is not a valid URL." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@不是有效的URL。"
+    "%@ is not a valid URL.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是有效的URL。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是有效的URL。"
           }
         }
       }
     },
-    "%@ is not a valid token endpoint." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@不是有效的令牌端点。"
+    "%@ is not a valid token endpoint.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是有效的令牌端点。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是有效的權杖端點。"
           }
         }
       }
     },
-    "%@ is not an http or https URL." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@不是HTTP或HTTPS URL。"
+    "%@ is not an http or https URL.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是HTTP或HTTPS URL。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@不是HTTP或HTTPS URL。"
           }
         }
       }
     },
-    "%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@在规划时不可用：尚未达成任何约定，因此没有需要跟踪的工作。请先完成计划并调用present_plan。"
+    "%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@在规划时不可用：尚未达成任何约定，因此没有需要跟踪的工作。请先完成计划并调用present_plan。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@在規劃時不可用：尚未達成任何約定，因此沒有需要追蹤的工作。請先完成計畫並呼叫present_plan。"
           }
         }
       }
     },
-    "%lld edits applied" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld应用的编辑"
+    "%lld edits applied": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld应用的编辑"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已套用%lld項編輯"
           }
         }
       }
     },
-    "%lld entries" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld条目"
+    "%lld entries": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld条目"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個項目"
           }
         }
       }
     },
-    "%lld files" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld个文件"
+    "%lld files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld个文件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個檔案"
           }
         }
       }
     },
-    "%lld matching lines in %lld files" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在%2$lld个文件中找到%1$lld个匹配行"
+    "%lld matching lines in %lld files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在%2$lld个文件中找到%1$lld个匹配行"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在%2$lld個檔案中找到%1$lld個相符的行"
           }
         }
       }
     },
-    "%lld replacements applied" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已应用%lld处替换"
+    "%lld replacements applied": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已应用%lld处替换"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已套用%lld處取代"
           }
         }
       }
     },
-    "%lld results" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld result"
+    "%lld results": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld result"
                 }
               },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld results"
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld results"
                 }
               }
             }
           }
         },
-        "zh-Hans" : {
-          "variations" : {
-            "plural" : {
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld个结果"
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld个结果"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hant": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld個結果"
                 }
               }
             }
@@ -135,1856 +207,2966 @@
         }
       }
     },
-    "%lld tasks · %lld completed" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld个任务·已完成%2$lld个"
+    "%lld tasks · %lld completed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld个任务·已完成%2$lld个"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld個任務·已完成%2$lld個"
+          }
         }
       }
     },
-    "A skill may be at most %lld KB." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能最大为%lld KB。"
+    "A skill may be at most %lld KB.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能最大为%lld KB。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能最大為%lld KB。"
           }
         }
       }
     },
-    "A skill name may be at most %lld characters." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能名称最多%lld个字符。"
+    "A skill name may be at most %lld characters.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名称最多%lld个字符。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名稱最多%lld個字元。"
+          }
         }
       }
     },
-    "A skill name may not begin or end with a hyphen." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能名称不能以连字符开头或结尾。"
+    "A skill name may not begin or end with a hyphen.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名称不能以连字符开头或结尾。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名稱不能以連字元開頭或結尾。"
+          }
         }
       }
     },
-    "A skill name may not contain two hyphens in a row." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能名称不能包含连续两个连字符。"
+    "A skill name may not contain two hyphens in a row.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名称不能包含连续两个连字符。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名稱不能包含連續兩個連字元。"
           }
         }
       }
     },
-    "A skill name may use only lowercase letters, digits, and hyphens." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能名称只能使用小写字母、数字和连字符。"
+    "A skill name may use only lowercase letters, digits, and hyphens.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名称只能使用小写字母、数字和连字符。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能名稱只能使用小寫字母、數字和連字元。"
+          }
         }
       }
     },
-    "A skill needs a description saying what it does and when to use it." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能需要一段描述，说明它做什么以及何时使用。"
+    "A skill needs a description saying what it does and when to use it.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能需要一段描述，说明它做什么以及何时使用。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能需要一段描述，說明它做什麼以及何時使用。"
+          }
         }
       }
     },
-    "A skill needs a name." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能需要一个名称。"
+    "A skill needs a name.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能需要一个名称。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能需要一個名稱。"
           }
         }
       }
     },
-    "A truncated model response contained tool calls; none were executed." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "截断的模型响应中包含工具调用，均未执行。"
+    "A truncated model response contained tool calls; none were executed.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "截断的模型响应中包含工具调用，均未执行。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "截斷的模型回應中包含工具呼叫，均未執行。"
+          }
         }
       }
     },
-    "Answer" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回答"
+    "Answer": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回答"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回答"
+          }
         }
       }
     },
-    "Answered in %lld ms" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在%lld毫秒内答复"
+    "Answered in %lld ms": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在%lld毫秒内答复"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "於%lld毫秒內回覆"
           }
         }
       }
     },
-    "Approve for me" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "帮我批准"
+    "Approve for me": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "帮我批准"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "替我核准"
+          }
         }
       }
     },
-    "Ask for approval" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请求批准"
+    "Ask for approval": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请求批准"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要求核准"
+          }
         }
       }
     },
-    "Attachments" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "附件"
+    "Attachments": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "附件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "附件"
           }
         }
       }
     },
-    "Audio" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "音频"
+    "Audio": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音频"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音訊"
+          }
         }
       }
     },
-    "Automatic" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "自动"
+    "Automatic": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動"
+          }
         }
       }
     },
-    "Case sensitive" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "区分大小写"
+    "Case sensitive": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "区分大小写"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "區分大小寫"
           }
         }
       }
     },
-    "Changes" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "变动"
+    "Changes": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "变动"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "變動"
+          }
         }
       }
     },
-    "Chat" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话"
+    "Chat": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話"
+          }
         }
       }
     },
-    "Command Generator" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "命令生成器"
+    "Command Generator": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "命令生成器"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指令產生器"
           }
         }
       }
     },
-    "Completed without output" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已完成，无输出"
+    "Completed without output": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已完成，无输出"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已完成，無輸出"
+          }
         }
       }
     },
-    "Connecting" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在连接"
+    "Connecting": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在连接"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在連線"
+          }
         }
       }
     },
-    "Consumer" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "消费者"
+    "Consumer": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消费者"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消費者"
           }
         }
       }
     },
-    "Content" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "内容"
+    "Content": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内容"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "內容"
+          }
         }
       }
     },
-    "Content type" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "内容类型"
+    "Content type": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内容类型"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "內容型別"
           }
         }
       }
     },
-    "Conversation" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话"
+    "Conversation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話"
+          }
         }
       }
     },
-    "Copied" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已复制"
+    "Copied": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已复制"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已複製"
+          }
         }
       }
     },
-    "Created" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已创建"
+    "Created": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已创建"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已建立"
           }
         }
       }
     },
-    "Critical" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "严重"
+    "Critical": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "严重"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "嚴重"
+          }
         }
       }
     },
-    "Deleted" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已删除"
+    "Deleted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已删除"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已刪除"
+          }
         }
       }
     },
-    "Destination" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目标"
+    "Destination": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目标"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目標"
           }
         }
       }
     },
-    "Diff" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "差异"
+    "Diff": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差异"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差異"
+          }
         }
       }
     },
-    "Directory" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目录"
+    "Directory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目录"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目錄"
+          }
         }
       }
     },
-    "Embedding" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "嵌入"
+    "Embedding": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "嵌入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "嵌入"
           }
         }
       }
     },
-    "Empty file" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "空文件"
+    "Empty file": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空文件"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空檔案"
+          }
         }
       }
     },
-    "Exited" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已退出"
+    "Exited": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已退出"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已結束"
+          }
         }
       }
     },
-    "Extra High" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "极高"
+    "Extra High": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "极高"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "極高"
           }
         }
       }
     },
-    "File" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件"
+    "File": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案"
+          }
         }
       }
     },
-    "Files" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件"
+    "Files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案"
+          }
         }
       }
     },
-    "Files are identical" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件为相同的"
+    "Files are identical": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件为相同的"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案內容相同"
           }
         }
       }
     },
-    "From" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "从"
+    "From": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "从"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "從"
+          }
         }
       }
     },
-    "Full access" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完全访问权限"
+    "Full access": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完全访问权限"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完整存取權限"
+          }
         }
       }
     },
-    "Google answered the sign-in without a token." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google完成了登录响应，但未返回令牌。"
+    "Google answered the sign-in without a token.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google完成了登录响应，但未返回令牌。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google已完成登入回應，但未傳回權杖。"
           }
         }
       }
     },
-    "Google refused the sign-in — %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Google拒绝登录：%@"
+    "Google refused the sign-in — %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google拒绝登录：%@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google拒絕登入：%@"
+          }
         }
       }
     },
-    "HTTP %lld" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "HTTP %lld"
+    "HTTP %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
+          }
         }
       }
     },
-    "High" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "高"
+    "High": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高"
           }
         }
       }
     },
-    "Image" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图像"
+    "Image": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图像"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "影像"
+          }
         }
       }
     },
-    "Image Generation" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图片生成"
+    "Image Generation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图片生成"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "影像產生"
           }
         }
       }
     },
-    "Imported as “%@”." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已导入为“%@”。"
+    "Imported as “%@”.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已导入为“%@”。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已匯入為「%@」。"
+          }
         }
       }
     },
-    "Kind" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "类型"
+    "Kind": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "类型"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "型別"
+          }
         }
       }
     },
-    "Legacy transport using a GET stream and a separate POST endpoint." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "旧版传输方式，使用GET流和单独的POST端点。"
+    "Legacy transport using a GET stream and a separate POST endpoint.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "旧版传输方式，使用GET流和单独的POST端点。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "舊版傳輸方式，使用GET串流和個別的POST端點。"
           }
         }
       }
     },
-    "Line endings" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "行终"
+    "Line endings": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行终"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行尾字元"
+          }
         }
       }
     },
-    "Lines" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "行数"
+    "Lines": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行数"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行數"
+          }
         }
       }
     },
-    "Low" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "低"
+    "Low": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低"
           }
         }
       }
     },
-    "Markdown" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Markdown"
+    "Markdown": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
+          }
         }
       }
     },
-    "Max" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最高"
+    "Max": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最高"
+          }
         }
       }
     },
-    "Medium" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "中"
+    "Medium": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
           }
         }
       }
     },
-    "Minimal" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最低"
+    "Minimal": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最低"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最低"
+          }
         }
       }
     },
-    "Moved" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已移动"
+    "Moved": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已移动"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已移動"
+          }
         }
       }
     },
-    "No" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "否"
+    "No": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "否"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "否"
           }
         }
       }
     },
-    "No Chat model is configured." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "尚未配置对话模型。"
+    "No Chat model is configured.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未配置对话模型。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未設定對話模型。"
+          }
         }
       }
     },
-    "No differences" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无差别"
+    "No differences": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无差别"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無差異"
+          }
         }
       }
     },
-    "No matches" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无匹配项"
+    "No matches": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无匹配项"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有相符項目"
           }
         }
       }
     },
-    "No model is configured for conversation titles." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "尚未为对话标题配置模型。"
+    "No model is configured for conversation titles.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未为对话标题配置模型。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚未為對話標題設定模型。"
+          }
         }
       }
     },
-    "No model list at this address. Check the base URL." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此地址没有模型列表，请检查基础URL。"
+    "No model list at this address. Check the base URL.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此地址没有模型列表，请检查基础URL。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此位址沒有模型清單，請檢查基底URL。"
+          }
         }
       }
     },
-    "No readable page content" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有可读的网页内容"
+    "No readable page content": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有可读的网页内容"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有可讀的網頁內容"
           }
         }
       }
     },
-    "No results" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无结果"
+    "No results": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无结果"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無結果"
+          }
         }
       }
     },
-    "None" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无"
+    "None": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無"
+          }
         }
       }
     },
-    "Off" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭"
+    "Off": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "關閉"
           }
         }
       }
     },
-    "Original HTML" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "原始HTML"
+    "Original HTML": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始HTML"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始HTML"
+          }
         }
       }
     },
-    "Overwritten" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "覆盖"
+    "Overwritten": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覆盖"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已覆寫"
           }
         }
       }
     },
-    "PDF" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PDF"
+    "PDF": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
+          }
         }
       }
     },
-    "Path" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "路径"
+    "Path": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "路径"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "路徑"
+          }
         }
       }
     },
-    "Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划模式已开启，因此未运行%@——它会更改本应用外部的内容。请先读取所需信息，在草稿工作区拟定计划并调用present_plan，由用户决定是否执行。"
+    "Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "计划模式已开启，因此未运行%@——它会更改本应用外部的内容。请先读取所需信息，在草稿工作区拟定计划并调用present_plan，由用户决定是否执行。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計畫模式已開啟，因此未執行%@——它會更改本應用外部的內容。請先讀取所需資訊，在草稿工作區擬定計畫並呼叫present_plan，由使用者決定是否執行。"
           }
         }
       }
     },
-    "Plan presented from %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提交计划%@"
+    "Plan presented from %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "提交计划%@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已從%@提交計畫"
+          }
         }
       }
     },
-    "Purpose" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "目的"
+    "Purpose": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目的"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目的"
+          }
         }
       }
     },
-    "Question" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "问题"
+    "Question": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "问题"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "問題"
           }
         }
       }
     },
-    "Question unavailable" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "问题不可用"
+    "Question unavailable": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "问题不可用"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "問題不可用"
+          }
         }
       }
     },
-    "Reasoning" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "推理"
+    "Reasoning": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "推理"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "推理"
+          }
         }
       }
     },
-    "Replaced" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已替换"
+    "Replaced": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已替换"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已取代"
           }
         }
       }
     },
-    "Request" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请求"
+    "Request": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请求"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請求"
+          }
         }
       }
     },
-    "Rerank" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重排序"
+    "Rerank": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重排序"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新排序"
+          }
         }
       }
     },
-    "Result" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "结果"
+    "Result": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结果"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結果"
           }
         }
       }
     },
-    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在自动批准前检查命令。请选择一个不同于对话模型的快速模型；“与对话模型相同”无法提供独立复核。"
+    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在自动批准前检查命令。请选择一个不同于对话模型的快速模型；“与对话模型相同”无法提供独立复核。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在自動核准前檢查指令。請選擇一個不同於對話模型的快速模型；「與對話模型相同」無法提供獨立複核。"
+          }
         }
       }
     },
-    "Running" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "运行中"
+    "Running": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "运行中"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "執行中"
+          }
         }
       }
     },
-    "SHA-256" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SHA-256"
+    "SHA-256": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
           }
         }
       }
     },
-    "SSE (legacy)" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "SSE（旧版）"
+    "SSE (legacy)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE（旧版）"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE（舊版）"
+          }
         }
       }
     },
-    "Same as Chat" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "与对话模型相同"
+    "Same as Chat": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "与对话模型相同"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "與對話模型相同"
+          }
         }
       }
     },
-    "Scratch path" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "草稿路径"
+    "Scratch path": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "草稿路径"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "草稿路徑"
           }
         }
       }
     },
-    "Secret received securely" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已安全接收机密信息"
+    "Secret received securely": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安全接收机密信息"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安全接收機密資訊"
+          }
         }
       }
     },
-    "Security Review" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全审查"
+    "Security Review": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全审查"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全審查"
+          }
         }
       }
     },
-    "Security Review failed; the action was not executed. %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全审查失败，操作未执行。%@"
+    "Security Review failed; the action was not executed. %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全审查失败，操作未执行。%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全審查失敗，操作未執行。%@"
           }
         }
       }
     },
-    "Security Review is unavailable; the action was not executed." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全审查不可用，操作未执行。"
+    "Security Review is unavailable; the action was not executed.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全审查不可用，操作未执行。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全審查不可用，操作未執行。"
+          }
         }
       }
     },
-    "Security Review returned an invalid decision." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全审查退回无效决定。"
+    "Security Review returned an invalid decision.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全审查退回无效决定。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全審查退回無效決定。"
           }
         }
       }
     },
-    "Security Review timed out; the action was not executed." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "安全审查超时，操作未执行。"
+    "Security Review timed out; the action was not executed.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全审查超时，操作未执行。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全審查超時，操作未執行。"
+          }
         }
       }
     },
-    "Showing %lld of %lld matching lines" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在显示%1$lld/%2$lld个匹配行"
+    "Showing %lld of %lld matching lines": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在显示%1$lld/%2$lld个匹配行"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在顯示%1$lld/%2$lld個匹配行"
+          }
         }
       }
     },
-    "Signing failed: %@." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "签名失败：%@。"
+    "Signing failed: %@.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "签名失败：%@。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "簽名失敗：%@。"
           }
         }
       }
     },
-    "Size" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "大小"
+    "Size": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大小"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大小"
+          }
         }
       }
     },
-    "Skill" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "技能"
+    "Skill": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能"
+          }
         }
       }
     },
-    "Skipped" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "跳过"
+    "Skipped": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "跳过"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "跳過"
           }
         }
       }
     },
-    "Skipped %lld binary files" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已跳过%lld个二进制文件"
+    "Skipped %lld binary files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已跳过%lld个二进制文件"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已略過%lld個二進位檔案"
+          }
         }
       }
     },
-    "Source" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "来源"
+    "Source": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来源"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "來源"
+          }
         }
       }
     },
-    "Status" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "状态"
+    "Status": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状态"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "狀態"
           }
         }
       }
     },
-    "Streamable HTTP" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可流式HTTP"
+    "Streamable HTTP": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可流式HTTP"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可流式HTTP"
+          }
         }
       }
     },
-    "Symlink" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "符号链接"
+    "Symlink": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "符号链接"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "符號連結"
+          }
         }
       }
     },
-    "System prompt" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "系统提示"
+    "System prompt": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系统提示"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系統提示"
           }
         }
       }
     },
-    "Text" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文本"
+    "Text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文本"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字"
+          }
         }
       }
     },
-    "Text is identical; line endings differ: %@ → %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文本相同，但换行符不同：%1$@→%2$@"
+    "Text is identical; line endings differ: %@ → %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文本相同，但换行符不同：%1$@→%2$@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字內容相同，但行尾字元不同：%1$@→%2$@"
+          }
         }
       }
     },
-    "That is not a service account key. It needs client_email and private_key." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这不是有效的服务账户密钥，其中必须包含client_email和private_key。"
+    "That is not a service account key. It needs client_email and private_key.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这不是有效的服务账户密钥，其中必须包含client_email和private_key。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這不是有效的服務帳戶金鑰，其中必須包含client_email和private_key。"
           }
         }
       }
     },
-    "The Chat model has no available credential." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话模型没有可用凭据。"
+    "The Chat model has no available credential.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话模型没有可用凭据。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話模型沒有可用認證資訊。"
+          }
         }
       }
     },
-    "The agent reached its tool-call limit." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "代理已达到工具调用上限。"
+    "The agent reached its tool-call limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "代理已达到工具调用上限。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "代理已達到工具呼叫上限。"
+          }
         }
       }
     },
-    "The agent reached its turn limit." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "代理已达到轮次上限。"
+    "The agent reached its turn limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "代理已达到轮次上限。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "代理已達到輪次上限。"
           }
         }
       }
     },
-    "The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "应用在记录此工具调用结果前已停止。操作是否完成尚不确定；再次执行前请检查当前状态。"
+    "The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用在记录此工具调用结果前已停止。操作是否完成尚不确定；再次执行前请检查当前状态。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用在記錄此工具呼叫結果前已停止。操作是否完成尚不確定；再次執行前請檢查目前狀態。"
+          }
         }
       }
     },
-    "The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "应用在此工具完成前停止了等待。操作是否完成尚不确定；再次执行前请检查当前状态。"
+    "The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用在此工具完成前停止了等待。操作是否完成尚不确定；再次执行前请检查当前状态。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "應用在此工具完成前停止了等待。操作是否完成尚不確定；再次執行前請檢查目前狀態。"
+          }
         }
       }
     },
-    "The conversation is too large to summarize." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话过长，无法生成摘要。"
+    "The conversation is too large to summarize.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话过长，无法生成摘要。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話過長，無法產生摘要。"
           }
         }
       }
     },
-    "The conversation no longer exists." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此对话已不存在。"
+    "The conversation no longer exists.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此对话已不存在。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此對話已不存在。"
+          }
         }
       }
     },
-    "The conversation-title model has no available credential." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "对话标题模型没有可用凭据。"
+    "The conversation-title model has no available credential.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话标题模型没有可用凭据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話標題模型沒有可用認證資訊。"
           }
         }
       }
     },
-    "The current transport, using one endpoint for POST and GET." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "当前传输方式，使用同一端点处理POST和GET。"
+    "The current transport, using one endpoint for POST and GET.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前传输方式，使用同一端点处理POST和GET。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前傳輸方式，使用同一端點處理POST和GET。"
+          }
         }
       }
     },
-    "The description is longer than %lld characters." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "描述超过%lld个字符。"
+    "The description is longer than %lld characters.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描述超过%lld个字符。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描述超過%lld個字元。"
+          }
         }
       }
     },
-    "The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "差异区域跨越%1$lld行，超过%2$lld行的差异限制。请分别读取两侧的有限范围以缩小差异。"
+    "The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差异区域跨越%1$lld行，超过%2$lld行的差异限制。请分别读取两侧的有限范围以缩小差异。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差異區域跨越%1$lld行，超過%2$lld行的差異限制。請分別讀取兩側的有限範圍以縮小差異。"
           }
         }
       }
     },
-    "The endpoint answered %lld." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端点返回了%lld。"
+    "The endpoint answered %lld.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端点返回了%lld。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端點傳回了%lld。"
+          }
         }
       }
     },
-    "The endpoint answered, but not with a model list." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端点已响应，但未返回模型列表。"
+    "The endpoint answered, but not with a model list.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端点已响应，但未返回模型列表。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端點已回應，但未傳回模型清單。"
+          }
         }
       }
     },
-    "The endpoint did not answer with HTTP." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端点没有用HTTP回答。"
+    "The endpoint did not answer with HTTP.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端点没有用HTTP回答。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端點未以HTTP回應。"
           }
         }
       }
     },
-    "The endpoint rejected this key." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "端点拒绝了此密钥。"
+    "The endpoint rejected this key.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端点拒绝了此密钥。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "端點拒絕了此金鑰。"
+          }
         }
       }
     },
-    "The event stream sent a line that exceeded the size limit." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "事件流中的一行超过了大小限制。"
+    "The event stream sent a line that exceeded the size limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "事件流中的一行超过了大小限制。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "事件流中的一行超過了大小限制。"
+          }
         }
       }
     },
-    "The file declared no name; “%@” was used." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件未声明名称，已使用“%@”。"
+    "The file declared no name; “%@” was used.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件未声明名称，已使用“%@”。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "檔案未宣告名稱，已使用「%@」。"
           }
         }
       }
     },
-    "The fork could not be created because its identifier already exists." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法创建分支，因为其标识符已存在。"
+    "The fork could not be created because its identifier already exists.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法创建分支，因为其标识符已存在。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法建立分支，因為其識別碼已存在。"
+          }
         }
       }
     },
-    "The message is no longer available to edit." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "该消息已无法编辑。"
+    "The message is no longer available to edit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该消息已无法编辑。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "該訊息已無法編輯。"
+          }
         }
       }
     },
-    "The model did not return a usable summary." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "该模型没有返回可用的摘要。"
+    "The model did not return a usable summary.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该模型没有返回可用的摘要。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型未傳回可用的摘要。"
           }
         }
       }
     },
-    "The model endpoint URL is invalid." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型端点URL无效。"
+    "The model endpoint URL is invalid.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端点URL无效。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端點URL無效。"
+          }
         }
       }
     },
-    "The model endpoint did not return HTTP." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型端点未返回HTTP响应。"
+    "The model endpoint did not return HTTP.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端点未返回HTTP响应。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端點未傳回HTTP回應。"
+          }
         }
       }
     },
-    "The model endpoint returned %lld: %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型端点返回%1$lld：%2$@"
+    "The model endpoint returned %lld: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端点返回%1$lld：%2$@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端點傳回%1$lld：%2$@"
           }
         }
       }
     },
-    "The model endpoint returned an unsupported response format." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型端点返回了不支持的响应格式。"
+    "The model endpoint returned an unsupported response format.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端点返回了不支持的响应格式。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型端點傳回了不支援的回應格式。"
+          }
         }
       }
     },
-    "The model provider failed to complete the response." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型提供商未能完成响应。"
+    "The model provider failed to complete the response.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型提供商未能完成响应。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型供應商未能完成回應。"
+          }
         }
       }
     },
-    "The model response exceeded the size limit." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型响应超过了大小限制。"
+    "The model response exceeded the size limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型响应超过了大小限制。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型回應超過了大小限制。"
           }
         }
       }
     },
-    "The model returned an invalid conversation title." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "该模型返回无效的对话标题。"
+    "The model returned an invalid conversation title.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该模型返回无效的对话标题。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型傳回了無效的對話標題。"
+          }
         }
       }
     },
-    "The model returned an invalid tool call." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型返回了无效的工具调用。"
+    "The model returned an invalid tool call.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型返回了无效的工具调用。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型傳回了無效的工具呼叫。"
+          }
         }
       }
     },
-    "The model returned malformed JSON arguments for %@." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "模型为%@返回了格式错误的JSON参数。"
+    "The model returned malformed JSON arguments for %@.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型为%@返回了格式错误的JSON参数。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型為%@傳回了格式錯誤的JSON參數。"
           }
         }
       }
     },
-    "The private key could not be read: %@." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无法读取私钥：%@。"
+    "The private key could not be read: %@.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取私钥：%@。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法讀取私密金鑰：%@。"
+          }
         }
       }
     },
-    "The run was cancelled before this tool ran." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此工具运行前的运行已被取消。"
+    "The run was cancelled before this tool ran.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此工具运行前的运行已被取消。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此工具執行前的執行已被取消。"
           }
         }
       }
     },
-    "The secret is not valid for this host, tool, or purpose." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此机密信息不适用于该主机、工具或用途。"
+    "The secret is not valid for this host, tool, or purpose.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此机密信息不适用于该主机、工具或用途。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此機密資訊不適用於該主機、工具或用途。"
+          }
         }
       }
     },
-    "The secret is unavailable or has already been used." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此机密信息不可用或已被使用。"
+    "The secret is unavailable or has already been used.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此机密信息不可用或已被使用。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此機密資訊不可用或已被使用。"
+          }
         }
       }
     },
-    "The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器对流式HTTP请求返回了%lld。它可能仅支持旧版SSE传输，请尝试切换传输方式。"
+    "The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器对流式HTTP请求返回了%lld。它可能仅支持旧版SSE传输，请尝试切换传输方式。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器對流式HTTP請求傳回了%lld。它可能僅支援舊版SSE傳輸，請嘗試切換傳輸方式。"
           }
         }
       }
     },
-    "The server answered %lld." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器返回了%lld。"
+    "The server answered %lld.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器返回了%lld。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器傳回了%lld。"
+          }
         }
       }
     },
-    "The server closed the stream before answering." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器在回复前关闭流。"
+    "The server closed the stream before answering.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器在回复前关闭流。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器在回覆前關閉流。"
+          }
         }
       }
     },
-    "The server did not answer with HTTP." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器没有用HTTP回答。"
+    "The server did not answer with HTTP.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器没有用HTTP回答。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器未以HTTP回應。"
           }
         }
       }
     },
-    "The server never answered %@." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器始终未响应%@。"
+    "The server never answered %@.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器始终未响应%@。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器一律未回應%@。"
+          }
         }
       }
     },
-    "The server's answer to %@ was not valid MCP." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务器的答案%@无效MCP。"
+    "The server's answer to %@ was not valid MCP.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "服务器的答案%@无效MCP。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "伺服器對%@的回應不是有效的MCP內容。"
+          }
         }
       }
     },
-    "The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "数据流已打开，但未提供POST端点。这可能是流式HTTP服务器，请尝试切换传输方式。"
+    "The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "数据流已打开，但未提供POST端点。这可能是流式HTTP服务器，请尝试切换传输方式。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資料流已開啟，但未提供POST端點。這可能是流式HTTP伺服器，請嘗試切換傳輸方式。"
           }
         }
       }
     },
-    "The token endpoint did not answer with HTTP." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "令牌端点未返回HTTP响应。"
+    "The token endpoint did not answer with HTTP.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "令牌端点未返回HTTP响应。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權杖端點未以HTTP回應。"
+          }
         }
       }
     },
-    "The tool call did not produce a result." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具调用没有产生结果。"
+    "The tool call did not produce a result.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具调用没有产生结果。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具呼叫沒有產生結果。"
+          }
         }
       }
     },
-    "There is not enough history to compact yet." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有足够的历史可以压缩。"
+    "There is not enough history to compact yet.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有足够的历史可以压缩。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有足夠的歷史可以壓縮。"
           }
         }
       }
     },
-    "This file has no --- frontmatter block, so it is not a skill." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此文件没有---frontmatter区块，因此不是技能。"
+    "This file has no --- frontmatter block, so it is not a skill.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件没有---frontmatter区块，因此不是技能。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此檔案沒有---frontmatter區塊，因此不是技能。"
+          }
         }
       }
     },
-    "This file is not readable text." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此文件不是可读文本。"
+    "This file is not readable text.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件不是可读文本。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此檔案不是可讀的文字。"
+          }
         }
       }
     },
-    "This folder has no SKILL.md." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此文件夹中没有SKILL.md。"
+    "This folder has no SKILL.md.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此文件夹中没有SKILL.md。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此資料夾中沒有SKILL.md。"
           }
         }
       }
     },
-    "This skill is empty" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此技能为空"
+    "This skill is empty": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此技能为空"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此技能為空"
+          }
         }
       }
     },
-    "This tool is not available in this run." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此工具在此运行中不可用。"
+    "This tool is not available in this run.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此工具在此运行中不可用。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此工具在此執行中不可用。"
+          }
         }
       }
     },
-    "Title" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "标题"
+    "Title": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "标题"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "標題"
           }
         }
       }
     },
-    "To" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "改为"
+    "To": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改为"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改為"
+          }
         }
       }
     },
-    "Tool input was rejected: %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具输入被拒绝：%@"
+    "Tool input was rejected: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具输入被拒绝：%@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具輸入被拒絕：%@"
+          }
         }
       }
     },
-    "Tool results" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具结果"
+    "Tool results": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具结果"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具結果"
           }
         }
       }
     },
-    "Tool schemas" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具计划"
+    "Tool schemas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具计划"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具結構描述"
+          }
         }
       }
     },
-    "Tools" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工具"
+    "Tools": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具"
+          }
         }
       }
     },
-    "Truncated" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已截断"
+    "Truncated": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已截断"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已截斷"
           }
         }
       }
     },
-    "Turns the current terminal input into one command. Choose a fast model." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将当前终端输入整理为一条命令。请选择速度较快的模型。"
+    "Turns the current terminal input into one command. Choose a fast model.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将当前终端输入整理为一条命令。请选择速度较快的模型。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "將目前終端輸入整理為一條指令。請選擇速度較快的模型。"
+          }
         }
       }
     },
-    "URL" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL"
+    "URL": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
         }
       }
     },
-    "Unknown tool: %@" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知工具：%@"
+    "Unknown tool: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知工具：%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知工具：%@"
           }
         }
       }
     },
-    "Unnamed entry" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未命名条目"
+    "Unnamed entry": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未命名条目"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未命名條目"
+          }
         }
       }
     },
-    "Untitled result" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "无标题结果"
+    "Untitled result": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无标题结果"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無標題結果"
+          }
         }
       }
     },
-    "Used for chat, tools, and the Assistant sidebar." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用于对话、工具和助手侧边栏。"
+    "Used for chat, tools, and the Assistant sidebar.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于对话、工具和助手侧边栏。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用於對話、工具和助手側邊欄。"
           }
         }
       }
     },
-    "Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vertex列出的是Model Garden条目，而非此项目可调用的模型。请添加你实际使用的模型。"
+    "Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertex列出的是Model Garden条目，而非此项目可调用的模型。请添加你实际使用的模型。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertex列出的是Model Garden條目，而非此專案可呼叫的模型。請新增你實際使用的模型。"
+          }
         }
       }
     },
-    "Video" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "视频"
+    "Video": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "影片"
+          }
         }
       }
     },
-    "Video Generation" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "视频生成"
+    "Video Generation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "视频生成"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "影片產生"
           }
         }
       }
     },
-    "Web Search" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "网页搜索"
+    "Web Search": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "网页搜索"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "網頁搜尋"
+          }
         }
       }
     },
-    "Web search run by the model provider." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "由模型提供商执行的网页搜索。"
+    "Web search run by the model provider.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "由模型提供商执行的网页搜索。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "由模型供應商執行的網頁搜尋。"
+          }
         }
       }
     },
-    "Workspace" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工作区"
+    "Workspace": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作区"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作區"
           }
         }
       }
     },
-    "Workspace is empty" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工作区为空"
+    "Workspace is empty": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作区为空"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作區為空"
+          }
         }
       }
     },
-    "Workspace usage" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工作区使用情况"
+    "Workspace usage": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作区使用情况"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作區使用情況"
+          }
         }
       }
     },
-    "Yes" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "是"
+    "Yes": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "是"
           }
         }
       }
     },
-    "allowed-tools was kept for reference only. Skills never pre-approve a tool." : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "allowed-tools仅作参考保留，技能永远不会预先批准任何工具。"
+    "allowed-tools was kept for reference only. Skills never pre-approve a tool.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-tools仅作参考保留，技能永远不会预先批准任何工具。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-tools僅作參考保留，技能永遠不會預先核准任何工具。"
+          }
         }
       }
     },
-    "no reason given" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有给出理由"
+    "no reason given": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有给出理由"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有給出理由"
+          }
         }
       }
     },
-    "not a PKCS#8 RSA private key" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不是PKCS#8 RSA私钥"
+    "not a PKCS#8 RSA private key": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不是PKCS#8 RSA私钥"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不是PKCS#8 RSA私密金鑰"
           }
         }
       }
     },
-    "not base64 PEM" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不是Base64编码的PEM"
+    "not base64 PEM": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不是Base64编码的PEM"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不是Base64編碼的PEM"
+          }
         }
       }
     },
-    "the key data ends early" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "密钥数据不完整"
+    "the key data ends early": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "密钥数据不完整"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "金鑰資料不完整"
+          }
         }
       }
     },
-    "unknown reason" : {
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未知原因"
+    "unknown reason": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知原因"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未知原因"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
