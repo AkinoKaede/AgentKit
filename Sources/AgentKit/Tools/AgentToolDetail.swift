@@ -153,15 +153,37 @@ public nonisolated struct AgentToolDetailInput: Sendable {
     public var locale: Locale
 }
 
+/// The arguments a person reviews before allowing a tool to run.
+///
+/// Separate from `AgentToolDetailInput`: there is no result yet, and inventing
+/// one makes a result presenter guess whether a value came from the request or
+/// execution. A tool may register this projection beside its result presenter;
+/// hosts retain a generic fallback for remote or older tools which do not.
+public nonisolated struct AgentToolArgumentDetailInput: Sendable {
+    public init(
+        arguments: [String: AgentJSONValue],
+        locale: Locale
+    ) {
+        self.arguments = arguments
+        self.locale = locale
+    }
+
+    public var arguments: [String: AgentJSONValue]
+    public var locale: Locale
+}
+
 /// A local function selected by a stable ID stored in descriptor metadata.
 /// Only the built-in catalog constructs these; remote tools cannot register code.
 public nonisolated struct AgentToolDetailPresenter: Sendable {
     public let id: String
     private let projection: @Sendable (AgentToolDetailInput) -> [AgentToolDetail.Item]
+    private let argumentProjection: (@Sendable (AgentToolArgumentDetailInput) -> [AgentToolDetail.Item])?
 
     public init(
         id: String,
-        present: @escaping @Sendable (AgentToolDetailInput) -> [AgentToolDetail.Item]
+        present: @escaping @Sendable (AgentToolDetailInput) -> [AgentToolDetail.Item],
+        presentArguments:
+            (@Sendable (AgentToolArgumentDetailInput) -> [AgentToolDetail.Item])? = nil
     ) {
         // Namespaced, not `builtin.`-prefixed. The ID is persisted with the card
         // and looked up years later against a registry the host composed from
@@ -175,10 +197,17 @@ public nonisolated struct AgentToolDetailPresenter: Sendable {
         )
         self.id = id
         projection = present
+        argumentProjection = presentArguments
     }
 
     public func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         projection(input)
+    }
+
+    public func presentArguments(
+        _ input: AgentToolArgumentDetailInput
+    ) -> [AgentToolDetail.Item]? {
+        argumentProjection?(input)
     }
 }
 

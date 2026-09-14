@@ -511,6 +511,22 @@
         }
       }
     },
+    "Command": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "命令"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "指令"
+          }
+        }
+      }
+    },
     "Command Generator": {
       "localizations": {
         "zh-Hans": {
@@ -847,6 +863,22 @@
         }
       }
     },
+    "Format": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "格式"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "格式"
+          }
+        }
+      }
+    },
     "From": {
       "localizations": {
         "zh-Hans": {
@@ -971,6 +1003,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "影像產生"
+          }
+        }
+      }
+    },
+    "Input": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輸入"
           }
         }
       }
@@ -1327,6 +1375,22 @@
         }
       }
     },
+    "Overwrite": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覆盖"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覆寫"
+          }
+        }
+      }
+    },
     "Overwritten": {
       "localizations": {
         "zh-Hans": {
@@ -1355,6 +1419,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "PDF"
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權限"
           }
         }
       }
@@ -1451,6 +1531,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "問題不可用"
+          }
+        }
+      }
+    },
+    "Remote path": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "遠端路徑"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "远程路径"
           }
         }
       }
@@ -1627,6 +1723,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "草稿路徑"
+          }
+        }
+      }
+    },
+    "Secret handle": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "机密句柄"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "機密句柄"
           }
         }
       }
@@ -2719,6 +2831,22 @@
         }
       }
     },
+    "Timeout": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "超时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "逾時"
+          }
+        }
+      }
+    },
     "Title": {
       "localizations": {
         "zh-Hans": {
@@ -3003,6 +3131,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "由模型供應商執行的網頁搜尋。"
+          }
+        }
+      }
+    },
+    "Working directory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作目录"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作目錄"
           }
         }
       }

@@ -2,7 +2,8 @@ import Foundation
 
 public nonisolated struct FetchTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.fetch", present: present
+        id: "builtin.fetch", present: present,
+        presentArguments: presentArguments
     )
     private let web: any AgentWebFetching
     public init(web: any AgentWebFetching) { self.web = web }
@@ -143,6 +144,27 @@ nonisolated
                         )))
             return items
         }
+    }
+
+    public static func presentArguments(
+        _ input: AgentToolArgumentDetailInput
+    ) -> [AgentToolDetail.Item] {
+        typealias F = AgentToolDetailFormatting
+        var items: [AgentToolDetail.Item] = []
+        if let url = F.nonempty(input.arguments["url"]?.stringValue) {
+            items.append(
+                .field(
+                    .init(
+                        label: F.localized("URL", locale: input.locale),
+                        value: url,
+                        isMonospaced: true,
+                        url: url
+                    )))
+        }
+        F.appendField(
+            &items, "Format", input.arguments["format"]?.stringValue,
+            locale: input.locale)
+        return items
     }
 }
 nonisolated

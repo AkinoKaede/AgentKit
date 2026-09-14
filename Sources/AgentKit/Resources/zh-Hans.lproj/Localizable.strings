@@ -60,6 +60,8 @@
 	<string>变动</string>
 	<key>Chat</key>
 	<string>对话</string>
+	<key>Command</key>
+	<string>命令</string>
 	<key>Command Generator</key>
 	<string>命令生成器</string>
 	<key>Completed without output</key>
@@ -102,6 +104,8 @@
 	<string>文件</string>
 	<key>Files are identical</key>
 	<string>文件为相同的</string>
+	<key>Format</key>
+	<string>格式</string>
 	<key>From</key>
 	<string>从</string>
 	<key>Full access</key>
@@ -120,6 +124,8 @@
 	<string>图片生成</string>
 	<key>Imported as “%@”.</key>
 	<string>已导入为“%@”。</string>
+	<key>Input</key>
+	<string>输入</string>
 	<key>Kind</key>
 	<string>类型</string>
 	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
@@ -162,12 +168,16 @@
 	<string>关闭</string>
 	<key>Original HTML</key>
 	<string>原始HTML</string>
+	<key>Overwrite</key>
+	<string>覆盖</string>
 	<key>Overwritten</key>
 	<string>覆盖</string>
 	<key>PDF</key>
 	<string>PDF</string>
 	<key>Path</key>
 	<string>路径</string>
+	<key>Permissions</key>
+	<string>权限</string>
 	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
 	<string>计划模式已开启，因此未运行%@——它会更改本应用外部的内容。请先读取所需信息，在草稿工作区拟定计划并调用present_plan，由用户决定是否执行。</string>
 	<key>Plan presented from %@</key>
@@ -180,6 +190,8 @@
 	<string>问题不可用</string>
 	<key>Reasoning</key>
 	<string>推理</string>
+	<key>Remote path</key>
+	<string>遠端路徑</string>
 	<key>Replaced</key>
 	<string>已替换</string>
 	<key>Request</key>
@@ -200,6 +212,8 @@
 	<string>与对话模型相同</string>
 	<key>Scratch path</key>
 	<string>草稿路径</string>
+	<key>Secret handle</key>
+	<string>机密句柄</string>
 	<key>Secret received securely</key>
 	<string>已安全接收机密信息</string>
 	<key>Security Review</key>
@@ -336,6 +350,8 @@
 	<string>此技能为空</string>
 	<key>This tool is not available in this run.</key>
 	<string>此工具在此运行中不可用。</string>
+	<key>Timeout</key>
+	<string>超时</string>
 	<key>Title</key>
 	<string>标题</string>
 	<key>To</key>
@@ -372,6 +388,8 @@
 	<string>网页搜索</string>
 	<key>Web search run by the model provider.</key>
 	<string>由模型提供商执行的网页搜索。</string>
+	<key>Working directory</key>
+	<string>工作目录</string>
 	<key>Workspace</key>
 	<string>工作区</string>
 	<key>Workspace is empty</key>
