@@ -1,18 +1,37 @@
 import Foundation
 
+public nonisolated struct GuardianEvidence: Identifiable, Hashable, Sendable, Codable {
+    public nonisolated enum Source: String, Hashable, Sendable, Codable {
+        case directUser
+        case userInputAnswer
+    }
+
+    public init(id: String, source: Source, text: String) {
+        self.id = id
+        self.source = source
+        self.text = AgentSensitiveDataRedactor.visibleText(text)
+    }
+
+    public var id: String
+    public var source: Source
+    public var text: String
+}
+
 public nonisolated struct AgentApprovalRequest: Identifiable, Hashable, Sendable {
     public init(
         id: UUID = UUID(),
         invocation: AgentToolInvocation,
         descriptor: AgentToolDescriptor,
         userIntent: String,
-        localReasons: [String] = []
+        localReasons: [String] = [],
+        authorizationEvidence: [GuardianEvidence] = []
     ) {
         self.id = id
         self.invocation = invocation
         self.descriptor = descriptor
         self.userIntent = userIntent
         self.localReasons = localReasons
+        self.authorizationEvidence = authorizationEvidence
     }
 
     public var id: UUID = UUID()
@@ -20,6 +39,7 @@ public nonisolated struct AgentApprovalRequest: Identifiable, Hashable, Sendable
     public var descriptor: AgentToolDescriptor
     public var userIntent: String
     public var localReasons: [String] = []
+    public var authorizationEvidence: [GuardianEvidence] = []
 }
 
 public nonisolated enum AgentApprovalDecision: Hashable, Sendable {
@@ -27,7 +47,7 @@ public nonisolated enum AgentApprovalDecision: Hashable, Sendable {
     case deny(String)
 }
 
-public nonisolated enum SecurityReviewRisk: String, Hashable, Sendable, Codable {
+public nonisolated enum GuardianRisk: String, Hashable, Sendable, Codable {
     case low, medium, high, critical
 
     public var displayName: String {
@@ -40,19 +60,19 @@ public nonisolated enum SecurityReviewRisk: String, Hashable, Sendable, Codable 
     }
 }
 
-public nonisolated enum SecurityReviewVerdict: String, Hashable, Sendable, Codable {
+public nonisolated enum GuardianVerdict: String, Hashable, Sendable, Codable {
     case approve, deny
 }
 
-public nonisolated enum SecurityReviewAuthorization: String, Hashable, Sendable, Codable {
-    case sufficient, insufficient
+public nonisolated enum GuardianAuthorization: String, Hashable, Sendable, Codable {
+    case unknown, low, medium, high
 }
 
-public nonisolated struct SecurityReviewDecision: Hashable, Sendable, Codable {
+public nonisolated struct GuardianDecision: Hashable, Sendable, Codable {
     public init(
-        verdict: SecurityReviewVerdict,
-        risk: SecurityReviewRisk,
-        userAuthorization: SecurityReviewAuthorization,
+        verdict: GuardianVerdict,
+        risk: GuardianRisk,
+        userAuthorization: GuardianAuthorization,
         reason: String
     ) {
         self.verdict = verdict
@@ -61,19 +81,19 @@ public nonisolated struct SecurityReviewDecision: Hashable, Sendable, Codable {
         self.reason = reason
     }
 
-    public var verdict: SecurityReviewVerdict
-    public var risk: SecurityReviewRisk
-    public var userAuthorization: SecurityReviewAuthorization
+    public var verdict: GuardianVerdict
+    public var risk: GuardianRisk
+    public var userAuthorization: GuardianAuthorization
     public var reason: String
 
     public var allowsExecution: Bool {
         guard verdict == .approve, risk != .critical else { return false }
-        return risk != .high || userAuthorization == .sufficient
+        return risk != .high || userAuthorization == .medium || userAuthorization == .high
     }
 }
 
-public nonisolated protocol SecurityReviewing: Sendable {
-    func review(_ request: AgentApprovalRequest) async throws -> SecurityReviewDecision
+public nonisolated protocol GuardianReviewing: Sendable {
+    func review(_ request: AgentApprovalRequest) async throws -> GuardianDecision
 }
 
 public nonisolated protocol AgentApprovalHandling: Sendable {
@@ -84,17 +104,18 @@ public nonisolated protocol AgentApprovalHandling: Sendable {
 }
 
 /// Implements the three permission modes. Reviewer failures are deliberately
-/// fail-closed, matching Codex Auto-review rather than silently becoming approval.
+/// fail-closed, matching Codex Auto-reviewing rather than silently becoming approval.
 public actor AgentApprovalBroker: AgentApprovalHandling {
     public typealias ManualApproval = @Sendable (AgentApprovalRequest) async -> AgentApprovalDecision
 
-    private let reviewer: (any SecurityReviewing)?
+    private let reviewer: (any GuardianReviewing)?
     private let manualApproval: ManualApproval
     private let event: @Sendable (AgentEvent) -> Void
     private let reviewTimeout: Duration
+    private var circuit = GuardianCircuitBreaker()
 
     public init(
-        reviewer: (any SecurityReviewing)?,
+        reviewer: (any GuardianReviewing)?,
         manualApproval: @escaping ManualApproval,
         reviewTimeout: Duration = .seconds(30),
         event: (@Sendable (AgentEvent) -> Void)? = nil
@@ -128,20 +149,37 @@ public actor AgentApprovalBroker: AgentApprovalHandling {
 
         guard mode == .approveForMe, let reviewer else {
             return .deny(
-                String(localized: "Security Review is unavailable; the action was not executed.", bundle: .module))
+                String(localized: "Auto-reviewing is unavailable; the action was not executed.", bundle: .module))
+        }
+        if circuit.isOpen {
+            let reason = String(
+                localized:
+                    "Auto-reviewing paused after repeated adverse results; the action was not executed.",
+                bundle: .module
+            )
+            event(.reviewFailed(request, reason: reason, timedOut: false))
+            return .deny(reason)
         }
         event(.reviewStarted(request))
         do {
             let decision = try await reviewWithTimeout(reviewer, request: request)
+            circuit.record(request: request, adverse: !decision.allowsExecution)
             event(.reviewFinished(request, decision))
             return decision.allowsExecution ? .allow : .deny(decision.reason)
-        } catch is SecurityReviewTimeoutError {
-            let reason = String(localized: "Security Review timed out; the action was not executed.", bundle: .module)
+        } catch is GuardianTimeoutError {
+            circuit.record(request: request, adverse: true)
+            let reason = String(localized: "Auto-reviewing timed out; the action was not executed.", bundle: .module)
             event(.reviewFailed(request, reason: reason, timedOut: true))
             return .deny(reason)
-        } catch {
+        } catch is CancellationError {
             let reason = String(
-                localized: "Security Review failed; the action was not executed. \(error.localizedDescription)"
+                localized: "Auto-reviewing was cancelled; the action was not executed.", bundle: .module)
+            event(.reviewFailed(request, reason: reason, timedOut: false))
+            return .deny(reason)
+        } catch {
+            circuit.record(request: request, adverse: true)
+            let reason = String(
+                localized: "Auto-reviewing failed; the action was not executed. \(error.localizedDescription)"
             )
             event(.reviewFailed(request, reason: reason, timedOut: false))
             return .deny(reason)
@@ -149,23 +187,68 @@ public actor AgentApprovalBroker: AgentApprovalHandling {
     }
 
     private func reviewWithTimeout(
-        _ reviewer: any SecurityReviewing,
+        _ reviewer: any GuardianReviewing,
         request: AgentApprovalRequest
-    ) async throws -> SecurityReviewDecision {
-        try await withThrowingTaskGroup(of: SecurityReviewDecision.self) { group in
+    ) async throws -> GuardianDecision {
+        try await withThrowingTaskGroup(of: GuardianDecision.self) { group in
             group.addTask { try await reviewer.review(request) }
             group.addTask { [reviewTimeout] in
                 try await Task.sleep(for: reviewTimeout)
-                throw SecurityReviewTimeoutError()
+                throw GuardianTimeoutError()
             }
-            guard let first = try await group.next() else { throw SecurityReviewTimeoutError() }
+            guard let first = try await group.next() else { throw GuardianTimeoutError() }
             group.cancelAll()
             return first
         }
     }
 }
 
-private nonisolated struct SecurityReviewTimeoutError: Error, Sendable {}
+private nonisolated struct GuardianTimeoutError: Error, Sendable {}
+
+private nonisolated struct GuardianCircuitBreaker: Sendable {
+    private struct Batch: Sendable {
+        var id: String
+        var createdAt: Date
+        var adverse: Bool
+    }
+
+    private var batches: [Batch] = []
+
+    var isOpen: Bool {
+        batches.suffix(3).count == 3 && batches.suffix(3).allSatisfy(\.adverse)
+            || batches.suffix(50).filter(\.adverse).count >= 10
+    }
+
+    mutating func record(request: AgentApprovalRequest, adverse: Bool) {
+        let id = request.invocation.sourceMessageID?.uuidString ?? request.invocation.id.uuidString
+        if let index = batches.firstIndex(where: { $0.id == id }) {
+            batches[index].adverse = batches[index].adverse || adverse
+            batches[index].createdAt = min(batches[index].createdAt, request.invocation.createdAt)
+        } else {
+            batches.append(Batch(id: id, createdAt: request.invocation.createdAt, adverse: adverse))
+        }
+        batches.sort {
+            $0.createdAt == $1.createdAt ? $0.id < $1.id : $0.createdAt < $1.createdAt
+        }
+        if batches.count > 50 { batches.removeFirst(batches.count - 50) }
+    }
+}
+
+/// The approval boundary inside a Guardian run. It deliberately has no
+/// reviewer reference, manual callback, or escalation path: an investigation
+/// tool is either locally proven read-only or refused.
+public nonisolated struct ReviewerReadOnlyApproval: AgentApprovalHandling, Sendable {
+    public init() {}
+
+    public func authorize(
+        _ request: AgentApprovalRequest,
+        mode: AgentPermissionMode
+    ) async -> AgentApprovalDecision {
+        request.descriptor.approvalPolicy == .approve
+            ? .allow
+            : .deny("Guardian investigation tools cannot request approval.")
+    }
+}
 
 public nonisolated struct SecretBinding: Hashable, Sendable {
     public init(

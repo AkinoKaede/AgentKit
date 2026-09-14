@@ -52,6 +52,22 @@
 	<string>附件</string>
 	<key>Audio</key>
 	<string>音訊</string>
+	<key>Auto-reviewing exceeded its investigation limit.</key>
+	<string>自動審查超出了調查次數限制。</string>
+	<key>Auto-reviewing exceeded its reasoning turn limit.</key>
+	<string>自動審查超出了推理輪次限制。</string>
+	<key>Auto-reviewing failed; the action was not executed. %@</key>
+	<string>自動審查失敗，操作未執行。%@</string>
+	<key>Auto-reviewing is unavailable; the action was not executed.</key>
+	<string>自動審查不可用，操作未執行。</string>
+	<key>Auto-reviewing paused after repeated adverse results; the action was not executed.</key>
+	<string>自動審查因連續出現不利結果而暫停，操作未執行。</string>
+	<key>Auto-reviewing returned an invalid decision.</key>
+	<string>自動審查傳回了無效決定。</string>
+	<key>Auto-reviewing timed out; the action was not executed.</key>
+	<string>自動審查逾時，操作未執行。</string>
+	<key>Auto-reviewing was cancelled; the action was not executed.</key>
+	<string>自動審查已取消，操作未執行。</string>
 	<key>Automatic</key>
 	<string>自動</string>
 	<key>Case sensitive</key>
@@ -114,6 +130,8 @@
 	<string>Google已完成登入回應，但未傳回權杖。</string>
 	<key>Google refused the sign-in — %@</key>
 	<string>Google拒絕登入：%@</string>
+	<key>Guardian</key>
+	<string>監護者</string>
 	<key>HTTP %lld</key>
 	<string>HTTP %lld</string>
 	<key>High</key>
@@ -202,8 +220,8 @@
 	<string>重新排序</string>
 	<key>Result</key>
 	<string>結果</string>
-	<key>Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.</key>
-	<string>在自動核准前檢查指令。請選擇一個不同於對話模型的快速模型；「與對話模型相同」無法提供獨立複核。</string>
+	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
+	<string>在自動核准前審查指令。自動模式會選擇最佳的可用審查模型。</string>
 	<key>Running</key>
 	<string>執行中</string>
 	<key>SHA-256</key>
@@ -218,16 +236,6 @@
 	<string>機密句柄</string>
 	<key>Secret received securely</key>
 	<string>已安全接收機密資訊</string>
-	<key>Security Review</key>
-	<string>安全審查</string>
-	<key>Security Review failed; the action was not executed. %@</key>
-	<string>安全審查失敗，操作未執行。%@</string>
-	<key>Security Review is unavailable; the action was not executed.</key>
-	<string>安全審查不可用，操作未執行。</string>
-	<key>Security Review returned an invalid decision.</key>
-	<string>安全審查退回無效決定。</string>
-	<key>Security Review timed out; the action was not executed.</key>
-	<string>安全審查超時，操作未執行。</string>
 	<key>Showing %lld of %lld matching lines</key>
 	<string>正在顯示%1$lld/%2$lld個匹配行</string>
 	<key>Signing failed: %@.</key>
@@ -246,6 +254,8 @@
 	<string>狀態</string>
 	<key>Streamable HTTP</key>
 	<string>可流式HTTP</string>
+	<key>Structured Output</key>
+	<string>結構化輸出</string>
 	<key>Symlink</key>
 	<string>符號連結</string>
 	<key>System prompt</key>

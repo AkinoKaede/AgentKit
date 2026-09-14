@@ -1,19 +1,39 @@
 import Foundation
 
+/// A provider-neutral request for schema-constrained final text.
+///
+/// Adapters that know the selected model supports structured output translate
+/// this to their native wire shape. Other models simply receive the prompt and
+/// remain protected by the caller's local decoder.
+public nonisolated struct AgentModelOutputFormat: Hashable, Sendable {
+    public init(name: String, schema: AgentJSONValue, strict: Bool = false) {
+        self.name = name
+        self.schema = schema
+        self.strict = strict
+    }
+
+    public var name: String
+    public var schema: AgentJSONValue
+    public var strict: Bool
+}
+
 public nonisolated struct AgentModelRequest: Sendable {
     public init(
         systemPrompt: String,
         messages: [AgentTranscriptMessage],
-        tools: [AgentToolDescriptor]
+        tools: [AgentToolDescriptor],
+        outputFormat: AgentModelOutputFormat? = nil
     ) {
         self.systemPrompt = systemPrompt
         self.messages = messages
         self.tools = tools
+        self.outputFormat = outputFormat
     }
 
     public var systemPrompt: String
     public var messages: [AgentTranscriptMessage]
     public var tools: [AgentToolDescriptor]
+    public var outputFormat: AgentModelOutputFormat?
 }
 
 public nonisolated enum AgentModelStreamEvent: Sendable {

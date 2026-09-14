@@ -1,6 +1,8 @@
 import Foundation
 
 public nonisolated struct RequestUserInputTool: AgentToolDefinition, AgentToolSchemaBuilding {
+    public static let name = "request_user_input"
+
     public init() {}
 
     public static let presenter = AgentToolDetailPresenter(
@@ -9,7 +11,7 @@ public nonisolated struct RequestUserInputTool: AgentToolDefinition, AgentToolSc
 
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
-            "request_user_input",
+            Self.name,
             """
             Ask the user to decide things you cannot decide yourself, and wait for the answers. \
             Use it only when the answer is genuinely theirs: a preference, a tradeoff with no \

@@ -107,9 +107,64 @@ struct AgentToolAvailabilityTests {
 
         let planning = Set(registry.available(in: .planning).descriptors.map(\.name))
         let acting = Set(registry.available(in: .acting).descriptors.map(\.name))
+        let reviewing = Set(registry.available(in: .reviewing).descriptors.map(\.name))
         #expect(!planning.contains("manage_tasks"))
         #expect(acting.contains("manage_tasks"))
         #expect(planning.contains("request_user_input"))
         #expect(acting.contains("request_user_input"))
+        #expect(reviewing.isEmpty)
+    }
+
+    @Test
+    func reviewingToolsMustOptInExplicitly() {
+        let ordinary = AnyAgentTool(
+            descriptor: AgentToolDescriptor(
+                name: "ordinary", summary: "ordinary", inputSchema: .object([:]),
+                target: .local, approvalPolicy: .approve
+            ),
+            execute: { invocation, _ in
+                AgentToolResult(callID: invocation.call.id, content: "ok")
+            }
+        )
+        let guardian = AnyAgentTool(
+            descriptor: AgentToolDescriptor(
+                name: "guardian_read", summary: "read", inputSchema: .object([:]),
+                target: .local, approvalPolicy: .approve
+            ),
+            availableIn: [.reviewing],
+            execute: { invocation, _ in
+                AgentToolResult(callID: invocation.call.id, content: "ok")
+            }
+        )
+        let registry = AgentToolRegistry([ordinary, guardian])
+
+        #expect(registry.available(in: .reviewing).descriptors.map(\.name) == ["guardian_read"])
+        #expect(registry.available(in: .acting).descriptors.map(\.name) == ["ordinary"])
+    }
+
+    @Test
+    func theSameToolNameMayRegisterDifferentImplementationsForDisjointModes() throws {
+        func tool(_ summary: String, modes: Set<AgentRunMode>) -> AnyAgentTool {
+            AnyAgentTool(
+                descriptor: AgentToolDescriptor(
+                    name: "shared", summary: summary, inputSchema: .object([:]),
+                    target: .local, approvalPolicy: .approve
+                ),
+                availableIn: modes,
+                execute: { invocation, _ in
+                    AgentToolResult(callID: invocation.call.id, content: summary)
+                }
+            )
+        }
+        let registry = AgentToolRegistry([
+            tool("ordinary", modes: [.planning, .acting]),
+            tool("reviewing", modes: [.reviewing]),
+            tool("shadow", modes: [.acting, .reviewing]),
+        ])
+
+        #expect(registry.available(in: .planning)["shared"]?.descriptor.summary == "ordinary")
+        #expect(registry.available(in: .acting)["shared"]?.descriptor.summary == "ordinary")
+        #expect(registry.available(in: .reviewing)["shared"]?.descriptor.summary == "reviewing")
+        #expect(registry.registeredTools.count == 2)
     }
 }

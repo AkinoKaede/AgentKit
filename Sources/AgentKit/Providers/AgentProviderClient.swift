@@ -66,7 +66,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     /// Ask the provider to run web search on its own servers this turn.
     ///
     /// Off by default so the short, tool-free callers — titling, compaction,
-    /// Security Review — cannot acquire it by accident. Turn it on only after
+    /// Guardian — cannot acquire it by accident. Turn it on only after
     /// checking both the model's ability and
     /// `ModelProvider.supportsNativeWebSearch`.
     private let webSearch: Bool
@@ -94,7 +94,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     /// One session for every agent request.
     ///
     /// A `URLSession` keeps itself alive until it is invalidated, and a client
-    /// is built per run — and again per Security Review — so making one here
+    /// is built per run — and again per Guardian — so making one here
     /// leaked a session, its connection pool, and its delegate queue on every
     /// turn. Sharing it also lets a multi-turn run reuse the connection it
     /// already has open.
@@ -262,6 +262,17 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             ]
             if let promptCacheKey { body["prompt_cache_key"] = promptCacheKey }
             if !tools.isEmpty { body["tools"] = tools }
+            if let output = supportedOutputFormat(request) {
+                body["text"] = [
+                    "format": [
+                        "type": "json_schema", "name": output.name,
+                        "strict": output.strict,
+                        "schema": Self.foundationObject(
+                            output.strict ? Self.openAIStrictSchema(output.schema) : output.schema
+                        ),
+                    ]
+                ]
+            }
             if let reasoningValue {
                 body["reasoning"] = ["effort": reasoningValue, "summary": "auto"]
             }
@@ -290,6 +301,17 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             if let promptCacheKey { body["prompt_cache_key"] = promptCacheKey }
             if streaming { body["stream_options"] = ["include_usage": true] }
             if !tools.isEmpty { body["tools"] = tools.map { ["type": "function", "function": $0] } }
+            if let output = supportedOutputFormat(request) {
+                body["response_format"] = [
+                    "type": "json_schema",
+                    "json_schema": [
+                        "name": output.name, "strict": output.strict,
+                        "schema": Self.foundationObject(
+                            output.strict ? Self.openAIStrictSchema(output.schema) : output.schema
+                        ),
+                    ],
+                ]
+            }
             if let reasoningValue { body["reasoning_effort"] = reasoningValue }
             return body
         case .messages:
@@ -314,14 +336,21 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                     }),
             ]
             if !tools.isEmpty { body["tools"] = tools }
+            var outputConfig: [String: Any] = [:]
+            if let output = supportedOutputFormat(request) {
+                outputConfig["format"] = [
+                    "type": "json_schema", "schema": Self.foundationObject(output.schema),
+                ]
+            }
             if let reasoningValue {
-                body["output_config"] = ["effort": reasoningValue]
+                outputConfig["effort"] = reasoningValue
                 if Self.supportsAdaptiveAnthropicThinking(model.id) {
                     body["thinking"] = [
                         "type": "adaptive", "display": "summarized",
                     ]
                 }
             }
+            if !outputConfig.isEmpty { body["output_config"] = outputConfig }
             return body
         case .generateContent:
             let declarations = request.tools.map {
@@ -341,16 +370,31 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 },
             ]
             if !tools.isEmpty { body["tools"] = tools }
-            if let reasoningValue {
-                body["generationConfig"] = [
-                    "thinkingConfig": [
-                        "thinkingLevel": reasoningValue,
-                        "includeThoughts": true,
+            var generationConfig: [String: Any] = [:]
+            if let output = supportedOutputFormat(request) {
+                generationConfig["responseFormat"] = [
+                    "text": [
+                        "mimeType": "application/json",
+                        "schema": Self.foundationObject(output.schema),
                     ]
                 ]
             }
+            if let reasoningValue {
+                generationConfig["thinkingConfig"] = [
+                    "thinkingLevel": reasoningValue,
+                    "includeThoughts": true,
+                ]
+            }
+            if !generationConfig.isEmpty { body["generationConfig"] = generationConfig }
             return body
         }
+    }
+
+    private func supportedOutputFormat(
+        _ request: AgentModelRequest
+    ) -> AgentModelOutputFormat? {
+        guard model.abilities.contains(.structuredOutput) else { return nil }
+        return request.outputFormat
     }
 
     private static func anthropicCachedMessages(_ input: [[String: Any]]) -> [[String: Any]] {

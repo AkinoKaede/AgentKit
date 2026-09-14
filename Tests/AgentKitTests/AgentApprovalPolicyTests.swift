@@ -12,14 +12,26 @@ private actor ApprovalProbe {
     }
 }
 
-private actor ReviewProbe: SecurityReviewing {
+private actor ReviewProbe: GuardianReviewing {
     private(set) var count = 0
 
-    func review(_ request: AgentApprovalRequest) async throws -> SecurityReviewDecision {
+    func review(_ request: AgentApprovalRequest) async throws -> GuardianDecision {
         count += 1
-        return SecurityReviewDecision(
-            verdict: .approve, risk: .low, userAuthorization: .sufficient,
+        return GuardianDecision(
+            verdict: .approve, risk: .low, userAuthorization: .high,
             reason: "Locally approved for the test."
+        )
+    }
+}
+
+private actor DenyingReviewProbe: GuardianReviewing {
+    private(set) var count = 0
+
+    func review(_ request: AgentApprovalRequest) async throws -> GuardianDecision {
+        count += 1
+        return GuardianDecision(
+            verdict: .deny, risk: .high, userAuthorization: .low,
+            reason: "Denied for the test."
         )
     }
 }
@@ -127,6 +139,35 @@ struct AgentApprovalPolicyTests {
         }
         #expect(await manual.count == 0)
         #expect(await reviewer.count == 0)
+    }
+
+    @Test
+    func reviewerReadOnlyApprovalNeverEscalatesAnAsk() async {
+        let approval = ReviewerReadOnlyApproval()
+        let decision = await approval.authorize(Self.request(.ask), mode: .approveForMe)
+        guard case .deny = decision else {
+            Issue.record("Reviewer investigation unexpectedly escaped its read-only gate")
+            return
+        }
+    }
+
+    @Test
+    func repeatedAdverseBatchesOpenTheRunLocalCircuit() async {
+        let reviewer = DenyingReviewProbe()
+        let broker = AgentApprovalBroker(
+            reviewer: reviewer,
+            manualApproval: { _ in .deny("manual unavailable") }
+        )
+        for index in 0..<4 {
+            var request = Self.request(.ask)
+            request.invocation.sourceMessageID = UUID()
+            request.invocation.createdAt = Date(timeIntervalSince1970: Double(index))
+            guard case .deny = await broker.authorize(request, mode: .approveForMe) else {
+                Issue.record("Adverse batch unexpectedly ran")
+                return
+            }
+        }
+        #expect(await reviewer.count == 3)
     }
 
     @Test

@@ -123,6 +123,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
     public var services = AgentToolServices()
     public var outputProjection = AgentToolOutputProjection()
     public var isToolAvailable: @Sendable (String) async -> Bool = { _ in true }
+    public var authorizationEvidence: @Sendable () async -> [GuardianEvidence] = { [] }
     public let runID: UUID
     public let permissionMode: AgentPermissionMode
     public let userIntent: String
@@ -143,11 +144,13 @@ public nonisolated struct AgentToolExecutor: Sendable {
         userIntent: String,
         interjection: (@Sendable () async -> Void)? = nil,
         outputProjection: AgentToolOutputProjection = AgentToolOutputProjection(),
-        isToolAvailable: @escaping @Sendable (String) async -> Bool = { _ in true }
+        isToolAvailable: @escaping @Sendable (String) async -> Bool = { _ in true },
+        authorizationEvidence: @escaping @Sendable () async -> [GuardianEvidence] = { [] }
     ) {
         self.tools = tools
         self.outputProjection = outputProjection
         self.isToolAvailable = isToolAvailable
+        self.authorizationEvidence = authorizationEvidence
         self.approval = approval
         self.hooks = hooks
         self.channel = channel
@@ -255,7 +258,8 @@ public nonisolated struct AgentToolExecutor: Sendable {
             invocation: ready.invocation,
             descriptor: ready.descriptor,
             userIntent: userIntent,
-            localReasons: ready.reasons
+            localReasons: ready.reasons,
+            authorizationEvidence: await authorizationEvidence()
         )
         switch await approval.authorize(request, mode: permissionMode) {
         case .deny(let reason):

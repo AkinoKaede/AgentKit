@@ -100,6 +100,8 @@ nonisolated
 }
 
 public nonisolated struct AnyAgentTool: AgentTool, Sendable {
+    public static let ordinaryRunModes: Set<AgentRunMode> = [.planning, .acting]
+
     public let descriptor: AgentToolDescriptor
     /// The run postures in which this definition may be advertised or called.
     /// Registration metadata stays local; providers receive only `descriptor`.
@@ -110,7 +112,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
 
     public init<T: AgentToolDefinition>(
         _ tool: T,
-        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases)
+        availableIn: Set<AgentRunMode> = Self.ordinaryRunModes
     ) {
         descriptor = tool.registeredDescriptor
         self.availableIn = availableIn
@@ -120,7 +122,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
 
     public init<T: AgentTool>(
         _ tool: T,
-        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases)
+        availableIn: Set<AgentRunMode> = Self.ordinaryRunModes
     ) {
         descriptor = tool.descriptor
         self.availableIn = availableIn
@@ -130,7 +132,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
 
     public init(
         descriptor: AgentToolDescriptor,
-        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases),
+        availableIn: Set<AgentRunMode> = Self.ordinaryRunModes,
         preflight: (@Sendable (AgentToolInvocation) async throws -> AgentToolPreflight)? = nil,
         execute:
             @escaping @Sendable (
@@ -155,5 +157,12 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
         context: AgentToolExecutionContext
     ) async throws -> AgentToolResult {
         try await executeClosure(invocation, context)
+    }
+
+    func restricting(to modes: Set<AgentRunMode>) -> AnyAgentTool {
+        AnyAgentTool(
+            descriptor: descriptor, availableIn: modes,
+            preflight: preflightClosure, execute: executeClosure
+        )
     }
 }

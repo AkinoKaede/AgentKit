@@ -200,11 +200,26 @@ remain registered so an attempted call receives an explicit refusal.
 | Mode | `.ask` calls |
 | --- | --- |
 | `.askForApproval` | go to your `manualApproval` handler |
-| `.approveForMe` | go to `SecurityReviewing`; missing credentials, timeouts, and malformed JSON fail closed |
+| `.approveForMe` | go to `GuardianReviewing`; missing credentials, timeouts, and malformed JSON fail closed |
 | `.fullAccess` | run, while every structural boundary still holds |
 
 Approval is deliberately not an extension point. `AgentApprovalHandling` is a structural stage
 of the executor that no configuration removes; hooks run on either side of it.
+
+Guardian is an isolated, in-memory reviewing agent. `GuardianSessionStore` serializes each channel,
+sends a bounded full authorization baseline once, then appends only new direct-user evidence and
+canonical decisions. A host can keep the store across ordinary runs and give its model client a
+stable `guardian:<conversation-id>` prompt-cache key. `.reviewing` is a third `AgentRunMode`; ordinary
+tools default to `.planning` and `.acting`. A registry may hold disjoint same-name registrations with
+different schema, preflight, and execution for `.reviewing`; no reviewing tools are registered by default.
+`ReviewerReadOnlyApproval` has no reviewer or manual-approval reference and refuses every tool whose
+preflight is not already `.approve`, preventing a Guardian tool call from recursively starting
+Auto-reviewing.
+
+`AgentModelOutputFormat` carries an optional JSON schema through the provider-neutral request. Models
+marked with `.structuredOutput` use Responses `text.format`, Chat Completions `response_format`,
+Anthropic `output_config.format`, or Gemini `generationConfig.responseFormat`; other models fall back
+to the same local Guardian JSON validator.
 
 ## Extension points
 

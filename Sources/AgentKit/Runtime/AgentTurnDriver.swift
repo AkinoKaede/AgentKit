@@ -89,7 +89,8 @@ public nonisolated struct AgentTurnDriver: Sendable {
         let request = AgentModelRequest(
             systemPrompt: context.systemPrompt,
             messages: context.messages,
-            tools: context.tools
+            tools: context.tools,
+            outputFormat: context.outputFormat
         )
         do {
             for try await event in model.stream(request) {

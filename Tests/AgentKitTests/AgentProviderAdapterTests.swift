@@ -73,7 +73,7 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func securityReviewPrefersLowReasoningThenClampsUpward() {
+    func guardianPrefersLowReasoningThenClampsUpward() {
         let provider = ModelProvider(name: "Gateway")
         var lowModel = AIModel(id: "low-reviewer")
         lowModel.abilities.insert(.reasoning)
@@ -89,11 +89,11 @@ struct AgentProviderAdapterTests {
         ])
 
         #expect(
-            SecurityReviewClient.preferredReasoning(model: lowModel, provider: provider)
+            GuardianClient.preferredReasoning(model: lowModel, provider: provider)
                 == .low
         )
         #expect(
-            SecurityReviewClient.preferredReasoning(model: highOnlyModel, provider: provider)
+            GuardianClient.preferredReasoning(model: highOnlyModel, provider: provider)
                 == .high
         )
 
@@ -109,6 +109,71 @@ struct AgentProviderAdapterTests {
 
         #expect((lowBody["reasoning"] as? [String: String])?["effort"] == "low")
         #expect((highBody["reasoning"] as? [String: String])?["effort"] == "high")
+    }
+
+    @Test(arguments: ModelAPIFormat.allCases)
+    func structuredOutputUsesEachProvidersNativeEnvelope(format: ModelAPIFormat) throws {
+        var provider = ModelProvider(name: "Structured", apiFormat: format)
+        if format == .generateContent {
+            provider.inferenceURL = "https://example.test/v1beta/models/{model}:generateContent"
+        }
+        var model = AIModel(id: "structured-test")
+        model.abilities.insert(.structuredOutput)
+        let output = AgentModelOutputFormat(
+            name: "decision",
+            schema: .object([
+                "type": .string("object"),
+                "properties": .object(["outcome": .object(["type": .string("string")])]),
+                "required": .array([.string("outcome")]),
+                "additionalProperties": .bool(false),
+            ])
+        )
+        let body = AgentProviderClient(
+            provider: provider, model: model, secret: "test"
+        ).body(
+            AgentModelRequest(
+                systemPrompt: "review", messages: [], tools: [], outputFormat: output
+            )
+        )
+
+        switch format {
+        case .responses:
+            #expect(((body["text"] as? [String: Any])?["format"] as? [String: Any])?["name"] as? String == "decision")
+        case .chatCompletions:
+            #expect((body["response_format"] as? [String: Any])?["type"] as? String == "json_schema")
+        case .messages:
+            let config = try #require(body["output_config"] as? [String: Any])
+            #expect((config["format"] as? [String: Any])?["type"] as? String == "json_schema")
+        case .generateContent:
+            let config = try #require(body["generationConfig"] as? [String: Any])
+            #expect((config["responseFormat"] as? [String: Any])?["text"] != nil)
+        }
+    }
+
+    @Test
+    func structuredOutputFallsBackWhenTheModelDoesNotDeclareSupport() {
+        var provider = ModelProvider(name: "Gateway")
+        provider.apiFormat = .responses
+        let body = AgentProviderClient(
+            provider: provider, model: AIModel(id: "legacy"), secret: "test"
+        ).body(
+            AgentModelRequest(
+                systemPrompt: "review", messages: [], tools: [],
+                outputFormat: GuardianClient.outputFormat
+            )
+        )
+
+        #expect(body["text"] == nil)
+    }
+
+    @Test(arguments: ["codex-auto-review", "DEEPSEEK-V5.2-FLASH", "glm-4.7-flash"])
+    func guardianFamiliesInferStructuredOutputWhenCatalogCapabilitiesOmitIt(id: String) {
+        let resolution = ModelCapabilityResolver.resolve(
+            model: AIModel(id: id), provider: ModelProvider(name: "Gateway"),
+            reported: [.abilities]
+        )
+
+        #expect(resolution.model.abilities.contains(.structuredOutput))
     }
 
     @Test

@@ -15,10 +15,12 @@ import Foundation
 public nonisolated struct AgentPlanModeHook: AgentLoopHook {
     public init(
         isPlanning: Bool,
-        blockedToolNames: Set<String> = Self.blockedByName
+        blockedToolNames: Set<String> = Self.blockedByName,
+        enforcesApprovalPolicy: Bool = true
     ) {
         self.isPlanning = isPlanning
         self.blockedToolNames = blockedToolNames
+        self.enforcesApprovalPolicy = enforcesApprovalPolicy
     }
 
     public let isPlanning: Bool
@@ -29,6 +31,10 @@ public nonisolated struct AgentPlanModeHook: AgentLoopHook {
     /// still protects callers that assemble a registry by hand or replay a call
     /// that was produced against a different capability set.
     public var blockedToolNames: Set<String> = Self.blockedByName
+    /// Disable when the host expresses every posture difference through
+    /// disjoint per-mode tool registrations. Plan presentation still ends the
+    /// run, but this hook adds no second approval-policy interpretation.
+    public var enforcesApprovalPolicy = true
 
     /// A host's own judgement about one call, asked before the approval gate.
     ///
@@ -67,6 +73,7 @@ public nonisolated struct AgentPlanModeHook: AgentLoopHook {
         }
 
         if let decision = await hostDecision(context) { return decision }
+        guard enforcesApprovalPolicy else { return .proceed }
 
         // `context.descriptor` is post-preflight, so the rest rides evidence the
         // pipeline already proved locally rather than anything the model or a

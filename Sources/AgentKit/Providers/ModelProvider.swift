@@ -423,7 +423,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
     }
 
     public nonisolated enum Ability: String, Codable, Sendable, CaseIterable, Identifiable {
-        case toolCall, reasoning
+        case toolCall, reasoning, structuredOutput
         /// The provider runs the search on its own servers when asked, rather
         /// than the model calling one of our tools. Whether that offer is
         /// actually taken up also depends on the API format — see
@@ -436,6 +436,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             switch self {
             case .toolCall: String(localized: "Tools", bundle: .module)
             case .reasoning: String(localized: "Reasoning", bundle: .module)
+            case .structuredOutput: String(localized: "Structured Output", bundle: .module)
             case .webSearch: String(localized: "Web Search", bundle: .module)
             }
         }
@@ -444,6 +445,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             switch self {
             case .toolCall: "wrench.and.screwdriver"
             case .reasoning: "brain"
+            case .structuredOutput: "curlybraces.square"
             case .webSearch: "magnifyingglass"
             }
         }
@@ -523,7 +525,27 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
     /// question that has one answer.
     case chat
     case commandGenerator
-    case securityReview
+    case guardian
+
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let value = try container.decode(String.self)
+        if value == "securityReview" {
+            self = .guardian
+        } else if let role = Self(rawValue: value) {
+            self = role
+        } else {
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Unknown AI role: \(value)"
+            )
+        }
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(rawValue)
+    }
 
     public nonisolated var id: String { rawValue }
 
@@ -533,7 +555,7 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
         // "Chat & Agent" implies a second setting exists somewhere.
         case .chat: String(localized: "Chat", bundle: .module)
         case .commandGenerator: String(localized: "Command Generator", bundle: .module)
-        case .securityReview: String(localized: "Security Review", bundle: .module)
+        case .guardian: String(localized: "Guardian", bundle: .module)
         }
     }
 
@@ -551,10 +573,10 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
         // Me would execute, so it sits in the latency path — a deliberate
         // reasoning model here makes the feature feel broken even when it
         // works, and that is not something a user should have to discover.
-        case .securityReview:
+        case .guardian:
             String(
                 localized:
-                    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.",
+                    "Reviews commands before automatic approval. Automatic selects the best available review model.",
                 bundle: .module
             )
         }
@@ -562,12 +584,12 @@ public nonisolated enum AIRole: String, Codable, Sendable, CaseIterable, Identif
 
     /// What the picker shows when nothing is assigned.
     ///
-    /// Chat says "Automatic" because it resolves to something rather than to
-    /// nothing; the rest say what they actually do, which is follow Chat.
+    /// Chat and Guardian both resolve an automatic model. Command Generator
+    /// follows Chat directly when it has no assignment.
     public var unsetLabel: String {
         switch self {
-        case .chat: String(localized: "Automatic", bundle: .module)
-        default: String(localized: "Same as Chat", bundle: .module)
+        case .chat, .guardian: String(localized: "Automatic", bundle: .module)
+        case .commandGenerator: String(localized: "Same as Chat", bundle: .module)
         }
     }
 }

@@ -1647,18 +1647,18 @@
         }
       }
     },
-    "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.": {
+    "Reviews commands before automatic approval. Automatic selects the best available review model.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "在自动批准前检查命令。请选择一个不同于对话模型的快速模型；“与对话模型相同”无法提供独立复核。"
+            "value": "在自动批准前审查命令。自动模式会选择最佳的可用审查模型。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "在自動核准前檢查指令。請選擇一個不同於對話模型的快速模型；「與對話模型相同」無法提供獨立複核。"
+            "value": "在自動核准前審查指令。自動模式會選擇最佳的可用審查模型。"
           }
         }
       }
@@ -1775,82 +1775,146 @@
         }
       }
     },
-    "Security Review": {
+    "Guardian": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全审查"
+            "value": "监护者"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全審查"
+            "value": "監護者"
           }
         }
       }
     },
-    "Security Review failed; the action was not executed. %@": {
+    "Auto-reviewing was cancelled; the action was not executed.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全审查失败，操作未执行。%@"
+            "value": "自动审查已取消，操作未执行。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全審查失敗，操作未執行。%@"
+            "value": "自動審查已取消，操作未執行。"
           }
         }
       }
     },
-    "Security Review is unavailable; the action was not executed.": {
+    "Auto-reviewing paused after repeated adverse results; the action was not executed.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全审查不可用，操作未执行。"
+            "value": "自动审查因连续出现不利结果而暂停，操作未执行。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全審查不可用，操作未執行。"
+            "value": "自動審查因連續出現不利結果而暫停，操作未執行。"
           }
         }
       }
     },
-    "Security Review returned an invalid decision.": {
+    "Auto-reviewing failed; the action was not executed. %@": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全审查退回无效决定。"
+            "value": "自动审查失败，操作未执行。%@"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全審查退回無效決定。"
+            "value": "自動審查失敗，操作未執行。%@"
           }
         }
       }
     },
-    "Security Review timed out; the action was not executed.": {
+    "Auto-reviewing is unavailable; the action was not executed.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全审查超时，操作未执行。"
+            "value": "自动审查不可用，操作未执行。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "安全審查超時，操作未執行。"
+            "value": "自動審查不可用，操作未執行。"
+          }
+        }
+      }
+    },
+    "Auto-reviewing returned an invalid decision.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动审查返回了无效决定。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動審查傳回了無效決定。"
+          }
+        }
+      }
+    },
+    "Auto-reviewing timed out; the action was not executed.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动审查超时，操作未执行。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動審查逾時，操作未執行。"
+          }
+        }
+      }
+    },
+    "Auto-reviewing exceeded its investigation limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动审查超出了调查次数限制。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動審查超出了調查次數限制。"
+          }
+        }
+      }
+    },
+    "Auto-reviewing exceeded its reasoning turn limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动审查超出了推理轮次限制。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動審查超出了推理輪次限制。"
           }
         }
       }
@@ -3387,6 +3451,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "金鑰資料不完整"
+          }
+        }
+      }
+    },
+    "Structured Output": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "结构化输出"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結構化輸出"
           }
         }
       }

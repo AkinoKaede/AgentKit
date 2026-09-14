@@ -223,7 +223,7 @@ public nonisolated struct StoredAgentToolCard: Sendable {
         descriptor: AgentToolDescriptor,
         state: String,
         result: AgentToolResult? = nil,
-        review: SecurityReviewDecision? = nil
+        review: GuardianDecision? = nil
     ) {
         self.invocation = invocation
         self.descriptor = descriptor
@@ -236,7 +236,7 @@ public nonisolated struct StoredAgentToolCard: Sendable {
     public var descriptor: AgentToolDescriptor
     public var state: String
     public var result: AgentToolResult?
-    public var review: SecurityReviewDecision?
+    public var review: GuardianDecision?
 }
 
 public actor InMemoryAgentRunRepository: AgentRunPersisting {

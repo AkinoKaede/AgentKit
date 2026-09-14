@@ -191,6 +191,17 @@ public actor AgentRuntime {
             contextAttachments: request.promptContextAttachments,
             contextSnapshot: activeContextSnapshot
         )
+        let evidenceLog = GuardianEvidenceLog(request.authorizationEvidence)
+        if let authored = request.authoredPrompt,
+            !authored.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        {
+            await evidenceLog.append([
+                GuardianEvidence(
+                    id: "user:\(request.promptID.uuidString)", source: .directUser,
+                    text: authored
+                )
+            ])
+        }
         if let index = snapshot.messages.firstIndex(where: { $0.id == prompt.id }) {
             // A retry continues recorded outcomes rather than duplicating its user turn.
             if snapshot.messages[index].contextSnapshot == nil {
@@ -227,7 +238,8 @@ public actor AgentRuntime {
                 userIntent: request.prompt,
                 interjection: { [interjection] in await interjection.wait() },
                 outputProjection: configuration.outputProjection,
-                isToolAvailable: { [weak self] name in await self?.isToolAvailable(name) ?? false }
+                isToolAvailable: { [weak self] name in await self?.isToolAvailable(name) ?? false },
+                authorizationEvidence: { await evidenceLog.snapshot() }
             ),
             mode: configuration.toolExecution,
             maximumConcurrency: configuration.maximumToolConcurrency
@@ -239,7 +251,9 @@ public actor AgentRuntime {
                 try Task.checkCancellation()
                 channel.emit(.turnStarted(index: index))
                 if !steering.isEmpty {
-                    snapshot.messages.append(contentsOf: deliverSteering())
+                    let delivered = deliverSteering()
+                    snapshot.messages.append(contentsOf: delivered)
+                    await evidenceLog.append(GuardianEvidence.collect(from: delivered))
                     await persist(snapshot)
                 }
                 let turn = try await driver.run(
@@ -305,6 +319,9 @@ public actor AgentRuntime {
                             role: .tool, text: result.content, toolCallID: result.callID,
                             toolName: call.name, isError: result.isError, modelText: result.modelContent
                         ))
+                    await evidenceLog.append(
+                        GuardianEvidence.answers(call: call, resultText: result.content)
+                    )
                 }
                 await persist(snapshot)
                 if let refusal { throw refusal }

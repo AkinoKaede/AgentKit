@@ -328,6 +328,11 @@ nonisolated private struct CatalogRow: Decodable {
             if Self.flag(capabilities, "reasoning", "thinking") {
                 model.abilities.insert(.reasoning)
             }
+            if Self.flag(
+                capabilities, "structured_output", "structured_outputs", "json_schema"
+            ) {
+                model.abilities.insert(.structuredOutput)
+            }
             // Vision arrives two ways — as its own boolean and as `image` in the
             // input modalities — and they mean the same thing. Folding the flag
             // into the modality set here is what lets `AIModel.isVision` be

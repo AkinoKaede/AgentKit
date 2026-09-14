@@ -208,6 +208,9 @@ public nonisolated enum ModelCapabilityResolver {
         // Additive only. It can turn the ability on from the model id; it never
         // takes away one the payload actually asserted.
         if Fallback.hasWebSearch(model.id) { result.abilities.insert(.webSearch) }
+        if Fallback.hasStructuredOutput(model.id) {
+            result.abilities.insert(.structuredOutput)
+        }
         if result.contextLength == nil { result.contextLength = record.contextWindow }
         if result.maxOutputTokens == nil, let maxOutputTokens = record.maxOutputTokens {
             result.maxOutputTokens = maxOutputTokens
@@ -513,11 +516,16 @@ public nonisolated enum ModelCapabilityResolver {
             // before them, so neither can pick up a search ability on its way
             // out.
             if webSearch.matches(id) { result.abilities.insert(.webSearch) }
+            if structuredOutput.matches(id) { result.abilities.insert(.structuredOutput) }
             return result
         }
 
         static func hasWebSearch(_ modelID: String) -> Bool {
             webSearch.matches(modelID.lowercased())
+        }
+
+        static func hasStructuredOutput(_ modelID: String) -> Bool {
+            structuredOutput.matches(modelID.lowercased())
         }
 
         private static let embedding = Pattern(
@@ -562,6 +570,14 @@ public nonisolated enum ModelCapabilityResolver {
                 + #"|claude-(opus|sonnet|haiku)-[4-9]|claude-3[-.]7"#
                 + #"|grok-[3-9]|kimi-k[2-9]|qwen-?[3-9]|glm-[4-9]|minimax-m[2-9]"#
                 + #"|deepseek-(r1|v3\.[1-9]|v[4-9]|reasoner)|qwq|magistral|seed-thinking|intern-s1"#
+        )
+        /// Conservative families with documented native JSON-schema output.
+        /// Unknown gateways remain off and use the caller's local validator.
+        private static let structuredOutput = Pattern(
+            #"codex-auto-review|gpt-4o|gpt-4\.1|gpt-[5-9]|(^|[-_/])o[1-9]([-._/]|$)"#
+                + #"|claude-(opus|sonnet|haiku)-(4[-.][5-9]|[5-9])"#
+                + #"|gemini-(2\.[05]|[3-9])"#
+                + #"|deepseek-v[3-9]|glm-[4-9]"#
         )
 
         private struct Pattern {

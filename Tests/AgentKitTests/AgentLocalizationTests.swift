@@ -43,9 +43,9 @@ struct AgentLocalizationTests {
                 "将当前终端输入整理为一条命令。请选择速度较快的模型。"
             ),
             (
-                .securityReview,
-                "Reviews commands before automatic approval. Choose a fast model different from Chat; Same as Chat is not an independent second opinion.",
-                "在自动批准前检查命令。请选择一个不同于对话模型的快速模型；“与对话模型相同”无法提供独立复核。"
+                .guardian,
+                "Reviews commands before automatic approval. Automatic selects the best available review model.",
+                "在自动批准前审查命令。自动模式会选择最佳的可用审查模型。"
             ),
         ]
         for (role, english, chinese) in descriptions {

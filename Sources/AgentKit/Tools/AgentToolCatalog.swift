@@ -117,18 +117,13 @@ public nonisolated struct AgentToolTypeRegistration<Environment>: Sendable {
 
     public init<T: AgentToolDefinition>(
         _ type: T.Type,
-        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases),
+        availableIn: Set<AgentRunMode> = AnyAgentTool.ordinaryRunModes,
         make: @escaping @Sendable (Environment) -> T?
     ) {
         presenter = type.presenter
         materialize = { environment in
             guard let tool = make(environment) else { return nil }
-            return AnyAgentTool(
-                descriptor: tool.registeredDescriptor,
-                availableIn: availableIn,
-                preflight: tool.preflight,
-                execute: tool.execute
-            )
+            return AnyAgentTool(tool, availableIn: availableIn)
         }
     }
 

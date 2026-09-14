@@ -10,16 +10,19 @@ public nonisolated struct AgentModelContext: Sendable {
     public init(
         systemPrompt: String,
         messages: [AgentTranscriptMessage],
-        tools: [AgentToolDescriptor]
+        tools: [AgentToolDescriptor],
+        outputFormat: AgentModelOutputFormat? = nil
     ) {
         self.systemPrompt = systemPrompt
         self.messages = messages
         self.tools = tools
+        self.outputFormat = outputFormat
     }
 
     public var systemPrompt: String
     public var messages: [AgentTranscriptMessage]
     public var tools: [AgentToolDescriptor]
+    public var outputFormat: AgentModelOutputFormat?
 }
 
 /// One rewrite applied at the model-call boundary.

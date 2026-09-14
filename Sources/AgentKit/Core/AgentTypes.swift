@@ -84,7 +84,7 @@ public nonisolated enum AgentJSONValue: Hashable, Sendable, Codable {
 /// Who authorizes an action, for the length of one run.
 ///
 /// A property of the run rather than of a call: the same command is presented
-/// to the user, sent to Security Review, or executed outright depending only on
+/// to the user, sent to Guardian, or executed outright depending only on
 /// this. What it never decides is a call's approval policy — that is established
 /// locally by `AgentToolDescriptor.ApprovalPolicy`. Calls marked `.approve` run
 /// in every mode, while `.deny` runs in none of them.
@@ -117,6 +117,7 @@ public nonisolated enum AgentPermissionMode: String, Codable, Sendable, CaseIter
 public nonisolated enum AgentRunMode: String, Codable, Sendable, CaseIterable {
     case planning
     case acting
+    case reviewing
 }
 
 public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable, Codable {
@@ -447,7 +448,7 @@ public nonisolated struct AgentToolInvocation: Identifiable, Hashable, Sendable,
 }
 
 /// Local, deterministic facts established before an action reaches either the
-/// user approval surface or Security Review. Remote annotations and model text
+/// user approval surface or Guardian. Remote annotations and model text
 /// may add caution, but cannot make approval unnecessary.
 public nonisolated struct AgentToolPreflight: Hashable, Sendable {
     public init(
@@ -1082,7 +1083,7 @@ public nonisolated enum AgentEvent: Hashable, Sendable {
     case toolFinished(AgentToolInvocation, AgentToolResult)
     case approvalRequested(AgentApprovalRequest)
     case reviewStarted(AgentApprovalRequest)
-    case reviewFinished(AgentApprovalRequest, SecurityReviewDecision)
+    case reviewFinished(AgentApprovalRequest, GuardianDecision)
     case reviewFailed(AgentApprovalRequest, reason: String, timedOut: Bool)
     case userInputRequested(AgentUserInputRequest)
     /// What the turn that just finished cost, as the provider counted it.
@@ -1140,15 +1141,16 @@ public nonisolated struct AgentRunRequest: Sendable {
     public var promptImages: [AgentImageAttachment]
     public var promptContextAttachments: [AgentContextAttachment]
     public var permissionMode: AgentPermissionMode
-    /// Whether this run may only look.
-    ///
-    /// Per run rather than read from the conversation mid-flight: a run's
-    /// posture is fixed when it starts, which is what lets the hook enforcing it
-    /// be a value instead of an actor.
-    public var isPlanning: Bool
-    public var mode: AgentRunMode { isPlanning ? .planning : .acting }
+    /// The posture fixed for this run. `.reviewing` is reserved for an isolated
+    /// Guardian loop and is never inferred from the conversation UI.
+    public var mode: AgentRunMode
+    public var isPlanning: Bool { mode == .planning }
     public var systemPrompt: String
     public var priorMessages: [AgentTranscriptMessage]
+    /// Direct-user evidence available to approval reviewers. This is kept
+    /// separate from model history so user-role context injections and tool
+    /// output can never become authorization merely by sharing a transcript.
+    public var authorizationEvidence: [GuardianEvidence]
     /// Where the run is happening, as the surface that started it understood it,
     /// already rendered as the block the model will read.
     ///
@@ -1172,6 +1174,7 @@ public nonisolated struct AgentRunRequest: Sendable {
         isPlanning: Bool = false,
         systemPrompt: String = AgentSystemPrompt.default,
         priorMessages: [AgentTranscriptMessage] = [],
+        authorizationEvidence: [GuardianEvidence] = [],
         sessionContext: String? = nil,
         contextSnapshot: AgentTurnContextSnapshot? = nil
     ) {
@@ -1182,11 +1185,32 @@ public nonisolated struct AgentRunRequest: Sendable {
         self.promptImages = promptImages
         self.promptContextAttachments = promptContextAttachments
         self.permissionMode = permissionMode
-        self.isPlanning = isPlanning
+        mode = isPlanning ? .planning : .acting
         self.systemPrompt = systemPrompt
         self.priorMessages = priorMessages
+        self.authorizationEvidence = authorizationEvidence
         self.sessionContext = sessionContext
         self.contextSnapshot = contextSnapshot
+    }
+
+    public init(
+        conversationID: UUID,
+        promptID: UUID = UUID(),
+        prompt: String,
+        authoredPrompt: String? = nil,
+        permissionMode: AgentPermissionMode,
+        mode: AgentRunMode,
+        systemPrompt: String = AgentSystemPrompt.default,
+        priorMessages: [AgentTranscriptMessage] = [],
+        authorizationEvidence: [GuardianEvidence] = []
+    ) {
+        self.init(
+            conversationID: conversationID, promptID: promptID, prompt: prompt,
+            authoredPrompt: authoredPrompt, permissionMode: permissionMode,
+            isPlanning: mode == .planning, systemPrompt: systemPrompt,
+            priorMessages: priorMessages, authorizationEvidence: authorizationEvidence
+        )
+        self.mode = mode
     }
 }
 
