@@ -43,9 +43,8 @@ tool call is rejected outright by every provider on the next request, so a stopp
 its answers would leave a permanently unusable conversation.
 
 **The transcript is repaired at the model boundary, not in your history.** A pipeline rewrites what
-is *sent*: tool results reordered to match the calls they answer, orphans dropped, older results
-trimmed head-and-tail against a budget you set, session context inserted in front of the turn it
-describes. Run snapshots and stored history keep everything. It also repairs what a crash left
+is *sent*: tool results reordered to match the calls they answer, orphans dropped, and frozen
+output/context projections replayed at their original message boundaries. Run snapshots and stored history keep everything. It also repairs what a crash left
 behind — a process killed mid-batch leaves calls nothing answered, and those are answered with *the
 outcome is unknown* rather than *the tool did not run*, because a model told the latter will simply
 run the command again.
@@ -218,7 +217,7 @@ All additive:
   takes a `hostDecision` closure for judgements only your own tools can make.
 - `AgentContextTransforming` — rewrites what is sent at the model boundary. The built-in chain
   reorders tool results to match the calls they answer, drops orphans, repairs calls a dead process
-  never answered, trims older results head-and-tail, and injects session context.
+  never answered, and replays frozen output and per-message context snapshots.
 - `AgentModelStreaming` / `AgentModelCompleting` — the provider boundary.
 - `AgentRunPersisting` — where runs are stored. An in-memory one ships; a database one is yours.
 
@@ -261,3 +260,23 @@ not depend on it.
 This repository is licensed under [MIT License](./LICENSE).
 
 SPDX-License-Identifier: [MIT](https://spdx.org/licenses/MIT.html)
+
+### Stable conversation replay (0.8)
+
+User messages can carry an `AgentTurnContextSnapshot`. The runtime captures one before
+saving the prompt; the default context pipeline replays the initial snapshot and only
+subsequent changes, including explicit clearing transitions. Hosts must retain
+`contextSnapshot` and `modelText` alongside each transcript message, and forward the
+snapshot when submitting steering messages. These fields are model replay metadata,
+not user-authored text or live UI state.
+
+`AgentLoopConfiguration.outputProjection` freezes bounded tool output before its
+completion event. Supply a conversation-scoped scratch workspace to retain oversized
+captures for paged reading. `AgentToolResult.modelContent` also survives in result
+metadata for interrupted-run recovery. Default replay no longer age-trims results;
+`AgentToolResultTrimming` remains available as an explicit opt-in transform.
+
+`AgentTextPageReader` reads bounded UTF-8 line windows from chunks and reports the
+next unread line. `scratch_read` uses the same scanner. Provider adapters serialize
+local schemas deterministically, support a stable OpenAI `promptCacheKey`, mark short
+Anthropic cache breakpoints, and expose `cacheWriteInputTokens` separately from reads.

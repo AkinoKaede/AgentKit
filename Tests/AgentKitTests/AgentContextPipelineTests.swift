@@ -122,16 +122,22 @@ struct AgentContextPipelineTests {
             context(messages)
         ).messages
 
-        #expect(sent.map(\.text) == ["earlier", "Session context", "inspect"])
+        #expect(
+            sent.map(\.text).filter { $0 == "earlier" || $0 == "Session context" || $0 == "inspect" } == [
+                "earlier", "Session context", "inspect",
+            ])
     }
 
     @Test
-    func withoutASessionContextNothingIsInserted() {
+    func anAbsentSessionEstablishesAnExplicitBaseline() {
         let prompt = AgentTranscriptMessage(role: .user, text: "inspect")
         let sent = AgentContextPipeline.chat(sessionContext: nil, before: prompt.id)(
             context([prompt])
         ).messages
-        #expect(sent.map(\.text) == ["inspect"])
+        #expect(
+            sent.last?.text == "inspect"
+        )
+        #expect(sent.contains { $0.text.contains("no active session") })
     }
 
     @Test

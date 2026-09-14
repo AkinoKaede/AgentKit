@@ -113,6 +113,7 @@ public nonisolated enum AgentSecretLifecycle {
                     || message.toolCallID.map(secretRequestCallIDs.contains) == true
             {
                 message.text = expiredResultContent
+                message.modelText = nil
             }
             return message
         }

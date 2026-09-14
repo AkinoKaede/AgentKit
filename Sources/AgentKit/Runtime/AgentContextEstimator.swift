@@ -108,12 +108,17 @@ public nonisolated enum AgentContextEstimator {
             .conversation: 0,
             .toolResults: 0,
         ]
+        var previousContext: AgentTurnContextSnapshot?
         for message in transcript {
+            let snapshot = message.role == .user && !message.isCompaction ? message.contextSnapshot : nil
+            let contextCharacters =
+                snapshot?.changes(from: previousContext).reduce(0) { $0 + characterUnits(in: $1) } ?? 0
+            if let snapshot { previousContext = snapshot }
             // Tool *calls* are counted with the conversation rather than with
             // the results: they are the assistant's own words, they are small,
             // and compaction cannot remove one without removing the turn.
             let characters =
-                characterUnits(in: message.text)
+                characterUnits(in: message.modelText ?? message.text) + contextCharacters
                 + message.toolCalls.reduce(0) {
                     $0 + characterUnits(in: $1.arguments.encodedString)
                 }
@@ -181,6 +186,9 @@ public final class AgentContextEstimateTracker {
     private var toolSchemaCharacters = 0
     private var attachedCharacters = 0
     private var measured: AgentTokenUsage?
+    private var contextOrder: [UUID] = []
+    private var contextSnapshots: [UUID: AgentTurnContextSnapshot] = [:]
+    private var contextTokens = 0
 
     public private(set) var fullRebuildCount = 0
 
@@ -215,19 +223,52 @@ public final class AgentContextEstimateTracker {
         contributions = Dictionary(
             uniqueKeysWithValues: transcript.map { ($0.id, contribution(for: $0)) }
         )
+        contextOrder = []
+        contextSnapshots = [:]
+        for message in transcript where message.role == .user && !message.isCompaction {
+            if let snapshot = message.contextSnapshot {
+                contextOrder.append(message.id)
+                contextSnapshots[message.id] = snapshot
+            }
+        }
+        recountContext()
         streamingCharacters.removeAll()
     }
 
     public func upsert(_ message: AgentTranscriptMessage) {
         contributions[message.id] = contribution(for: message)
         streamingCharacters[message.id] = nil
+        let snapshot = message.role == .user && !message.isCompaction ? message.contextSnapshot : nil
+        if snapshot != contextSnapshots[message.id] {
+            if snapshot != nil, contextSnapshots[message.id] == nil { contextOrder.append(message.id) }
+            if snapshot == nil { contextOrder.removeAll { $0 == message.id } }
+            contextSnapshots[message.id] = snapshot
+            recountContext()
+        }
     }
 
     public func remove(_ ids: some Sequence<AgentTranscriptMessage.ID>) {
-        for id in ids {
+        let removed = Set(ids)
+        for id in removed {
             contributions[id] = nil
             streamingCharacters[id] = nil
+            contextSnapshots[id] = nil
         }
+        contextOrder.removeAll { removed.contains($0) }
+        recountContext()
+    }
+
+    private func recountContext() {
+        var previous: AgentTurnContextSnapshot?
+        var characters = 0
+        for id in contextOrder {
+            guard let snapshot = contextSnapshots[id] else { continue }
+            characters += snapshot.changes(from: previous).reduce(0) {
+                $0 + AgentContextEstimator.characterUnits(in: $1)
+            }
+            previous = snapshot
+        }
+        contextTokens = AgentContextEstimator.tokens(inCharacters: characters)
     }
 
     public func appendStreamingText(_ text: String, to id: AgentTranscriptMessage.ID) {
@@ -265,6 +306,7 @@ public final class AgentContextEstimateTracker {
         for contribution in contributions.values {
             parts[contribution.part, default: 0] += contribution.tokens
         }
+        parts[.conversation, default: 0] += contextTokens
         for characters in streamingCharacters.values {
             parts[.conversation, default: 0] +=
                 AgentContextEstimator.tokens(inCharacters: characters)
@@ -274,7 +316,7 @@ public final class AgentContextEstimateTracker {
 
     private func contribution(for message: AgentTranscriptMessage) -> Contribution {
         let characters =
-            AgentContextEstimator.characterUnits(in: message.text)
+            AgentContextEstimator.characterUnits(in: message.modelText ?? message.text)
             + message.toolCalls.reduce(0) {
                 $0 + AgentContextEstimator.characterUnits(in: $1.arguments.encodedString)
             }

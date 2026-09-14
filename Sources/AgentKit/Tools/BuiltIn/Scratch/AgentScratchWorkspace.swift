@@ -293,7 +293,7 @@ public actor AgentScratchWorkspace {
         /// What `scratch_read` will put in front of the model at once, matching
         /// a remote read's inline ceiling. A *file* may be far larger; reading it
         /// whole is what the offset/limit window and a transfer tool are for.
-        public static let inlineReadBytes = 128 * 1_024
+        public static let inlineReadBytes = AgentTextPageReader.defaultMaximumBytes
         public static let searchQueryCharacters = 4_096
         public static let searchLineBytes = 1_024
         public static let searchResults = 100
@@ -384,25 +384,15 @@ public actor AgentScratchWorkspace {
         let ending = LineEnding.detected(in: raw)
         let (lines, _) = UnifiedDiff.split(LineEnding.normalizedToLF(raw))
 
-        let start = max(1, offset ?? 1)
-        guard start <= max(lines.count, 1) else {
-            throw AgentToolError.invalidArguments(
-                "offset \(start) is past the end of \(path), which has \(lines.count) lines."
-            )
-        }
-        let end = limit.map { min(lines.count, start - 1 + max(0, $0)) } ?? lines.count
-        let window = start - 1 < end ? Array(lines[(start - 1)..<end]) : []
-
-        var content = window.joined(separator: "\n")
-        var isTruncated = false
-        if content.utf8.count > maximumBytes {
-            content = String(decoding: content.utf8.prefix(maximumBytes), as: UTF8.self)
-            isTruncated = true
-        }
+        var reader = try AgentTextPageReader(
+            offset: offset ?? 1, limit: limit ?? AgentTextPageReader.defaultLineLimit, maximumBytes: maximumBytes
+        )
+        try reader.append(Data(LineEnding.normalizedToLF(raw).utf8))
+        let page = try reader.finish()
         return ScratchText(
-            path: path, content: content, bytes: file.bytes, totalLines: lines.count,
-            offset: start, returnedLines: window.count,
-            isTruncated: isTruncated || end < lines.count, lineEnding: ending
+            path: path, content: page.content, bytes: file.bytes, totalLines: lines.count,
+            offset: page.offset, returnedLines: page.returnedLines,
+            isTruncated: page.isTruncated, lineEnding: ending
         )
     }
 

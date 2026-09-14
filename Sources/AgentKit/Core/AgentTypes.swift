@@ -73,7 +73,11 @@ public nonisolated enum AgentJSONValue: Hashable, Sendable, Codable {
         try JSONDecoder().decode(Self.self, from: data)
     }
 
-    public var encodedData: Data { (try? JSONEncoder().encode(self)) ?? Data("null".utf8) }
+    public var encodedData: Data {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        return (try? encoder.encode(self)) ?? Data("null".utf8)
+    }
     public var encodedString: String { String(decoding: encodedData, as: UTF8.self) }
 }
 
@@ -538,6 +542,19 @@ public nonisolated struct AgentToolResult: Hashable, Sendable, Codable {
     public var metadata: [String: AgentJSONValue] = [:]
 
     /// Marks a result the provider produced inside its own turn.
+    /// A frozen model projection, also preserved in durable result metadata for crash recovery.
+    public var modelContent: String? {
+        get { metadata[Self.modelContentKey]?.stringValue }
+        set { metadata[Self.modelContentKey] = newValue.map(AgentJSONValue.string) }
+    }
+
+    /// Set only by locally registered tools that already return bounded pages.
+    public var hasBoundedModelContent: Bool {
+        get { metadata["bounded_model_content"]?.boolValue == true }
+        set { metadata["bounded_model_content"] = .bool(newValue) }
+    }
+
+    public static let modelContentKey = "model_content"
     public static let providerNativeKey = "provider_native"
     public static let approvalPolicyDeniedKey = "approval_policy_denied"
     public static let toolPresentationKey = "tool_presentation"
@@ -681,11 +698,25 @@ public nonisolated struct AgentTokenUsage: Hashable, Sendable, Codable {
     public init(
         inputTokens: Int = 0,
         outputTokens: Int = 0,
-        cachedInputTokens: Int = 0
+        cachedInputTokens: Int = 0,
+        cacheWriteInputTokens: Int = 0
     ) {
         self.inputTokens = inputTokens
         self.outputTokens = outputTokens
         self.cachedInputTokens = cachedInputTokens
+        self.cacheWriteInputTokens = cacheWriteInputTokens
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case inputTokens, outputTokens, cachedInputTokens, cacheWriteInputTokens
+    }
+
+    public init(from decoder: any Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        inputTokens = try values.decodeIfPresent(Int.self, forKey: .inputTokens) ?? 0
+        outputTokens = try values.decodeIfPresent(Int.self, forKey: .outputTokens) ?? 0
+        cachedInputTokens = try values.decodeIfPresent(Int.self, forKey: .cachedInputTokens) ?? 0
+        cacheWriteInputTokens = try values.decodeIfPresent(Int.self, forKey: .cacheWriteInputTokens) ?? 0
     }
 
     public var inputTokens: Int = 0
@@ -694,6 +725,7 @@ public nonisolated struct AgentTokenUsage: Hashable, Sendable, Codable {
     /// Reported by all four, and worth showing: it is the difference between a
     /// long conversation being expensive and being nearly free.
     public var cachedInputTokens: Int = 0
+    public var cacheWriteInputTokens: Int = 0
 
     /// What the *next* request would carry, which is what a context gauge is a
     /// share of. The reply becomes context the moment the turn ends, so input
@@ -715,7 +747,8 @@ public nonisolated struct AgentTokenUsage: Hashable, Sendable, Codable {
         AgentTokenUsage(
             inputTokens: max(inputTokens, other.inputTokens),
             outputTokens: max(outputTokens, other.outputTokens),
-            cachedInputTokens: max(cachedInputTokens, other.cachedInputTokens)
+            cachedInputTokens: max(cachedInputTokens, other.cachedInputTokens),
+            cacheWriteInputTokens: max(cacheWriteInputTokens, other.cacheWriteInputTokens)
         )
     }
 
@@ -867,6 +900,8 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
         isError: Bool = false,
         providerItems: [AgentJSONValue] = [],
         isCompaction: Bool = false,
+        contextSnapshot: AgentTurnContextSnapshot? = nil,
+        modelText: String? = nil,
         createdAt: Date = .now
     ) {
         self.id = id
@@ -882,6 +917,8 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
         self.isError = isError
         self.providerItems = providerItems
         self.isCompaction = isCompaction
+        self.contextSnapshot = contextSnapshot
+        self.modelText = modelText
         self.createdAt = createdAt
     }
 
@@ -911,6 +948,10 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
     /// on the one turn where the user could least afford it. See
     /// `SwiftDataAgentRunRepository.loadConversations`.
     public var isCompaction: Bool = false
+    /// Hidden replay state, never user-authored content or live surface state.
+    public var contextSnapshot: AgentTurnContextSnapshot?
+    /// Immutable tool output projection. The complete captured result stays in text.
+    public var modelText: String?
     public var createdAt: Date = .now
 }
 
@@ -1118,6 +1159,7 @@ public nonisolated struct AgentRunRequest: Sendable {
     /// continued from another surface has no focused session and must not claim
     /// one.
     public var sessionContext: String?
+    public var contextSnapshot: AgentTurnContextSnapshot?
 
     public init(
         conversationID: UUID,
@@ -1130,7 +1172,8 @@ public nonisolated struct AgentRunRequest: Sendable {
         isPlanning: Bool = false,
         systemPrompt: String = AgentSystemPrompt.default,
         priorMessages: [AgentTranscriptMessage] = [],
-        sessionContext: String? = nil
+        sessionContext: String? = nil,
+        contextSnapshot: AgentTurnContextSnapshot? = nil
     ) {
         self.conversationID = conversationID
         self.promptID = promptID
@@ -1143,6 +1186,7 @@ public nonisolated struct AgentRunRequest: Sendable {
         self.systemPrompt = systemPrompt
         self.priorMessages = priorMessages
         self.sessionContext = sessionContext
+        self.contextSnapshot = contextSnapshot
     }
 }
 

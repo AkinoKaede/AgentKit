@@ -390,7 +390,7 @@ public nonisolated struct AgentSkillCatalog: Hashable, Sendable {
             order.append(name)
         }
         skillsByName = byName
-        self.order = order
+        self.order = order.sorted()
     }
 
     public var isEmpty: Bool { order.isEmpty }

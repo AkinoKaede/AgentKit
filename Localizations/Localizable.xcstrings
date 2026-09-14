@@ -1007,22 +1007,6 @@
         }
       }
     },
-    "Input": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "输入"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "輸入"
-          }
-        }
-      }
-    },
     "Imported as “%@”.": {
       "localizations": {
         "zh-Hans": {
@@ -1035,6 +1019,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "已匯入為「%@」。"
+          }
+        }
+      }
+    },
+    "Input": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輸入"
           }
         }
       }
@@ -1067,6 +1067,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "舊版傳輸方式，使用GET串流和個別的POST端點。"
+          }
+        }
+      }
+    },
+    "Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第%1$lld行超出每页%2$lld字节的限制。请按字节截取所需片段或搜索。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第%1$lld行超出每頁%2$lld位元組的限制。請按位元組擷取所需片段或搜尋。"
           }
         }
       }
@@ -1423,22 +1439,6 @@
         }
       }
     },
-    "Permissions": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "权限"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "權限"
-          }
-        }
-      }
-    },
     "Path": {
       "localizations": {
         "zh-Hans": {
@@ -1451,6 +1451,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "路徑"
+          }
+        }
+      }
+    },
+    "Permissions": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "权限"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "權限"
           }
         }
       }
@@ -1535,22 +1551,6 @@
         }
       }
     },
-    "Remote path": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "遠端路徑"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "远程路径"
-          }
-        }
-      }
-    },
     "Reasoning": {
       "localizations": {
         "zh-Hans": {
@@ -1563,6 +1563,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "推理"
+          }
+        }
+      }
+    },
+    "Remote path": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "遠端路徑"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "远程路径"
           }
         }
       }
@@ -2591,6 +2607,22 @@
         }
       }
     },
+    "The selected file window is not UTF-8 text.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选文件片段不是UTF-8文本。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所選檔案片段不是UTF-8文字。"
+          }
+        }
+      }
+    },
     "The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.": {
       "localizations": {
         "zh-Hans": {
@@ -2843,6 +2875,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "此工具在此執行中不可用。"
+          }
+        }
+      }
+    },
+    "This tool is unavailable for the current user message.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前用户消息无法使用此工具。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前的使用者訊息無法使用此工具。"
           }
         }
       }
@@ -3291,6 +3339,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "不是Base64編碼的PEM"
+          }
+        }
+      }
+    },
+    "offset %lld is past the end of the file (%lld lines).": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "偏移量%1$lld超出文件末尾（共%2$lld行）。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "偏移量%1$lld超出檔案末尾（共%2$lld行）。"
+          }
+        }
+      }
+    },
+    "offset, limit, and maximumBytes must be positive.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset、limit和maximumBytes必须为正数。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset、limit和maximumBytes必須為正數。"
           }
         }
       }

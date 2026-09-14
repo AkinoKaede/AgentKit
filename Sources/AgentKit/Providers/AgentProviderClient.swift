@@ -71,6 +71,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     /// `ModelProvider.supportsNativeWebSearch`.
     private let webSearch: Bool
     private let session: URLSession
+    private let promptCacheKey: String?
 
     public init(
         provider: ModelProvider,
@@ -78,6 +79,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         secret: String,
         reasoning: ReasoningEffort = .medium,
         webSearch: Bool = false,
+        promptCacheKey: String? = nil,
         session: URLSession? = nil
     ) {
         self.provider = provider
@@ -85,6 +87,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         self.secret = secret
         self.reasoning = reasoning
         self.webSearch = webSearch
+        self.promptCacheKey = promptCacheKey.map { String($0.prefix(64)) }
         self.session = session ?? Self.shared
     }
 
@@ -228,7 +231,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             forHTTPHeaderField: "Accept"
         )
         request.httpBody = try JSONSerialization.data(
-            withJSONObject: body(input, streaming: streaming)
+            withJSONObject: body(input, streaming: streaming), options: [.sortedKeys]
         )
         return request
     }
@@ -240,6 +243,11 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     public func body(
         _ request: AgentModelRequest, streaming: Bool
     ) -> [String: Any] {
+        var request = request
+        request.tools.sort { $0.qualifiedName < $1.qualifiedName }
+        let cacheKey =
+            URL(string: provider.requestURL(model: model.id))?.host?.lowercased() == "api.openai.com"
+            ? promptCacheKey : nil
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
         let reasoningResolution = ModelCapabilityResolver.reasoning(
             model: model, provider: provider
@@ -255,6 +263,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 "instructions": request.systemPrompt,
                 "input": request.messages.flatMap(Self.responsesMessages),
             ]
+            if let cacheKey { body["prompt_cache_key"] = cacheKey }
             if !tools.isEmpty { body["tools"] = tools }
             if let reasoningValue {
                 body["reasoning"] = ["effort": reasoningValue, "summary": "auto"]
@@ -281,6 +290,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             // Chat Completions omits it from a stream unless this is present.
             // Only on the streaming path — sending it on a non-streaming request
             // is what several OpenAI-compatible gateways reject outright.
+            if let cacheKey { body["prompt_cache_key"] = cacheKey }
             if streaming { body["stream_options"] = ["include_usage": true] }
             if !tools.isEmpty { body["tools"] = tools.map { ["type": "function", "function": $0] } }
             if let reasoningValue { body["reasoning_effort"] = reasoningValue }
@@ -300,10 +310,11 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             var body: [String: Any] = [
                 "model": model.id, "stream": streaming,
                 "max_tokens": model.maxOutputTokens ?? 4096,
-                "system": request.systemPrompt,
-                "messages": request.messages.flatMap {
-                    Self.anthropicMessages($0, toolNames: toolNames)
-                },
+                "system": [["type": "text", "text": request.systemPrompt, "cache_control": ["type": "ephemeral"]]],
+                "messages": Self.anthropicCachedMessages(
+                    request.messages.flatMap {
+                        Self.anthropicMessages($0, toolNames: toolNames)
+                    }),
             ]
             if !tools.isEmpty { body["tools"] = tools }
             if let reasoningValue {
@@ -343,6 +354,33 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             }
             return body
         }
+    }
+
+    private static func anthropicCachedMessages(_ input: [[String: Any]]) -> [[String: Any]] {
+        var messages = input
+        var marked = 0
+        for index in messages.indices.reversed() {
+            guard marked < 2 else { break }
+            let content = messages[index]["content"]
+            var blocks: [[String: Any]]
+            if let text = content as? String, !text.isEmpty {
+                blocks = [["type": "text", "text": text]]
+            } else if let values = content as? [[String: Any]] {
+                blocks = values
+            } else {
+                continue
+            }
+            guard
+                let last = blocks.indices.last(where: {
+                    let kind = blocks[$0]["type"] as? String
+                    return kind == "text" || kind == "image" || kind == "tool_result" || kind == "tool_use"
+                })
+            else { continue }
+            blocks[last]["cache_control"] = ["type": "ephemeral"]
+            messages[index]["content"] = blocks
+            marked += 1
+        }
+        return messages
     }
 
     /// A ceiling on searches per turn, which only Anthropic's tool takes as a
@@ -1267,7 +1305,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             AgentTokenUsage(
                 inputTokens: count(usage["input_tokens"]),
                 outputTokens: count(usage["output_tokens"]),
-                cachedInputTokens: count(details?["cached_tokens"])
+                cachedInputTokens: count(details?["cached_tokens"]),
+                cacheWriteInputTokens: count(details?["cache_write_tokens"])
             ))
     }
 
@@ -1278,7 +1317,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             AgentTokenUsage(
                 inputTokens: count(usage["prompt_tokens"]),
                 outputTokens: count(usage["completion_tokens"]),
-                cachedInputTokens: count(details?["cached_tokens"])
+                cachedInputTokens: count(details?["cached_tokens"]),
+                cacheWriteInputTokens: count(details?["cache_write_tokens"])
             ))
     }
 
@@ -1290,7 +1330,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 inputTokens: count(usage["input_tokens"]) + read
                     + count(usage["cache_creation_input_tokens"]),
                 outputTokens: count(usage["output_tokens"]),
-                cachedInputTokens: read
+                cachedInputTokens: read,
+                cacheWriteInputTokens: count(usage["cache_creation_input_tokens"])
             ))
     }
 

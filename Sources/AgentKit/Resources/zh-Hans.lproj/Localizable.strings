@@ -130,6 +130,8 @@
 	<string>类型</string>
 	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
 	<string>旧版传输方式，使用GET流和单独的POST端点。</string>
+	<key>Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.</key>
+	<string>第%1$lld行超出每页%2$lld字节的限制。请按字节截取所需片段或搜索。</string>
 	<key>Line endings</key>
 	<string>行终</string>
 	<key>Lines</key>
@@ -320,6 +322,8 @@
 	<string>此机密信息不适用于该主机、工具或用途。</string>
 	<key>The secret is unavailable or has already been used.</key>
 	<string>此机密信息不可用或已被使用。</string>
+	<key>The selected file window is not UTF-8 text.</key>
+	<string>所选文件片段不是UTF-8文本。</string>
 	<key>The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.</key>
 	<string>服务器对流式HTTP请求返回了%lld。它可能仅支持旧版SSE传输，请尝试切换传输方式。</string>
 	<key>The server answered %lld.</key>
@@ -352,6 +356,8 @@
 	<string>此技能为空</string>
 	<key>This tool is not available in this run.</key>
 	<string>此工具在此运行中不可用。</string>
+	<key>This tool is unavailable for the current user message.</key>
+	<string>当前用户消息无法使用此工具。</string>
 	<key>Timeout</key>
 	<string>超时</string>
 	<key>Title</key>
@@ -408,6 +414,10 @@
 	<string>不是PKCS#8 RSA私钥</string>
 	<key>not base64 PEM</key>
 	<string>不是Base64编码的PEM</string>
+	<key>offset %lld is past the end of the file (%lld lines).</key>
+	<string>偏移量%1$lld超出文件末尾（共%2$lld行）。</string>
+	<key>offset, limit, and maximumBytes must be positive.</key>
+	<string>offset、limit和maximumBytes必须为正数。</string>
 	<key>the key data ends early</key>
 	<string>密钥数据不完整</string>
 	<key>unknown reason</key>

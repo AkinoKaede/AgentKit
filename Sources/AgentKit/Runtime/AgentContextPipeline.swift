@@ -45,18 +45,10 @@ public nonisolated struct AgentContextPipeline: Sendable {
         transforms.reduce(context) { $1.transform($0) }
     }
 
-    /// What a chat run uses.
-    ///
-    /// Order matters. The unanswered repair runs first so the results it
-    /// invents are sorted into place by the step after it; ordering runs before
-    /// the orphan repair so a reordered block is what gets checked; trimming
-    /// runs after all three so it measures the results that will actually be
-    /// sent; injection runs last because everything before it reasons about
-    /// tool results sitting directly behind their assistant turn.
-    ///
-    /// The three injections all insert *at* the prompt, so a later one lands
-    /// closer to it. Read in the order the model sees them, that is: here is
-    /// where you are, here is what you know, here is what you may do this turn.
+    /// Repairs tool-call grammar, then replays frozen output and context snapshots.
+    /// Results are bounded once by AgentToolOutputProjection, never shortened as
+    /// they age. toolResultLimit is retained for source compatibility only;
+    /// configure AgentLoopConfiguration.outputProjection for new results.
     public static func chat(
         sessionContext: AgentTranscriptMessage?,
         before promptID: AgentTranscriptMessage.ID?,
@@ -69,12 +61,14 @@ public nonisolated struct AgentContextPipeline: Sendable {
             AgentUnansweredToolCallRepair(),
             AgentToolResultOrdering(),
             AgentOrphanedToolResultRepair(),
-            AgentToolResultTrimming(limit: toolResultLimit),
-            AgentSessionContextInjection(message: sessionContext, before: promptID),
-            AgentSkillCatalogInjection(catalog: skills, before: promptID),
-            AgentPlanContractInjection(
-                isPlanning: isPlanning, before: promptID, contract: planContract
+            AgentContextSnapshotCapture(
+                snapshot: AgentTurnContextSnapshot(
+                    sessionContext: sessionContext?.text,
+                    skillCatalog: skills.isEmpty ? nil : skills.catalogBlock,
+                    planContract: isPlanning ? planContract : nil
+                ), promptID: promptID
             ),
+            AgentContextSnapshotReplay(),
         ])
     }
 }
@@ -313,26 +307,8 @@ public nonisolated struct AgentToolResultTrimming: AgentContextTransforming {
 
 // MARK: - Session context
 
-/// Puts the session context into what is *sent* without putting it into what is
-/// *kept*.
-///
-/// The durable transcript is where a context block must not go: it would be
-/// persisted, replayed, and — since restore projects user rows into the visible
-/// list — eventually shown in the user's own chat bubble. Dropping it costs the
-/// next run one uncached message at the tail and nothing before it, because
-/// history the model already saw is unchanged either way.
-///
-/// It rides the tail of the message list rather than the system prompt. Every
-/// cache these providers keep is a *prefix* cache, and the working directory of
-/// a terminal is the most volatile thing we know: one `cd` between turns used
-/// to change byte zero of the request and miss the entire replayed
-/// conversation. Here the divergence is the newest turn, which was never
-/// cacheable anyway, and the system prompt stays byte-identical across every
-/// run, conversation, and user.
-///
-/// Anchored to the prompt's identity rather than to a captured index. An index
-/// is only correct as long as nothing ahead of it is ever added or removed, and
-/// the transforms that run before this one are free to do both.
+/// Legacy request-only injection. Prefer AgentContextSnapshotReplay for conversations
+/// so context from earlier requests remains at its original position.
 public nonisolated struct AgentSessionContextInjection: AgentContextTransforming {
     public var message: AgentTranscriptMessage?
     public var before: AgentTranscriptMessage.ID?

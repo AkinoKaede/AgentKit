@@ -121,6 +121,8 @@ public nonisolated struct AgentToolExecutor: Sendable {
     public let userInteraction: any AgentUserInteractionHandling
     /// Passed through untouched to every call — see `AgentToolServices`.
     public var services = AgentToolServices()
+    public var outputProjection = AgentToolOutputProjection()
+    public var isToolAvailable: @Sendable (String) async -> Bool = { _ in true }
     public let runID: UUID
     public let permissionMode: AgentPermissionMode
     public let userIntent: String
@@ -139,9 +141,13 @@ public nonisolated struct AgentToolExecutor: Sendable {
         runID: UUID,
         permissionMode: AgentPermissionMode,
         userIntent: String,
-        interjection: (@Sendable () async -> Void)? = nil
+        interjection: (@Sendable () async -> Void)? = nil,
+        outputProjection: AgentToolOutputProjection = AgentToolOutputProjection(),
+        isToolAvailable: @escaping @Sendable (String) async -> Bool = { _ in true }
     ) {
         self.tools = tools
+        self.outputProjection = outputProjection
+        self.isToolAvailable = isToolAvailable
         self.approval = approval
         self.hooks = hooks
         self.channel = channel
@@ -179,6 +185,17 @@ public nonisolated struct AgentToolExecutor: Sendable {
                         inputSchema: .object(["type": .string("object")]),
                         target: .local, approvalPolicy: .ask
                     )))
+            channel.emit(.toolFinished(proposed, result))
+            return .rejected(invocation: proposed, result: result)
+        }
+
+        guard await isToolAvailable(call.name) else {
+            let result = AgentToolResult(
+                callID: call.id,
+                content: String(
+                    localized: "This tool is unavailable for the current user message.", bundle: .module), isError: true
+            )
+            channel.emit(.toolProposed(proposed, tool.descriptor))
             channel.emit(.toolFinished(proposed, result))
             return .rejected(invocation: proposed, result: result)
         }
@@ -343,6 +360,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         var final = await hooks.didExecute(
             ready.invocation, descriptor: ready.descriptor, result: result
         )
+        final = await outputProjection.project(final, invocation: ready.invocation)
         final.toolPresentation = ready.descriptor.presentation
         channel.emit(.toolFinished(ready.invocation, final))
         return final

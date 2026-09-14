@@ -134,6 +134,9 @@ public nonisolated enum AgentCompaction {
             var lines: [String] = []
             switch message.role {
             case .user:
+                if let snapshot = message.contextSnapshot {
+                    lines.append("[Context at this message] " + snapshot.modelDescription)
+                }
                 if !message.text.isEmpty { lines.append("[User] \(message.text)") }
                 if !message.images.isEmpty {
                     lines.append(
@@ -151,7 +154,7 @@ public nonisolated enum AgentCompaction {
             case .tool:
                 let name = message.toolName ?? "tool"
                 lines.append(
-                    "[Tool result: \(name)] \(clipped(message.text, to: toolResultLimit))"
+                    "[Tool result: \(name)] \(clipped(message.modelText ?? message.text, to: toolResultLimit))"
                 )
             }
             return lines
@@ -178,7 +181,7 @@ public nonisolated enum AgentCompaction {
 
     private static func estimatedTokens(of message: AgentTranscriptMessage) -> Int {
         let characters =
-            message.text.count
+            (message.modelText ?? message.text).count + (message.contextSnapshot?.characterCount ?? 0)
             + message.toolCalls.reduce(0) { $0 + $1.arguments.encodedString.count }
         let imageTokens = message.images.reduce(0) { total, image in
             let wide = max(1, Int(ceil(Double(image.pixelWidth) / 512)))

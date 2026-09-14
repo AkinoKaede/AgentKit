@@ -14,13 +14,13 @@ public nonisolated struct AgentLoopConfiguration: Sendable {
     /// How streamed text reaches the reader. `nil` — the default — sends every
     /// delta on as it arrives; see `AgentStreamPacing` for when to set it.
     public var streamPacing: AgentStreamPacing?
-    /// The `transformContext` seam, replaceable whole. Given the run's session
-    /// context block, the id of the turn it belongs in front of, and whether the
-    /// run is planning, it returns the chain applied to every request this run
-    /// makes.
-    /// Written out rather than referencing `AgentContextPipeline.chat` directly:
-    /// that one takes the run's skill catalog too, and a caller with skills to
-    /// offer replaces this whole closure. The default is the run that has none.
+    public var outputProjection = AgentToolOutputProjection()
+    public var contextSnapshot: @Sendable (String?, Bool) -> AgentTurnContextSnapshot = {
+        AgentTurnContextSnapshot(sessionContext: $0, planContract: $1 ? AgentPlanContractInjection.contract : nil)
+    }
+
+    /// Additional request shaping. The runtime captures context before persistence;
+    /// the default pipeline materializes all recorded snapshots for replay.
     public var contextPipeline:
         @Sendable (AgentTranscriptMessage?, AgentTranscriptMessage.ID?, Bool)
             -> AgentContextPipeline = {
@@ -67,6 +67,7 @@ public actor AgentRuntime {
     /// ends a run, which is what makes the window empty rather than narrow.
     private var acceptsSteering = false
     private var activeRunID: UUID?
+    private var activeContextSnapshot: AgentTurnContextSnapshot?
 
     public init(
         model: any AgentModelStreaming,
@@ -125,6 +126,9 @@ public actor AgentRuntime {
         // would otherwise be refused for want of a run that is already on its
         // way, and the first drain happens ahead of the first provider request
         // — so even something typed this early is delivered rather than lost.
+        activeContextSnapshot =
+            request.contextSnapshot
+            ?? configuration.contextSnapshot(request.sessionContext, request.isPlanning)
         acceptsSteering = true
         runTask = Task { [weak self] in
             await self?.run(request)
@@ -146,7 +150,9 @@ public actor AgentRuntime {
         else {
             return false
         }
-        steering.append(message)
+        var captured = message
+        captured.contextSnapshot = message.contextSnapshot ?? activeContextSnapshot
+        steering.append(captured)
         interjection.arm()
         return true
     }
@@ -182,9 +188,17 @@ public actor AgentRuntime {
         let prompt = AgentTranscriptMessage(
             id: request.promptID, role: .user, text: request.prompt,
             authoredText: request.authoredPrompt, images: request.promptImages,
-            contextAttachments: request.promptContextAttachments
+            contextAttachments: request.promptContextAttachments,
+            contextSnapshot: activeContextSnapshot
         )
-        snapshot.messages.append(prompt)
+        if let index = snapshot.messages.firstIndex(where: { $0.id == prompt.id }) {
+            // A retry continues recorded outcomes rather than duplicating its user turn.
+            if snapshot.messages[index].contextSnapshot == nil {
+                snapshot.messages[index].contextSnapshot = prompt.contextSnapshot
+            }
+        } else {
+            snapshot.messages.append(prompt)
+        }
         let pipeline = configuration.contextPipeline(
             sessionContext, prompt.id, request.isPlanning
         )
@@ -211,7 +225,9 @@ public actor AgentRuntime {
                 services: services,
                 runID: runID, permissionMode: request.permissionMode,
                 userIntent: request.prompt,
-                interjection: { [interjection] in await interjection.wait() }
+                interjection: { [interjection] in await interjection.wait() },
+                outputProjection: configuration.outputProjection,
+                isToolAvailable: { [weak self] name in await self?.isToolAvailable(name) ?? false }
             ),
             mode: configuration.toolExecution,
             maximumConcurrency: configuration.maximumToolConcurrency
@@ -285,8 +301,9 @@ public actor AgentRuntime {
                 for (call, result) in zip(turn.message.toolCalls, results) {
                     snapshot.messages.append(
                         AgentTranscriptMessage(
+                            id: AgentTranscriptMessage.toolResultID(runID: runID, callID: result.callID),
                             role: .tool, text: result.content, toolCallID: result.callID,
-                            toolName: call.name, isError: result.isError
+                            toolName: call.name, isError: result.isError, modelText: result.modelContent
                         ))
                 }
                 await persist(snapshot)
@@ -347,10 +364,15 @@ public actor AgentRuntime {
             message.createdAt = .now
             return message
         }
+        if let snapshot = delivered.last?.contextSnapshot { activeContextSnapshot = snapshot }
         steering.removeAll()
         interjection.disarm()
         for message in delivered { channel.emit(.steeringDelivered(message)) }
         return delivered
+    }
+
+    private func isToolAvailable(_ name: String) -> Bool {
+        activeContextSnapshot?.toolAvailability?[name] ?? true
     }
 
     private func complete(_ snapshot: AgentRunSnapshot, runID: UUID) async {

@@ -69,7 +69,7 @@ public nonisolated struct ScratchReadTool: AgentToolDefinition, AgentToolSchemaB
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "offset": Self.integer(min: 1, max: 10_000_000),
-                "limit": Self.integer(min: 1, max: 100_000),
+                "limit": Self.integer(min: 1, max: AgentTextPageReader.defaultLineLimit),
             ], required: ["path"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
@@ -87,15 +87,18 @@ public nonisolated struct ScratchReadTool: AgentToolDefinition, AgentToolSchemaB
             arguments.string("path"), offset: arguments.optionalInt("offset"),
             limit: arguments.optionalInt("limit")
         )
-        return Self.result(
+        var result = Self.result(
             invocation,
             .object([
                 "path": .string(text.path), "content": .string(text.content),
                 "bytes": .number(Double(text.bytes)), "total_lines": .number(Double(text.totalLines)),
                 "offset": .number(Double(text.offset)),
+                "next_offset": text.isTruncated ? .number(Double(text.offset + text.returnedLines)) : .null,
                 "returned_lines": .number(Double(text.returnedLines)),
                 "truncated": .bool(text.isTruncated), "line_ending": .string(text.lineEnding.rawValue),
             ]), truncated: text.isTruncated)
+        result.hasBoundedModelContent = true
+        return result
     }
 }
 
