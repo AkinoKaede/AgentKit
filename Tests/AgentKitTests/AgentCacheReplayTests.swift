@@ -77,17 +77,31 @@ struct AgentCacheReplayTests {
         #expect(Array(after.prefix(before.count)) == before)
     }
 
-    @Test
-    func onlyOfficialOpenAIReceivesTheStableCacheKey() {
-        for format in [ModelAPIFormat.responses, .chatCompletions] {
-            for host in ["api.openai.com", "gateway.example", "api.openai.com.example"] {
+    @Test(arguments: ModelAPIFormat.allCases)
+    func cachingUsesTheAPIFormatWithoutRestrictingTheEndpoint(format: ModelAPIFormat) throws {
+        for host in ["api.openai.com", "api.anthropic.com", "generativelanguage.googleapis.com", "gateway.example"] {
+            for key in [nil, "conversation-id"] as [String?] {
                 let client = AgentProviderClient(
-                    provider: .init(name: "test", apiFormat: format, inferenceURL: "https://\(host)/v1/responses"),
-                    model: .init(id: "test"), secret: "test", promptCacheKey: "conversation-id"
+                    provider: .init(name: "test", apiFormat: format, inferenceURL: "https://\(host)/test"),
+                    model: .init(id: "test"), secret: "test", promptCacheKey: key
                 )
-                let body = client.body(.init(systemPrompt: "s", messages: [], tools: []))
-                #expect((body["prompt_cache_key"] as? String) == (host == "api.openai.com" ? "conversation-id" : nil))
-                #expect(body["prompt_cache_retention"] == nil)
+                for streaming in [true, false] {
+                    let request = try client.buildRequest(
+                        .init(systemPrompt: "s", messages: [], tools: []), streaming: streaming)
+                    let data = try #require(request.httpBody)
+                    let body = try #require(JSONSerialization.jsonObject(with: data) as? [String: Any])
+                    let usesOpenAIKey = format == .responses || format == .chatCompletions
+                    #expect(body["prompt_cache_key"] as? String == (usesOpenAIKey ? key : nil))
+                    #expect(body["prompt_cache_retention"] == nil)
+                    if format == .messages {
+                        let system = try #require(body["system"] as? [[String: Any]])
+                        #expect((system.first?["cache_control"] as? [String: String])?["type"] == "ephemeral")
+                    }
+                    if format == .generateContent {
+                        #expect(body["cache_control"] == nil)
+                        #expect(body["cachedContent"] == nil)
+                    }
+                }
             }
         }
     }

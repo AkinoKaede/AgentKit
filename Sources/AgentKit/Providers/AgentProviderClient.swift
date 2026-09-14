@@ -245,9 +245,6 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
     ) -> [String: Any] {
         var request = request
         request.tools.sort { $0.qualifiedName < $1.qualifiedName }
-        let cacheKey =
-            URL(string: provider.requestURL(model: model.id))?.host?.lowercased() == "api.openai.com"
-            ? promptCacheKey : nil
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
         let reasoningResolution = ModelCapabilityResolver.reasoning(
             model: model, provider: provider
@@ -263,7 +260,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 "instructions": request.systemPrompt,
                 "input": request.messages.flatMap(Self.responsesMessages),
             ]
-            if let cacheKey { body["prompt_cache_key"] = cacheKey }
+            if let promptCacheKey { body["prompt_cache_key"] = promptCacheKey }
             if !tools.isEmpty { body["tools"] = tools }
             if let reasoningValue {
                 body["reasoning"] = ["effort": reasoningValue, "summary": "auto"]
@@ -290,7 +287,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             // Chat Completions omits it from a stream unless this is present.
             // Only on the streaming path — sending it on a non-streaming request
             // is what several OpenAI-compatible gateways reject outright.
-            if let cacheKey { body["prompt_cache_key"] = cacheKey }
+            if let promptCacheKey { body["prompt_cache_key"] = promptCacheKey }
             if streaming { body["stream_options"] = ["include_usage": true] }
             if !tools.isEmpty { body["tools"] = tools.map { ["type": "function", "function": $0] } }
             if let reasoningValue { body["reasoning_effort"] = reasoningValue }

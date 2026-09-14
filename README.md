@@ -278,5 +278,5 @@ metadata for interrupted-run recovery. Default replay no longer age-trims result
 
 `AgentTextPageReader` reads bounded UTF-8 line windows from chunks and reports the
 next unread line. `scratch_read` uses the same scanner. Provider adapters serialize
-local schemas deterministically, support a stable OpenAI `promptCacheKey`, mark short
+local schemas deterministically, forward a stable `promptCacheKey` to Responses/Chat Completions endpoints without a hostname restriction, mark short
 Anthropic cache breakpoints, and expose `cacheWriteInputTokens` separately from reads.
