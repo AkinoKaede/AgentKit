@@ -2735,6 +2735,22 @@
         }
       }
     },
+    "The tool is denied by its approval policy.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该工具已被其审批策略拒绝。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此工具已被其核准策略拒絕。"
+          }
+        }
+      }
+    },
     "There is not enough history to compact yet.": {
       "localizations": {
         "zh-Hans": {

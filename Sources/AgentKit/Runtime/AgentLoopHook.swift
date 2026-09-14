@@ -15,7 +15,7 @@ public nonisolated struct AgentToolCallContext: Sendable {
     }
 
     public var invocation: AgentToolInvocation
-    /// The descriptor *after* preflight, so a hook sees the same safety the
+    /// The descriptor *after* preflight, so a hook sees the same approval policy the
     /// approval gate is about to see rather than the tool's declared default.
     public var descriptor: AgentToolDescriptor
     public var userIntent: String

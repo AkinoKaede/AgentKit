@@ -28,7 +28,7 @@ public nonisolated struct PresentPlanTool: AgentToolDefinition, AgentToolSchemaB
                 "title": Self.string(max: 120),
                 "scratch_path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
             ],
-            required: ["title", "scratch_path"], target: .user, safety: .locallyReadOnly,
+            required: ["title", "scratch_path"], target: .user, approvalPolicy: .approve,
             presentation: .init(
                 symbol: "lightbulb.max", activity: .semanticArgument(key: "title", fallback: .plan),
                 output: .field("plan"), actionKind: .present
@@ -91,7 +91,7 @@ public nonisolated struct ManageTasksTool: AgentToolDefinition, AgentToolSchemaB
             a list for work that only has one or two steps.
             """,
             properties: ["tasks": Self.array(items: task, max: AgentTaskList.maximumTasks)],
-            required: ["tasks"], target: .user, safety: .locallyReadOnly,
+            required: ["tasks"], target: .user, approvalPolicy: .approve,
             presentation: .init(
                 symbol: "checklist", activity: .semanticLabel(.taskList), output: .json,
                 actionKind: .update
@@ -184,7 +184,8 @@ public nonisolated struct AgentPlanRecorder: Sendable {
 /// once** — it is presented, answered, and stays in the transcript where it
 /// happened. A task list is **live state, rewritten every turn**, and belongs in
 /// the strip above the composer where the current one is always the only one.
-/// The hook that runs planning blocks `manage_tasks` for exactly this reason.
+/// Its catalog registration makes it available only while acting for exactly
+/// this reason, so planning requests never advertise it in the first place.
 public nonisolated enum AgentPlanTools: AgentToolSchemaBuilding {
 }
 nonisolated

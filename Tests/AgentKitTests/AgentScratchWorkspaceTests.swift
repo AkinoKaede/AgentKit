@@ -383,12 +383,11 @@ struct AgentScratchWorkspaceTests {
                 "scratch_copy", "scratch_delete", "scratch_diff", "scratch_list", "scratch_move",
                 "scratch_read", "scratch_replace", "scratch_search", "scratch_write",
             ])
-        // Copying and moving change something, and both stay contained — so both are
-        // available while planning, on the same terms as scratch_write.
+        // Copying and moving change only the scratch workspace, so both are
+        // pre-approved and remain available while planning.
         for name in ["scratch_copy", "scratch_move", "scratch_replace"] {
             let descriptor = descriptors.first { $0.name == name }
-            #expect(descriptor?.safety == .locallyContained, "\(name)")
-            #expect(descriptor?.safety.isAllowedWhilePlanning == true, "\(name)")
+            #expect(descriptor?.approvalPolicy == .approve, "\(name)")
             #expect(descriptor?.concurrency == .parallel, "\(name)")
         }
     }

@@ -22,12 +22,10 @@ public nonisolated struct MCPAgentTool: AgentTool {
             namespace: server.effectiveNamespaceID,
             summary: "\(server.name): \(tool.summary)",
             inputSchema: AgentMCPTools.normalizedSchema(tool.inputSchema), target: .mcp,
-            // Remote read-only annotations are hints, never local proof.
-            safety: .requiresAuthorization,
-            concurrency: tool.annotations.destructiveHint == true
-                || tool.accessPolicy == .alwaysAsk
-                ? .sequential : .parallel,
-            alwaysAskUser: tool.accessPolicy == .alwaysAsk,
+            // Remote read-only annotations are hints, never local proof. The
+            // access policy is a local choice persisted by the host app.
+            approvalPolicy: tool.accessPolicy,
+            concurrency: tool.annotations.destructiveHint == true ? .sequential : .parallel,
             presentation: .init(
                 symbol: "puzzlepiece.extension",
                 activity: .label(
@@ -49,7 +47,7 @@ public nonisolated struct MCPAgentTool: AgentTool {
             reasons.append("The MCP server says this operation interacts with external entities.")
         }
         return AgentToolPreflight(
-            invocation: invocation, safety: .requiresAuthorization, reasons: reasons
+            invocation: invocation, approvalPolicy: tool.accessPolicy, reasons: reasons
         )
     }
 
@@ -80,7 +78,7 @@ public nonisolated enum AgentMCPTools {
         return servers.flatMap { entry -> [AnyAgentTool] in
             guard !entry.server.effectiveNamespaceID.isEmpty else { return [] }
             let names = MCPToolNaming.functionNames(for: entry.server.tools)
-            return entry.server.enabledTools.map { tool in
+            return entry.server.tools.map { tool in
                 AnyAgentTool(
                     MCPAgentTool(
                         server: entry.server, tool: tool,

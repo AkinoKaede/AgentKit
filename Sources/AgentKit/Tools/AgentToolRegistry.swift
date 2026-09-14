@@ -25,6 +25,14 @@ public nonisolated struct AgentToolRegistry: Sendable {
         AgentToolRegistry(byName.values.filter { isIncluded($0.descriptor) })
     }
 
+    /// The definitions advertised and executable for one run posture.
+    ///
+    /// A new registry, rather than a descriptor-only projection, keeps the
+    /// model-facing schema and the executor's lookup on the same capability set.
+    public func available(in mode: AgentRunMode) -> AgentToolRegistry {
+        AgentToolRegistry(byName.values.filter { $0.availableIn.contains(mode) })
+    }
+
     /// Sorted, because the tool list is part of the request's cacheable prefix
     /// and a dictionary's iteration order is not stable across launches.
     public var descriptors: [AgentToolDescriptor] {

@@ -177,7 +177,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
                         name: call.name,
                         summary: String(localized: "This tool is not available in this run.", bundle: .module),
                         inputSchema: .object(["type": .string("object")]),
-                        target: .local, safety: .requiresAuthorization
+                        target: .local, approvalPolicy: .ask
                     )))
             channel.emit(.toolFinished(proposed, result))
             return .rejected(invocation: proposed, result: result)
@@ -201,7 +201,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         }
 
         var descriptor = tool.descriptor
-        descriptor.safety = preflight.safety
+        descriptor.approvalPolicy = preflight.approvalPolicy
         // Only if preflight had something to say. A tool that does not override
         // keeps whatever it declared.
         if let concurrency = preflight.concurrency { descriptor.concurrency = concurrency }
@@ -242,10 +242,13 @@ public nonisolated struct AgentToolExecutor: Sendable {
         )
         switch await approval.authorize(request, mode: permissionMode) {
         case .deny(let reason):
+            let policyDenied = ready.descriptor.approvalPolicy == .deny
             return await finish(
                 ready,
                 AgentToolResult(
-                    callID: ready.invocation.call.id, content: reason, isError: true
+                    callID: ready.invocation.call.id, content: reason, isError: true,
+                    metadata: policyDenied
+                        ? [AgentToolResult.approvalPolicyDeniedKey: .bool(true)] : [:]
                 ))
         case .allow:
             channel.emit(.toolStarted(ready.invocation))
@@ -302,7 +305,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
                 name: call.name,
                 summary: String(localized: "This tool is not available in this run.", bundle: .module),
                 inputSchema: .object(["type": .string("object")]),
-                target: .local, safety: .requiresAuthorization
+                target: .local, approvalPolicy: .ask
             )
         channel.emit(.toolProposed(invocation, descriptor))
         channel.emit(.toolFinished(invocation, result))

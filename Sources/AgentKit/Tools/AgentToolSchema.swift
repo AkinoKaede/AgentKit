@@ -33,7 +33,7 @@ nonisolated
     public static func descriptor(
         _ name: String, _ summary: String, properties: [String: AgentJSONValue],
         required: [String], target: AgentToolDescriptor.Target,
-        safety: AgentToolDescriptor.Safety,
+        approvalPolicy: AgentToolDescriptor.ApprovalPolicy,
         concurrency: AgentToolDescriptor.Concurrency = .sequential,
         presentation: AgentToolDescriptor.Presentation? = nil
     ) -> AgentToolDescriptor {
@@ -44,7 +44,7 @@ nonisolated
                 "required": .array(required.map(AgentJSONValue.string)),
                 "additionalProperties": .bool(false),
             ]),
-            target: target, safety: safety, concurrency: concurrency,
+            target: target, approvalPolicy: approvalPolicy, concurrency: concurrency,
             presentation: presentation
         )
     }

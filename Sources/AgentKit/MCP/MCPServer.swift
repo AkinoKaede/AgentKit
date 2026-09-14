@@ -92,10 +92,6 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
         namespaceID.isEmpty ? MCPToolNaming.namespaceID(from: name) : namespaceID
     }
 
-    public var enabledTools: [MCPTool] {
-        tools.filter { $0.accessPolicy != .disabled }
-    }
-
     public var isReachable: Bool {
         !url.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -192,10 +188,10 @@ public nonisolated struct MCPHeader: Identifiable, Hashable, Sendable, Codable {
 
 /// One tool a server offers.
 ///
-/// `accessPolicy` defaults to `alwaysAsk`, and that default is the point rather
-/// than caution. An MCP tool is a command fetched over the network from a server
-/// the model can talk to, so a newly discovered tool must not silently inherit a
-/// more permissive conversation setting.
+/// `accessPolicy` defaults to `ask`. An MCP tool is a command fetched over the
+/// network from a server the model can talk to, so a newly discovered tool must
+/// not silently start approved. Denied tools remain registered so the model gets
+/// an explicit refusal if it tries to use one.
 public nonisolated struct MCPTool: Identifiable, Hashable, Sendable, Codable {
     public init(
         id: String,
@@ -205,7 +201,7 @@ public nonisolated struct MCPTool: Identifiable, Hashable, Sendable, Codable {
             "type": .string("object"), "properties": .object([:]),
         ]),
         annotations: MCPToolAnnotations = MCPToolAnnotations(),
-        accessPolicy: AccessPolicy = .alwaysAsk
+        accessPolicy: AgentToolDescriptor.ApprovalPolicy = .ask
     ) {
         self.id = id
         self.title = title
@@ -213,14 +209,6 @@ public nonisolated struct MCPTool: Identifiable, Hashable, Sendable, Codable {
         self.inputSchema = inputSchema
         self.annotations = annotations
         self.accessPolicy = accessPolicy
-    }
-
-    public nonisolated enum AccessPolicy: String, CaseIterable, Identifiable, Hashable, Sendable, Codable {
-        case disabled
-        case alwaysAsk
-        case followPermissions
-
-        public nonisolated var id: String { rawValue }
     }
 
     /// The tool name as the server reports it. Its identity, since MCP names
@@ -232,7 +220,7 @@ public nonisolated struct MCPTool: Identifiable, Hashable, Sendable, Codable {
         "type": .string("object"), "properties": .object([:]),
     ])
     public var annotations: MCPToolAnnotations = MCPToolAnnotations()
-    public var accessPolicy: AccessPolicy = .alwaysAsk
+    public var accessPolicy: AgentToolDescriptor.ApprovalPolicy = .ask
 
 }
 

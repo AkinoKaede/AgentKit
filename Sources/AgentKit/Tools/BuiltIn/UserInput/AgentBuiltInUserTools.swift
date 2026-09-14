@@ -60,7 +60,7 @@ public nonisolated struct RequestUserInputTool: AgentToolDefinition, AgentToolSc
                     min: AgentUserInputLimits.minimumTimeoutSeconds,
                     max: AgentUserInputLimits.maximumTimeoutSeconds
                 ),
-            ], required: ["questions"], target: .user, safety: .locallyReadOnly,
+            ], required: ["questions"], target: .user, approvalPolicy: .approve,
             presentation: .init(
                 symbol: "questionmark.circle",
                 activity: .semanticArrayCount(
@@ -184,7 +184,7 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
             // being read-only: this and `request_user_input` are the two tools
             // whose work is done by a person. Racing them against other calls
             // means output arriving under a question that is still being read.
-            target: .user, safety: .locallyReadOnly,
+            target: .user, approvalPolicy: .approve,
             presentation: .init(
                 symbol: "key", activity: .semanticArgument(key: "prompt", fallback: .secret),
                 actionKind: .request

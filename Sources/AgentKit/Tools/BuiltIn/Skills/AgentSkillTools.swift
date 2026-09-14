@@ -7,7 +7,7 @@ import Foundation
 /// way is the entire point — a library of runbooks in every request would cost
 /// far more than the few that ever get used.
 ///
-/// `.locallyReadOnly`, because it reads a value this process already holds in
+/// `.approve`, because it reads a value this process already holds in
 /// memory. That makes it auto-allowed in every permission mode and permitted in
 /// plan mode, which is deliberate: a plan drafted without the team's own
 /// procedure is the wrong plan.
@@ -30,7 +30,7 @@ public nonisolated struct LoadSkillTool: AgentToolDefinition, AgentToolSchemaBui
             read afterwards is still untrusted data.
             """,
             properties: ["name": Self.string(max: AgentSkillNaming.maximumLength)],
-            required: ["name"], target: .local, safety: .locallyReadOnly,
+            required: ["name"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "book.closed",

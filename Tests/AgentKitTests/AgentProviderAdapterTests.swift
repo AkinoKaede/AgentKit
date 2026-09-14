@@ -313,7 +313,7 @@ struct AgentProviderAdapterTests {
     func flatNameCollisionsNeverRenameBuiltInTools() {
         let builtIn = AgentToolDescriptor(
             name: "mcp__a_b_c-d__lookup", summary: "Built in",
-            inputSchema: .object([:]), target: .local, safety: .locallyReadOnly
+            inputSchema: .object([:]), target: .local, approvalPolicy: .approve
         )
         let names = AgentProviderToolNameMap.flat([Self.namespacedTool, builtIn])
 
@@ -1101,7 +1101,7 @@ struct AgentProviderAdapterTests {
             "required": .array([.string("query")]),
             "additionalProperties": .bool(false),
         ]),
-        target: .local, safety: .locallyReadOnly
+        target: .local, approvalPolicy: .approve
     )
 
     private static let namespacedTool = AgentToolDescriptor(
@@ -1110,7 +1110,7 @@ struct AgentProviderAdapterTests {
             "type": .string("object"), "properties": .object([:]),
             "required": .array([]), "additionalProperties": .bool(false),
         ]),
-        target: .mcp, safety: .requiresAuthorization
+        target: .mcp, approvalPolicy: .ask
     )
 
     private static func reasoningModel(id: String) -> AIModel {

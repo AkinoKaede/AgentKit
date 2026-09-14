@@ -23,22 +23,18 @@ public nonisolated struct AgentPlanModeHook: AgentLoopHook {
 
     public let isPlanning: Bool
 
-    /// Tools refused by name rather than by safety.
+    /// Tools refused by name rather than by approval policy.
     ///
-    /// `manage_tasks` is `.locallyReadOnly` — it changes nothing, so the safety
-    /// gate has no reason to stop it — and it still has no business running
-    /// here. `pi-plan-mode` blocks Pi's `update_plan` during planning "because
-    /// it tracks execution progress rather than conversational planning", and
-    /// the same holds: nothing is executing yet, so a task list would be a
-    /// checklist of things that have not started, sitting beside a plan that has
-    /// not been agreed to.
+    /// Availability keeps `manage_tasks` out of planning requests. This fallback
+    /// still protects callers that assemble a registry by hand or replay a call
+    /// that was produced against a different capability set.
     public var blockedToolNames: Set<String> = Self.blockedByName
 
-    /// A host's own judgement about one call, asked before the safety gate.
+    /// A host's own judgement about one call, asked before the approval gate.
     ///
     /// `nil` falls through to the ordinary rules; a decision replaces them. This
     /// is where "which of *my* tools deserve a finer answer than their declared
-    /// safety" lives — a host with a shell tool reads its command with
+    /// approval policy" lives — a host with a shell tool reads its command with
     /// `CommandRiskClassifier` here, because whether a command may run while
     /// planning is a property of the command and only its owner can say.
     ///
@@ -74,18 +70,21 @@ public nonisolated struct AgentPlanModeHook: AgentLoopHook {
 
         // `context.descriptor` is post-preflight, so the rest rides evidence the
         // pipeline already proved locally rather than anything the model or a
-        // remote server asserted. `scratch_write` and `scratch_replace` are
-        // contained; a remote write, a private-network `fetch`, and every MCP
-        // tool are not.
-        guard !context.descriptor.safety.isAllowedWhilePlanning else { return .proceed }
-        return .block(
-            reason: String(
-                localized: """
-                    Plan mode is on, so \(name) was not run — it changes something outside this \
-                    app. Investigate with reads, draft the plan in the scratch workspace, and \
-                    call present_plan. The user runs it, or not, from there.
-                    """
-            ))
+        // remote server asserted. Scratch work is pre-approved; a remote write
+        // and a private-network `fetch` still ask.
+        switch context.descriptor.approvalPolicy {
+        case .approve:
+            return .proceed
+        case .ask, .deny:
+            return .block(
+                reason: String(
+                    localized: """
+                        Plan mode is on, so \(name) was not run — it changes something outside this \
+                        app. Investigate with reads, draft the plan in the scratch workspace, and \
+                        call present_plan. The user runs it, or not, from there.
+                        """
+                ))
+        }
     }
 
     /// Ends the run on the turn that presented a plan.

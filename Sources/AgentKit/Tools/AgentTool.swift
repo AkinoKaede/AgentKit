@@ -95,30 +95,42 @@ nonisolated
     extension AgentTool
 {
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
-        AgentToolPreflight(invocation: invocation, safety: descriptor.safety)
+        AgentToolPreflight(invocation: invocation, approvalPolicy: descriptor.approvalPolicy)
     }
 }
 
 public nonisolated struct AnyAgentTool: AgentTool, Sendable {
     public let descriptor: AgentToolDescriptor
+    /// The run postures in which this definition may be advertised or called.
+    /// Registration metadata stays local; providers receive only `descriptor`.
+    public let availableIn: Set<AgentRunMode>
     private let executeClosure:
         @Sendable (AgentToolInvocation, AgentToolExecutionContext) async throws -> AgentToolResult
     private let preflightClosure: @Sendable (AgentToolInvocation) async throws -> AgentToolPreflight
 
-    public init<T: AgentToolDefinition>(_ tool: T) {
+    public init<T: AgentToolDefinition>(
+        _ tool: T,
+        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases)
+    ) {
         descriptor = tool.registeredDescriptor
+        self.availableIn = availableIn
         preflightClosure = tool.preflight
         executeClosure = tool.execute
     }
 
-    public init<T: AgentTool>(_ tool: T) {
+    public init<T: AgentTool>(
+        _ tool: T,
+        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases)
+    ) {
         descriptor = tool.descriptor
+        self.availableIn = availableIn
         preflightClosure = tool.preflight
         executeClosure = tool.execute
     }
 
     public init(
         descriptor: AgentToolDescriptor,
+        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases),
         preflight: (@Sendable (AgentToolInvocation) async throws -> AgentToolPreflight)? = nil,
         execute:
             @escaping @Sendable (
@@ -126,9 +138,10 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
             ) async throws -> AgentToolResult
     ) {
         self.descriptor = descriptor
+        self.availableIn = availableIn
         preflightClosure =
             preflight ?? { invocation in
-                AgentToolPreflight(invocation: invocation, safety: descriptor.safety)
+                AgentToolPreflight(invocation: invocation, approvalPolicy: descriptor.approvalPolicy)
             }
         executeClosure = execute
     }

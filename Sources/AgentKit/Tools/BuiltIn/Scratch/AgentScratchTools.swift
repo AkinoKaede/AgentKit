@@ -17,7 +17,7 @@ public nonisolated struct ScratchListTool: AgentToolDefinition, AgentToolSchemaB
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "recursive": Self.boolean(),
-            ], required: [], target: .local, safety: .locallyReadOnly, concurrency: .parallel,
+            ], required: [], target: .local, approvalPolicy: .approve, concurrency: .parallel,
             presentation: .init(
                 symbol: "folder", activity: .semanticArgument(key: "path", fallback: .scratchWorkspace),
                 output: .json, actionKind: .list
@@ -70,7 +70,7 @@ public nonisolated struct ScratchReadTool: AgentToolDefinition, AgentToolSchemaB
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "offset": Self.integer(min: 1, max: 10_000_000),
                 "limit": Self.integer(min: 1, max: 100_000),
-            ], required: ["path"], target: .local, safety: .locallyReadOnly,
+            ], required: ["path"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "doc.text", activity: .semanticArgument(key: "path", fallback: .scratchFile),
@@ -118,7 +118,7 @@ public nonisolated struct ScratchSearchTool: AgentToolDefinition, AgentToolSchem
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "regex": Self.boolean(), "case_sensitive": Self.boolean(),
                 "limit": Self.integer(min: 1, max: AgentScratchWorkspace.Limits.searchResults),
-            ], required: ["query"], target: .local, safety: .locallyReadOnly,
+            ], required: ["query"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "magnifyingglass",
@@ -185,7 +185,7 @@ public nonisolated struct ScratchWriteTool: AgentToolDefinition, AgentToolSchema
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "content": Self.string(max: 128 * 1_024),
-            ], required: ["path", "content"], target: .local, safety: .locallyContained,
+            ], required: ["path", "content"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "square.and.pencil",
@@ -267,7 +267,7 @@ public nonisolated struct ScratchReplaceTool: AgentToolDefinition, AgentToolSche
                 "replacements": Self.array(
                     items: replacement, max: AgentScratchWorkspace.Limits.replacements
                 ),
-            ], required: ["path", "replacements"], target: .local, safety: .locallyContained,
+            ], required: ["path", "replacements"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "pencil", activity: .semanticArgument(key: "path", fallback: .scratchFile),
@@ -329,7 +329,7 @@ nonisolated
                     replaced, whatever this says.
                     """
                 ),
-            ], required: ["from", "to"], target: .local, safety: .locallyContained,
+            ], required: ["from", "to"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: Self.symbol, activity: .semanticArgument(key: "from", fallback: .scratchEntry),
@@ -457,7 +457,7 @@ public nonisolated struct ScratchDiffTool: AgentToolDefinition, AgentToolSchemaB
                 "path_a": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "path_b": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "context": Self.integer(min: 0, max: 20),
-            ], required: ["path_a", "path_b"], target: .local, safety: .locallyReadOnly,
+            ], required: ["path_a", "path_b"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "arrow.left.arrow.right",
@@ -508,7 +508,7 @@ public nonisolated struct ScratchDeleteTool: AgentToolDefinition, AgentToolSchem
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "kind": Self.enumeration(["file", "directory"]),
-            ], required: ["path", "kind"], target: .local, safety: .locallyContained,
+            ], required: ["path", "kind"], target: .local, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "trash", activity: .semanticArgument(key: "path", fallback: .scratchEntry),
@@ -850,7 +850,7 @@ public nonisolated struct ScratchFetchTool: AgentToolDefinition, AgentToolSchema
                 "scratch_path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "format": Self.enumeration(["markdown", "original"]),
             ], required: ["url", "scratch_path"], target: .network,
-            safety: .locallyContained, concurrency: .parallel,
+            approvalPolicy: .approve, concurrency: .parallel,
             presentation: .init(
                 symbol: "globe.badge.chevron.backward",
                 activity: .semanticArgument(key: "url", fallback: .url),
@@ -863,7 +863,7 @@ public nonisolated struct ScratchFetchTool: AgentToolDefinition, AgentToolSchema
         let arguments = try Arguments(invocation)
         _ = try AgentWebAddress.validated(arguments.string("url"))
         _ = try AgentScratchWorkspace.normalize(arguments.string("scratch_path"))
-        return AgentToolPreflight(invocation: invocation, safety: .locallyContained)
+        return AgentToolPreflight(invocation: invocation, approvalPolicy: .approve)
     }
 
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws

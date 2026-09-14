@@ -81,9 +81,9 @@ public nonisolated enum AgentJSONValue: Hashable, Sendable, Codable {
 ///
 /// A property of the run rather than of a call: the same command is presented
 /// to the user, sent to Security Review, or executed outright depending only on
-/// this. What it never decides is whether a call is *safe* — that is established
-/// locally by `AgentToolDescriptor.Safety`, and the two auto-allowed cases there
-/// are allowed in every mode including `.askForApproval`.
+/// this. What it never decides is a call's approval policy — that is established
+/// locally by `AgentToolDescriptor.ApprovalPolicy`. Calls marked `.approve` run
+/// in every mode, while `.deny` runs in none of them.
 public nonisolated enum AgentPermissionMode: String, Codable, Sendable, CaseIterable, Identifiable {
     case askForApproval, approveForMe, fullAccess
 
@@ -106,6 +106,15 @@ public nonisolated enum AgentPermissionMode: String, Codable, Sendable, CaseIter
     }
 }
 
+/// The posture one agent run holds from its first model request to its last.
+///
+/// Separate from `AgentPermissionMode`: this answers whether the run is
+/// planning or acting, while permission mode answers who authorizes an action.
+public nonisolated enum AgentRunMode: String, Codable, Sendable, CaseIterable {
+    case planning
+    case acting
+}
+
 public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable, Codable {
     public init(
         name: String,
@@ -113,9 +122,8 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
         summary: String,
         inputSchema: AgentJSONValue,
         target: Target,
-        safety: Safety,
+        approvalPolicy: ApprovalPolicy,
         concurrency: Concurrency = .sequential,
-        alwaysAskUser: Bool = false,
         presentation: Presentation? = nil
     ) {
         self.name = name
@@ -123,9 +131,8 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
         self.summary = summary
         self.inputSchema = inputSchema
         self.target = target
-        self.safety = safety
+        self.approvalPolicy = approvalPolicy
         self.concurrency = concurrency
-        self.alwaysAskUser = alwaysAskUser
         self.presentation = presentation
     }
 
@@ -322,64 +329,44 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
         case local, host, network, user, mcp
     }
 
-    public nonisolated enum Safety: String, Hashable, Sendable, Codable {
-        /// Proven locally, not asserted by a model or remote MCP annotation.
-        case locallyReadOnly
-        /// A change, but only to storage the app owns and nothing outside it can
-        /// reach — today, the scratch workspace.
-        ///
-        /// A separate case rather than a second use of `locallyReadOnly`, because
-        /// the two names state *why* a call may skip the gate and a write is not a
-        /// read. What they share is the kind of evidence: containment is a local
-        /// fact about a path this process resolved, not something a model or a
-        /// remote server asserted.
-        ///
-        /// Auto-allowed in every permission mode, including Ask for approval. That
-        /// is the point of it: a staging area you have to approve into is not a
-        /// staging area, and six dialogs for one edit loop teach the reader to
-        /// click through the seventh — the one that reaches a host.
-        case locallyContained
-        case requiresAuthorization
+    /// How this call enters the run's approval gate.
+    ///
+    /// This is established locally, never asserted by a model or remote MCP
+    /// annotation. `.approve` covers both work proven read-only and changes
+    /// confined to app-owned storage such as the scratch workspace. `.ask`
+    /// delegates to the run's permission mode, and `.deny` refuses every mode.
+    public nonisolated enum ApprovalPolicy: String, CaseIterable, Identifiable, Hashable, Sendable, Codable {
+        case deny
+        case ask
+        case approve
 
-        /// Whether the approval gate lets this through without asking anyone.
-        ///
-        /// Phrased as a property of the case rather than an `== .requiresAuthorization`
-        /// at the call site so that adding a fourth case forces a decision here,
-        /// where the reasoning is, instead of silently defaulting to allowed.
-        public var isAutoAllowed: Bool {
-            switch self {
-            case .locallyReadOnly, .locallyContained: true
-            case .requiresAuthorization: false
+        public nonisolated var id: String { rawValue }
+
+        public init(from decoder: any Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let rawValue = try container.decode(String.self)
+            switch rawValue {
+            case Self.deny.rawValue, "disabled": self = .deny
+            case Self.ask.rawValue, "alwaysAsk", "followPermissions": self = .ask
+            case Self.approve.rawValue: self = .approve
+            default:
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Unknown approval policy: \(rawValue)"
+                )
             }
         }
 
-        /// Whether plan mode lets this run at all.
-        ///
-        /// Phrased here beside `isAutoAllowed`, and for the same reason: adding
-        /// a fourth case should force a decision where the reasoning is rather
-        /// than default to permitted at a call site.
-        ///
-        /// It happens to agree with `isAutoAllowed` today, and they are still
-        /// two properties, because they answer different questions. That one is
-        /// "must a person authorize this"; this one is "does this change
-        /// anything outside the app". A future case could easily be auto-allowed
-        /// and still be a change plan mode has no business making.
-        ///
-        /// `locallyContained` is allowed deliberately: the scratch workspace is
-        /// where a plan is drafted, and a planning mode that cannot write its own
-        /// plan is not one.
-        public var isAllowedWhilePlanning: Bool {
-            switch self {
-            case .locallyReadOnly, .locallyContained: true
-            case .requiresAuthorization: false
-            }
+        public func encode(to encoder: any Encoder) throws {
+            var container = encoder.singleValueContainer()
+            try container.encode(rawValue)
         }
     }
 
     /// Whether this tool may run beside the other calls of the same turn.
     ///
-    /// Separate from `Safety`, which answers a different question: safety is
-    /// about who must authorize the call, concurrency is about what else may be
+    /// Separate from `ApprovalPolicy`, which answers a different question:
+    /// approval policy is about who must approve the call, concurrency is about what else may be
     /// happening while it runs. A write can be approved and still be the only
     /// thing allowed to touch the host at that moment.
     public nonisolated enum Concurrency: String, Hashable, Sendable, Codable {
@@ -397,14 +384,12 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
     public var summary: String
     public var inputSchema: AgentJSONValue
     public var target: Target
-    public var safety: Safety
+    public var approvalPolicy: ApprovalPolicy
     /// Defaults to the strict value on purpose. A batch runs in parallel only
     /// when *every* call in it is marked parallel, so an unannotated tool — a
     /// new one, or one a future contributor forgets about — makes its turn
     /// serial rather than quietly racing whatever else the model asked for.
     public var concurrency: Concurrency = .sequential
-    /// MCP's Ask First override. Full access intentionally ignores it.
-    public var alwaysAskUser: Bool = false
     /// Transcript rendering declared by the tool rather than guessed by Chat UI.
     public var presentation: Presentation? = nil
 }
@@ -459,24 +444,24 @@ public nonisolated struct AgentToolInvocation: Identifiable, Hashable, Sendable,
 
 /// Local, deterministic facts established before an action reaches either the
 /// user approval surface or Security Review. Remote annotations and model text
-/// may add caution, but cannot mark an action read-only.
+/// may add caution, but cannot make approval unnecessary.
 public nonisolated struct AgentToolPreflight: Hashable, Sendable {
     public init(
         invocation: AgentToolInvocation,
-        safety: AgentToolDescriptor.Safety,
+        approvalPolicy: AgentToolDescriptor.ApprovalPolicy,
         reasons: [String] = [],
         concurrency: AgentToolDescriptor.Concurrency? = nil,
         executionMetadata: [String: AgentJSONValue] = [:]
     ) {
         self.invocation = invocation
-        self.safety = safety
+        self.approvalPolicy = approvalPolicy
         self.reasons = reasons
         self.concurrency = concurrency
         self.executionMetadata = executionMetadata
     }
 
     public var invocation: AgentToolInvocation
-    public var safety: AgentToolDescriptor.Safety
+    public var approvalPolicy: AgentToolDescriptor.ApprovalPolicy
     public var reasons: [String] = []
     /// Overrides the descriptor's declared concurrency for this one call, or
     /// `nil` to keep it.
@@ -484,7 +469,7 @@ public nonisolated struct AgentToolPreflight: Hashable, Sendable {
     /// A tool that runs commands is the reason this exists: whether one command
     /// may run beside another is a property of the command, not of the tool, and
     /// whatever classifier proves that is already consulted here to decide the
-    /// same call's `safety`. Both answers come from the same locally-proven
+    /// same call's `approvalPolicy`. Both answers come from the same locally-proven
     /// evidence rather than from anything the model or a remote server
     /// asserted.
     public var concurrency: AgentToolDescriptor.Concurrency?
@@ -554,6 +539,7 @@ public nonisolated struct AgentToolResult: Hashable, Sendable, Codable {
 
     /// Marks a result the provider produced inside its own turn.
     public static let providerNativeKey = "provider_native"
+    public static let approvalPolicyDeniedKey = "approval_policy_denied"
     public static let toolPresentationKey = "tool_presentation"
     public static let untrustedDataOpeningMarker = "<untrusted-data>\n"
     public static let untrustedDataClosingMarker = "\n</untrusted-data>"
@@ -593,6 +579,10 @@ public nonisolated struct AgentToolResult: Hashable, Sendable, Codable {
 
     public var isInterrupted: Bool {
         metadata["interrupted"]?.boolValue == true
+    }
+
+    public var isApprovalPolicyDenied: Bool {
+        metadata[Self.approvalPolicyDeniedKey]?.boolValue == true
     }
 
     public var presentationPhase: String? {
@@ -1115,6 +1105,7 @@ public nonisolated struct AgentRunRequest: Sendable {
     /// posture is fixed when it starts, which is what lets the hook enforcing it
     /// be a value instead of an actor.
     public var isPlanning: Bool
+    public var mode: AgentRunMode { isPlanning ? .planning : .acting }
     public var systemPrompt: String
     public var priorMessages: [AgentTranscriptMessage]
     /// Where the run is happening, as the surface that started it understood it,

@@ -255,7 +255,7 @@ public nonisolated struct AgentTurnDriver: Sendable {
                 "additionalProperties": .bool(false),
             ]),
             target: .network,
-            safety: .locallyReadOnly,
+            approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: WebSearchTool.presentation
         )

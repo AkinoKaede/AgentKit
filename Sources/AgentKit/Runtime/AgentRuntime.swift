@@ -188,6 +188,9 @@ public actor AgentRuntime {
         let pipeline = configuration.contextPipeline(
             sessionContext, prompt.id, request.isPlanning
         )
+        // Resolve once for the run. Every model round trip and every execution
+        // lookup then sees the same posture-specific capability set.
+        let availableTools = tools.available(in: request.mode)
 
         channel.emit(
             .runStarted(
@@ -198,12 +201,12 @@ public actor AgentRuntime {
         await persist(snapshot)
 
         let driver = AgentTurnDriver(
-            model: model, tools: tools, channel: channel, runID: runID,
+            model: model, tools: availableTools, channel: channel, runID: runID,
             pacing: configuration.streamPacing
         )
         let scheduler = AgentToolScheduler(
             executor: AgentToolExecutor(
-                tools: tools, approval: approval, hooks: hooks, channel: channel,
+                tools: availableTools, approval: approval, hooks: hooks, channel: channel,
                 secretBroker: secretBroker, userInteraction: userInteraction,
                 services: services,
                 runID: runID, permissionMode: request.permissionMode,
@@ -228,7 +231,7 @@ public actor AgentRuntime {
                         AgentModelContext(
                             systemPrompt: request.systemPrompt,
                             messages: snapshot.messages,
-                            tools: tools.descriptors
+                            tools: availableTools.descriptors
                         )))
                 snapshot.messages.append(turn.message)
                 channel.emit(.messageFinished(turn.message))

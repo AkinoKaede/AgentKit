@@ -338,6 +338,8 @@
 	<string>權杖端點未以HTTP回應。</string>
 	<key>The tool call did not produce a result.</key>
 	<string>工具呼叫沒有產生結果。</string>
+	<key>The tool is denied by its approval policy.</key>
+	<string>此工具已被其核准策略拒絕。</string>
 	<key>There is not enough history to compact yet.</key>
 	<string>沒有足夠的歷史可以壓縮。</string>
 	<key>This file has no --- frontmatter block, so it is not a skill.</key>

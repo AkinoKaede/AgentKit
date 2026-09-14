@@ -109,10 +109,19 @@ public actor AgentApprovalBroker: AgentApprovalHandling {
         _ request: AgentApprovalRequest,
         mode: AgentPermissionMode
     ) async -> AgentApprovalDecision {
-        if request.descriptor.safety.isAutoAllowed { return .allow }
+        switch request.descriptor.approvalPolicy {
+        case .deny:
+            return .deny(
+                String(localized: "The tool is denied by its approval policy.", bundle: .module)
+            )
+        case .approve:
+            return .allow
+        case .ask:
+            break
+        }
         if mode == .fullAccess { return .allow }
 
-        if request.descriptor.alwaysAskUser || mode == .askForApproval {
+        if mode == .askForApproval {
             event(.approvalRequested(request))
             return await manualApproval(request)
         }

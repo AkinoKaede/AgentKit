@@ -18,20 +18,19 @@ An agent that only talks is easy. One that *acts* — writes things, changes thi
 and does it somewhere the consequences are real — is where the hard parts are, and they are all in
 the same place: between the model asking and the thing happening. This is a runtime for that gap.
 
-**Safety is proven locally, never asserted.** Every call is classified before it runs, and the
-classification comes from evidence this process established — a resolved path, a parsed URL, a
-command a classifier could read. Nothing a model claims about its own call, and nothing a remote
-MCP server annotates onto its tool, can make a call read-only. Remote metadata can only ever
-tighten: a server's "destructive" hint makes a tool serial, a server's "safe" hint does nothing.
+**Approval policy is decided locally, never asserted.** Every call is classified before it runs, and
+the classification comes from evidence this process established — a resolved path, a parsed URL, a
+command a classifier could read, or a choice the user saved for an MCP tool. Nothing a model claims
+about its own call, and nothing a remote MCP server annotates onto its tool, can approve a call.
+Remote metadata can only tighten: a server's "destructive" hint makes a tool serial, while a
+server's "safe" hint does nothing.
 
-**Three permission modes, one gate.** `.askForApproval` puts every acting call to the user;
-`.approveForMe` sends the same calls to a model reviewer that fails closed on a timeout, a missing
-credential, or malformed JSON; `.fullAccess` runs them. What no mode changes is the two categories
-proven harmless — a read that changed nothing, and a write that touched only storage the app owns.
-Those run everywhere, including under `.askForApproval`, because a staging area you have to approve
-into is not a staging area, and dialogs nobody can act on teach the reader to click through the one
-that matters. Authorization is deliberately *not* an extension point: `AgentApprovalHandling` is a
-structural stage of the executor, and hooks run on either side of it rather than in place of it.
+**Three policies, three permission modes, one gate.** `.deny` refuses every mode and `.approve` runs
+in every mode. `.ask` delegates: `.askForApproval` puts the call to the user, `.approveForMe` sends
+it to a model reviewer that fails closed, and `.fullAccess` runs it. Reads and writes confined to
+app-owned storage are pre-approved, because a staging area you have to approve into is not a staging
+area. Approval is deliberately *not* an extension point: `AgentApprovalHandling` is a structural
+stage of the executor, and hooks run on either side of it rather than in place of it.
 
 **Concurrency is opt-in per call, and the batch is only as parallel as its least parallel member.**
 A turn's calls run together only when every one of them is marked parallel; a single sequential call
@@ -128,6 +127,19 @@ of theirs:
 AgentToolCatalog.registry(builtIn: builtIn, additional: myTools)
 ```
 
+A registration may limit a tool to planning or acting runs. Both modes are the default, so existing
+tools need no annotation; mode-specific tools opt in where they are registered:
+
+```swift
+AgentToolTypeRegistration(MyTaskTool.self, availableIn: [.acting]) { environment in
+    MyTaskTool(environment: environment)
+}
+```
+
+The runtime resolves that availability once per run. An unavailable tool is absent from every model
+request in that run and from the executor's lookup, so what the model is offered and what can run do
+not diverge.
+
 ### The web client
 
 `AgentWebFetching` and `AgentWebSearching` are two methods each, and the core ships no
@@ -174,24 +186,25 @@ put their endpoints in comparable places.
 it, `AgentModelStreaming` is a single-method protocol and the runtime knows nothing else about the
 boundary.
 
-## Permission modes
+## Approval policies and permission modes
 
-Safety is a property of the call, established locally, never asserted by the model:
+Approval policy is a property of the call, established locally, never asserted by the model:
 
-- `.locallyReadOnly` — proven to change nothing.
-- `.locallyContained` — changes only storage the app owns, i.e. the scratch workspace.
-- `.requiresAuthorization` — everything else.
+- `.deny` — refuse the call in every permission mode.
+- `.ask` — delegate to the run's permission mode.
+- `.approve` — run without another approval step.
 
-The first two are allowed in every mode. A staging area you have to approve into is not a staging
-area, and dialogs nobody can act on teach the reader to click through the one that matters.
+Calls proven read-only or confined to storage the app owns, such as the scratch workspace, are
+marked `.approve`. MCP tools use the locally persisted choice made by the host app; denied tools
+remain registered so an attempted call receives an explicit refusal.
 
-| Mode | Non-read-only calls |
+| Mode | `.ask` calls |
 | --- | --- |
 | `.askForApproval` | go to your `manualApproval` handler |
 | `.approveForMe` | go to `SecurityReviewing`; missing credentials, timeouts, and malformed JSON fail closed |
 | `.fullAccess` | run, while every structural boundary still holds |
 
-Authorization is deliberately not an extension point. `AgentApprovalHandling` is a structural stage
+Approval is deliberately not an extension point. `AgentApprovalHandling` is a structural stage
 of the executor that no configuration removes; hooks run on either side of it.
 
 ## Extension points

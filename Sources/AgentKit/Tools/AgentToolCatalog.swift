@@ -117,6 +117,7 @@ public nonisolated struct AgentToolTypeRegistration<Environment>: Sendable {
 
     public init<T: AgentToolDefinition>(
         _ type: T.Type,
+        availableIn: Set<AgentRunMode> = Set(AgentRunMode.allCases),
         make: @escaping @Sendable (Environment) -> T?
     ) {
         presenter = type.presenter
@@ -124,6 +125,7 @@ public nonisolated struct AgentToolTypeRegistration<Environment>: Sendable {
             guard let tool = make(environment) else { return nil }
             return AnyAgentTool(
                 descriptor: tool.registeredDescriptor,
+                availableIn: availableIn,
                 preflight: tool.preflight,
                 execute: tool.execute
             )
@@ -232,7 +234,7 @@ public nonisolated enum AgentToolCatalog {
     ]
 
     private static let taskTools: [Registration] = [
-        .init(ManageTasksTool.self) { configuration in
+        .init(ManageTasksTool.self, availableIn: [.acting]) { configuration in
             guard configuration.includes(.tasks) else { return nil }
             return configuration.tasks.map(ManageTasksTool.init(tasks:))
         }

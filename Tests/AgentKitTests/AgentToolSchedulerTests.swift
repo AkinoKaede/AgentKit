@@ -66,19 +66,19 @@ private let emptySchema = AgentJSONValue.object([
 private func probeTool(
     _ name: String,
     concurrency: AgentToolDescriptor.Concurrency,
-    safety: AgentToolDescriptor.Safety = .locallyReadOnly,
+    approvalPolicy: AgentToolDescriptor.ApprovalPolicy = .approve,
     preflightConcurrency: AgentToolDescriptor.Concurrency? = nil,
     probe: ConcurrencyProbe
 ) -> AnyAgentTool {
     let descriptor = AgentToolDescriptor(
         name: name, summary: name, inputSchema: emptySchema,
-        target: .local, safety: safety, concurrency: concurrency
+        target: .local, approvalPolicy: approvalPolicy, concurrency: concurrency
     )
     return AnyAgentTool(
         descriptor: descriptor,
         preflight: { invocation in
             AgentToolPreflight(
-                invocation: invocation, safety: safety, concurrency: preflightConcurrency
+                invocation: invocation, approvalPolicy: approvalPolicy, concurrency: preflightConcurrency
             )
         },
         execute: { invocation, _ in
