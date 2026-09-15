@@ -295,7 +295,7 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
                 runs: ordered.map {
                     AgentRunSummary(
                         id: $0.id, state: $0.state, startedAt: $0.startedAt,
-                        finishedAt: $0.finishedAt
+                        finishedAt: $0.finishedAt, failure: $0.failure
                     )
                 },
                 toolCards: storedToolCards[id] ?? [],
@@ -386,7 +386,8 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
                     !$0.isCompaction
                         && (conversation.messageRunIDs[$0.id] ?? fallbackRunID) == run.id
                 },
-                startedAt: run.startedAt, finishedAt: run.finishedAt
+                startedAt: run.startedAt, finishedAt: run.finishedAt,
+                failure: run.failure
             )
         }
         storedToolCards[conversation.id] = conversation.toolCards

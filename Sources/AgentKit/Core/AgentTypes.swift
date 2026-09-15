@@ -775,18 +775,21 @@ public nonisolated struct AgentRunSummary: Identifiable, Hashable, Sendable {
         id: UUID,
         state: AgentRunState,
         startedAt: Date,
-        finishedAt: Date? = nil
+        finishedAt: Date? = nil,
+        failure: String? = nil
     ) {
         self.id = id
         self.state = state
         self.startedAt = startedAt
         self.finishedAt = finishedAt
+        self.failure = failure
     }
 
     public var id: UUID
     public var state: AgentRunState
     public var startedAt: Date
     public var finishedAt: Date?
+    public var failure: String?
 }
 
 public nonisolated enum AgentStopReason: String, Hashable, Sendable, Codable {
@@ -1062,6 +1065,11 @@ public nonisolated enum AgentEvent: Hashable, Sendable {
     /// Provider-authored reasoning summary/thinking, kept out of final answer text.
     case reasoningDelta(messageID: AgentTranscriptMessage.ID, text: String)
     case messageFinished(AgentTranscriptMessage)
+    /// The current provider attempt was abandoned. Readers must discard any
+    /// transient text and reasoning already shown for `messageID`.
+    case modelRetryScheduled(AgentModelRetryProgress)
+    /// The replacement request has begun producing a valid response.
+    case modelRetryRecovered(AgentModelRetryProgress)
     /// A message the user queued mid-run has entered the model's context.
     ///
     /// The one moment at which a steered turn becomes part of the conversation.
@@ -1107,6 +1115,8 @@ public nonisolated enum AgentEvent: Hashable, Sendable {
         switch self {
         case .runStarted(let run), .runFinished(let run):
             run.id
+        case .modelRetryScheduled(let progress), .modelRetryRecovered(let progress):
+            progress.runID
         case .toolProposed(let invocation, _), .toolStarted(let invocation),
             .toolProgress(let invocation, _), .toolFinished(let invocation, _):
             invocation.runID

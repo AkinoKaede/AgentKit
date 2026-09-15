@@ -13,13 +13,15 @@ public nonisolated struct AgentTurnDriver: Sendable {
         tools: AgentToolRegistry,
         channel: AgentEventChannel,
         runID: UUID,
-        pacing: AgentStreamPacing? = nil
+        pacing: AgentStreamPacing? = nil,
+        retryPolicy: AgentModelRetryPolicy = .disabled
     ) {
         self.model = model
         self.tools = tools
         self.channel = channel
         self.runID = runID
         self.pacing = pacing
+        self.retryPolicy = retryPolicy
     }
 
     /// What one turn produced.
@@ -58,134 +60,173 @@ public nonisolated struct AgentTurnDriver: Sendable {
     public let runID: UUID
     /// `nil` sends every delta on as it arrives — see `AgentStreamPacing`.
     public let pacing: AgentStreamPacing?
+    public let retryPolicy: AgentModelRetryPolicy
 
     public func run(
         _ context: AgentModelContext
     ) async throws -> Turn {
-        var message = AgentTranscriptMessage(role: .assistant)
-        var pending: [String: PendingToolCall] = [:]
-        var order: [String] = []
-        var stopReason = AgentStopReason.completed
-        var usage = AgentTokenUsage()
-        // One card per distinct query. Gemini reports its grounding metadata on
-        // more than one chunk of the same stream, and a card per chunk would
-        // read as the model having searched four times for one thing.
-        var recordedSearches: Set<String> = []
-        channel.emit(.messageStarted(message))
-        let messageID = message.id
-
-        let reasoningEmitter = AgentDeltaEmitter(
-            configuration: pacing?.reasoning
-        ) { [channel] text in
-            channel.emit(.reasoningDelta(messageID: messageID, text: text))
-        }
-        let textEmitter = AgentDeltaEmitter(
-            configuration: pacing?.text
-        ) { [channel] text in
-            channel.emit(.messageDelta(messageID: messageID, text: text))
-        }
-        var streamedCharacterCount = 0
-
+        let started = AgentTranscriptMessage(role: .assistant)
+        channel.emit(.messageStarted(started))
         let request = AgentModelRequest(
             systemPrompt: context.systemPrompt,
             messages: context.messages,
             tools: context.tools,
             outputFormat: context.outputFormat
         )
-        do {
-            for try await event in model.stream(request) {
-                try Task.checkCancellation()
-                switch event {
-                case .textDelta(let text):
-                    message.text += text
-                    try await reasoningEmitter.wait()
-                    if let step = pacing?.step(atCharacters: streamedCharacterCount) {
-                        await textEmitter.update(step)
+        var retryAttempt = 0
+        var scheduledProgress: AgentModelRetryProgress?
+
+        while true {
+            var message = AgentTranscriptMessage(
+                id: started.id, role: .assistant, createdAt: started.createdAt
+            )
+            var pending: [String: PendingToolCall] = [:]
+            var order: [String] = []
+            var stopReason = AgentStopReason.completed
+            var usage = AgentTokenUsage()
+            var receivedFinish = false
+            var recovered = false
+            var streamedCharacterCount = 0
+            var recordedSearches: Set<String> = []
+            var searches: [AgentWebSearchActivity] = []
+            let messageID = message.id
+            let reasoningEmitter = AgentDeltaEmitter(
+                configuration: pacing?.reasoning
+            ) { [channel] text in
+                channel.emit(.reasoningDelta(messageID: messageID, text: text))
+            }
+            let textEmitter = AgentDeltaEmitter(
+                configuration: pacing?.text
+            ) { [channel] text in
+                channel.emit(.messageDelta(messageID: messageID, text: text))
+            }
+
+            do {
+                for try await event in model.stream(request) {
+                    try Task.checkCancellation()
+                    if !recovered, let progress = scheduledProgress {
+                        channel.emit(.modelRetryRecovered(progress))
+                        recovered = true
                     }
-                    await textEmitter.add(text)
-                    streamedCharacterCount += text.count
-                case .textSnapshot(let text):
-                    // The UI is reconciled by messageFinished after the provider
-                    // stream closes, so replacing here cannot duplicate deltas.
-                    message.text = text
-                case .reasoningDelta(let text):
-                    if message.reasoning.isEmpty {
-                        message.reasoning.append(
-                            AgentReasoningBlock(
-                                text: text, createdAt: message.createdAt
-                            ))
-                    } else {
-                        message.reasoning[
-                            message.reasoning.index(before: message.reasoning.endIndex)
-                        ].text += text
+                    switch event {
+                    case .textDelta(let text):
+                        message.text += text
+                        try await reasoningEmitter.wait()
+                        if let step = pacing?.step(atCharacters: streamedCharacterCount) {
+                            await textEmitter.update(step)
+                        }
+                        await textEmitter.add(text)
+                        streamedCharacterCount += text.count
+                    case .textSnapshot(let text):
+                        // The UI is reconciled by messageFinished after the provider
+                        // stream closes, so replacing here cannot duplicate deltas.
+                        message.text = text
+                    case .reasoningDelta(let text):
+                        if message.reasoning.isEmpty {
+                            message.reasoning.append(
+                                AgentReasoningBlock(
+                                    text: text, createdAt: message.createdAt
+                                ))
+                        } else {
+                            message.reasoning[
+                                message.reasoning.index(before: message.reasoning.endIndex)
+                            ].text += text
+                        }
+                        try await textEmitter.wait()
+                        await reasoningEmitter.add(text)
+                    case .reasoningSnapshot(let text):
+                        if message.reasoning.isEmpty {
+                            message.reasoning.append(
+                                AgentReasoningBlock(
+                                    text: text, createdAt: message.createdAt
+                                ))
+                        } else {
+                            message.reasoning[
+                                message.reasoning.index(before: message.reasoning.endIndex)
+                            ].text = text
+                        }
+                    case .toolCallDelta(let id, let name, let arguments):
+                        try await reasoningEmitter.wait()
+                        try await textEmitter.wait()
+                        if pending[id] == nil { order.append(id) }
+                        var entry = pending[id] ?? PendingToolCall()
+                        if let name { entry.name = name }
+                        entry.arguments += arguments
+                        pending[id] = entry
+                    case .toolCallSnapshot(let id, let providerItemID, let name, let arguments):
+                        try await reasoningEmitter.wait()
+                        try await textEmitter.wait()
+                        if pending[id] == nil { order.append(id) }
+                        pending[id] = PendingToolCall(
+                            name: name, arguments: arguments,
+                            providerItemID: providerItemID
+                        )
+                    case .providerItem(let item):
+                        if let id = item.objectValue?["id"]?.stringValue,
+                            let index = message.providerItems.firstIndex(where: {
+                                $0.objectValue?["id"]?.stringValue == id
+                            })
+                        {
+                            message.providerItems[index] = item
+                        } else {
+                            message.providerItems.append(item)
+                        }
+                    case .webSearch(let activity):
+                        try await reasoningEmitter.wait()
+                        try await textEmitter.wait()
+                        if recordedSearches.insert(activity.query).inserted {
+                            searches.append(activity)
+                        }
+                    case .usage(let reported):
+                        usage = usage.merging(reported)
+                    case .finished(let reason):
+                        receivedFinish = true
+                        stopReason = reason
                     }
-                    try await textEmitter.wait()
-                    await reasoningEmitter.add(text)
-                case .reasoningSnapshot(let text):
-                    if message.reasoning.isEmpty {
-                        message.reasoning.append(
-                            AgentReasoningBlock(
-                                text: text, createdAt: message.createdAt
-                            ))
-                    } else {
-                        message.reasoning[
-                            message.reasoning.index(before: message.reasoning.endIndex)
-                        ].text = text
-                    }
-                case .toolCallDelta(let id, let name, let arguments):
-                    try await reasoningEmitter.wait()
-                    try await textEmitter.wait()
-                    if pending[id] == nil { order.append(id) }
-                    var entry = pending[id] ?? PendingToolCall()
-                    if let name { entry.name = name }
-                    entry.arguments += arguments
-                    pending[id] = entry
-                case .toolCallSnapshot(let id, let providerItemID, let name, let arguments):
-                    try await reasoningEmitter.wait()
-                    try await textEmitter.wait()
-                    if pending[id] == nil { order.append(id) }
-                    pending[id] = PendingToolCall(
-                        name: name, arguments: arguments,
-                        providerItemID: providerItemID
+                }
+                guard receivedFinish else { throw AgentTurnStreamError.endedBeforeFinish }
+                try await reasoningEmitter.wait()
+                try await textEmitter.wait()
+            } catch {
+                if Task.isCancelled {
+                    await reasoningEmitter.cancel()
+                    await textEmitter.cancel()
+                    throw CancellationError()
+                }
+                // Once the provider declared the response complete, losing the
+                // trailing framing can at most lose usage metadata. Reissuing
+                // the turn would risk duplicating a complete answer.
+                if receivedFinish {
+                    try? await reasoningEmitter.wait()
+                    try? await textEmitter.wait()
+                } else if let delay = retryPolicy.delay(forAttempt: retryAttempt + 1),
+                    error is AgentTurnStreamError || model.shouldRetry(after: error)
+                {
+                    await reasoningEmitter.cancel()
+                    await textEmitter.cancel()
+                    retryAttempt += 1
+                    let progress = AgentModelRetryProgress(
+                        runID: runID, messageID: message.id,
+                        attempt: retryAttempt,
+                        maximumAttempts: retryPolicy.delays.count
                     )
-                case .providerItem(let item):
-                    if let id = item.objectValue?["id"]?.stringValue,
-                        let index = message.providerItems.firstIndex(where: {
-                            $0.objectValue?["id"]?.stringValue == id
-                        })
-                    {
-                        // `response.completed` can carry a richer final reasoning
-                        // item (notably encrypted_content) than output_item.done.
-                        message.providerItems[index] = item
-                    } else {
-                        message.providerItems.append(item)
-                    }
-                case .webSearch(let activity):
-                    try await reasoningEmitter.wait()
-                    try await textEmitter.wait()
-                    if recordedSearches.insert(activity.query).inserted {
-                        recordNativeWebSearch(activity, sourceMessageID: message.id)
-                    }
-                case .usage(let reported):
-                    usage = usage.merging(reported)
-                case .finished(let reason):
-                    stopReason = reason
+                    scheduledProgress = progress
+                    channel.emit(.modelRetryScheduled(progress))
+                    try await Task.sleep(for: delay)
+                    continue
+                } else {
+                    try? await reasoningEmitter.wait()
+                    try? await textEmitter.wait()
+                    throw error
                 }
             }
-            try await reasoningEmitter.wait()
-            try await textEmitter.wait()
-        } catch {
-            if Task.isCancelled {
-                await reasoningEmitter.cancel()
-                await textEmitter.cancel()
-            } else {
-                try? await reasoningEmitter.wait()
-                try? await textEmitter.wait()
+
+            for activity in searches {
+                recordNativeWebSearch(activity, sourceMessageID: message.id)
             }
-            throw error
+            message.toolCalls = try order.map { try assembled($0, pending: pending) }
+            return Turn(message: message, reason: stopReason, usage: usage)
         }
-        message.toolCalls = try order.map { try assembled($0, pending: pending) }
-        return Turn(message: message, reason: stopReason, usage: usage)
     }
 
     private func assembled(
@@ -280,5 +321,16 @@ public nonisolated struct AgentTurnDriver: Sendable {
         result.toolPresentation = descriptor.presentation
         channel.emit(.toolProposed(invocation, descriptor))
         channel.emit(.toolFinished(invocation, result))
+    }
+}
+
+private nonisolated enum AgentTurnStreamError: LocalizedError, Sendable {
+    case endedBeforeFinish
+
+    var errorDescription: String? {
+        String(
+            localized: "The model connection closed before the response finished.",
+            bundle: .module
+        )
     }
 }

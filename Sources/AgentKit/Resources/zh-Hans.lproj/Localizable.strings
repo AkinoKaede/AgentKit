@@ -300,6 +300,8 @@
 	<string>无法创建分支，因为其标识符已存在。</string>
 	<key>The message is no longer available to edit.</key>
 	<string>该消息已无法编辑。</string>
+	<key>The model connection closed before the response finished.</key>
+	<string>模型连接在响应完成前已关闭。</string>
 	<key>The model did not return a usable summary.</key>
 	<string>该模型没有返回可用的摘要。</string>
 	<key>The model endpoint URL is invalid.</key>

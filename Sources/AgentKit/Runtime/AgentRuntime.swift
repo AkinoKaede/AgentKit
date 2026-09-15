@@ -12,6 +12,8 @@ public nonisolated struct AgentLoopConfiguration: Sendable {
     /// How streamed text reaches the reader. `nil` — the default — sends every
     /// delta on as it arrives; see `AgentStreamPacing` for when to set it.
     public var streamPacing: AgentStreamPacing?
+    /// Retries transient model-provider failures without replaying tools.
+    public var modelRetryPolicy = AgentModelRetryPolicy()
     public var outputProjection = AgentToolOutputProjection()
     public var contextSnapshot: @Sendable (String?, Bool) -> AgentTurnContextSnapshot = {
         AgentTurnContextSnapshot(sessionContext: $0, planContract: $1 ? AgentPlanContractInjection.contract : nil)
@@ -225,7 +227,8 @@ public actor AgentRuntime {
 
         let driver = AgentTurnDriver(
             model: model, tools: availableTools, channel: channel, runID: runID,
-            pacing: configuration.streamPacing
+            pacing: configuration.streamPacing,
+            retryPolicy: configuration.modelRetryPolicy
         )
         let scheduler = AgentToolScheduler(
             executor: AgentToolExecutor(
@@ -348,7 +351,8 @@ public actor AgentRuntime {
                 .runFinished(
                     AgentRunSummary(
                         id: runID, state: .failed, startedAt: snapshot.startedAt,
-                        finishedAt: snapshot.finishedAt
+                        finishedAt: snapshot.finishedAt,
+                        failure: snapshot.failure
                     )))
             channel.emit(.runState(.failed))
             await persist(snapshot)

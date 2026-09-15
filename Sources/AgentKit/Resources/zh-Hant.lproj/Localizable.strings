@@ -300,6 +300,8 @@
 	<string>無法建立分支，因為其識別碼已存在。</string>
 	<key>The message is no longer available to edit.</key>
 	<string>該訊息已無法編輯。</string>
+	<key>The model connection closed before the response finished.</key>
+	<string>模型連線在回應完成前已關閉。</string>
 	<key>The model did not return a usable summary.</key>
 	<string>模型未傳回可用的摘要。</string>
 	<key>The model endpoint URL is invalid.</key>

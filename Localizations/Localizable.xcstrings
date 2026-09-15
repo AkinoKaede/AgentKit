@@ -2431,6 +2431,22 @@
         }
       }
     },
+    "The model connection closed before the response finished.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型连接在响应完成前已关闭。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型連線在回應完成前已關閉。"
+          }
+        }
+      }
+    },
     "The model endpoint URL is invalid.": {
       "localizations": {
         "zh-Hans": {

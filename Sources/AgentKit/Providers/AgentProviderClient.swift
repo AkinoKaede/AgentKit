@@ -162,6 +162,39 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         }
     }
 
+    public func shouldRetry(after error: any Error) -> Bool {
+        if let error = error as? URLError {
+            return Self.retryableURLCodes.contains(error.code)
+        }
+        if let error = error as? AgentProviderStreamFailure {
+            return error.isRetryable
+        }
+        if let error = error as? AgentProviderError {
+            if case .http(let status, _) = error {
+                return status == 408 || status == 429 || (500..<600).contains(status)
+            }
+            return false
+        }
+        if let error = error as? GoogleAuthError {
+            if case .transport = error { return true }
+        }
+        return false
+    }
+
+    private static let retryableURLCodes: Set<URLError.Code> = [
+        .timedOut,
+        .cannotFindHost,
+        .cannotConnectToHost,
+        .networkConnectionLost,
+        .dnsLookupFailed,
+        .notConnectedToInternet,
+        .resourceUnavailable,
+        .internationalRoamingOff,
+        .callIsActive,
+        .dataNotAllowed,
+        .backgroundSessionWasDisconnected,
+    ]
+
     public func complete(_ request: AgentModelRequest) async throws -> [AgentModelStreamEvent] {
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
         var urlRequest = try buildRequest(request, streaming: false)
@@ -454,6 +487,9 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         // the JSON payload (`type`) and leaves the SSE `event:` field unset.
         // Compatible gateways commonly do the same for every provider.
         let eventType = Self.streamEventType(event, root: root)
+        if eventType == "error" || eventType == "response.failed" {
+            throw Self.streamFailure(in: root)
+        }
         switch provider.apiFormat {
         case .responses:
             if eventType == "response.completed",
@@ -481,6 +517,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         _ data: Data, wireNames: [String: String]
     ) throws -> [AgentModelStreamEvent] {
         if let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            if let failure = Self.explicitFailure(in: root) { throw failure }
             switch provider.apiFormat {
             case .responses:
                 return Self.parseCompletedResponses(root)
@@ -512,6 +549,33 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         }
         guard !output.isEmpty else { throw AgentProviderError.invalidResponse }
         return output
+    }
+
+    private static func explicitFailure(
+        in root: [String: Any]
+    ) -> AgentProviderStreamFailure? {
+        let response = root["response"] as? [String: Any]
+        guard
+            root["type"] as? String == "error"
+                || root["type"] as? String == "response.failed"
+                || response?["status"] as? String == "failed"
+                || root["error"] != nil
+        else { return nil }
+        return streamFailure(in: root)
+    }
+
+    private static func streamFailure(
+        in root: [String: Any]
+    ) -> AgentProviderStreamFailure {
+        let response = root["response"] as? [String: Any]
+        let error = (response?["error"] ?? root["error"]) as? [String: Any]
+        let code = (error?["code"] ?? error?["type"] ?? root["code"]) as? String
+        let message =
+            error?["message"] as? String
+            ?? response?["error"] as? String
+            ?? root["message"] as? String
+            ?? String(localized: "The model provider failed to complete the response.", bundle: .module)
+        return AgentProviderStreamFailure(code: code, message: message)
     }
 
     private static func providerToolObject(
@@ -1451,4 +1515,25 @@ public nonisolated enum AgentProviderError: LocalizedError, Sendable {
             String(localized: "The model endpoint returned \(status): \(body)", bundle: .module)
         }
     }
+}
+
+private nonisolated struct AgentProviderStreamFailure: LocalizedError, Sendable {
+    let code: String?
+    let message: String
+
+    var isRetryable: Bool {
+        guard let code = code?.lowercased() else { return false }
+        return [
+            "api_error",
+            "internal_error",
+            "internal_server_error",
+            "overloaded_error",
+            "rate_limit_error",
+            "rate_limit_exceeded",
+            "server_error",
+            "temporarily_unavailable",
+        ].contains(code)
+    }
+
+    var errorDescription: String? { message }
 }

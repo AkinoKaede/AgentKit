@@ -105,6 +105,13 @@ again. Every phase is a separate value you can hold still in a test — `AgentTu
 turn, `AgentToolScheduler` plans its batch, `AgentToolExecutor` takes one call through validation,
 preflight, hooks, authorization, and execution in that fixed order.
 
+`AgentRuntime` retries a transient provider failure five times with 1, 2, 4, 8, and 16 second
+backoff. A retry restarts only the current model request: partial deltas are abandoned through
+`modelRetryScheduled`, the replacement keeps the same logical message id, and no tool can be
+replayed because tools are dispatched only after the stream finishes. Custom `AgentModelStreaming`
+implementations opt errors in through `shouldRetry(after:)`; direct `AgentTurnDriver` use remains
+retry-free unless given an `AgentModelRetryPolicy`.
+
 ## Built-in tools
 
 Tools are selected by group. A group whose dependency is missing contributes nothing rather than

@@ -62,12 +62,62 @@ public nonisolated enum AgentModelStreamEvent: Sendable {
     case finished(AgentStopReason)
 }
 
+/// Backoff applied when one logical model turn loses its provider connection.
+///
+/// Each duration is one retry after the initial request. An empty list disables
+/// retries, which is the default for callers that use `AgentTurnDriver`
+/// directly rather than through `AgentRuntime`.
+public nonisolated struct AgentModelRetryPolicy: Equatable, Sendable {
+    public var delays: [Duration]
+
+    public init(
+        delays: [Duration] = [
+            .seconds(1), .seconds(2), .seconds(4), .seconds(8), .seconds(16),
+        ]
+    ) {
+        self.delays = delays
+    }
+
+    public static let disabled = AgentModelRetryPolicy(delays: [])
+
+    public func delay(forAttempt attempt: Int) -> Duration? {
+        guard attempt > 0, attempt <= delays.count else { return nil }
+        return delays[attempt - 1]
+    }
+}
+
+/// Ephemeral progress for a provider retry inside one logical model turn.
+public nonisolated struct AgentModelRetryProgress: Hashable, Sendable {
+    public var runID: UUID
+    public var messageID: AgentTranscriptMessage.ID
+    public var attempt: Int
+    public var maximumAttempts: Int
+
+    public init(
+        runID: UUID,
+        messageID: AgentTranscriptMessage.ID,
+        attempt: Int,
+        maximumAttempts: Int
+    ) {
+        self.runID = runID
+        self.messageID = messageID
+        self.attempt = attempt
+        self.maximumAttempts = maximumAttempts
+    }
+}
+
 /// The provider boundary — Pi's `streamFn`. Everything above it works in
 /// `AgentTranscriptMessage`; everything below it speaks one vendor's wire
 /// format. Swapping providers, proxying through a server, or scripting a run in
 /// a test are all the same substitution.
 public nonisolated protocol AgentModelStreaming: Sendable {
     func stream(_ request: AgentModelRequest) -> AsyncThrowingStream<AgentModelStreamEvent, any Error>
+    /// Whether dispatching the same request again can recover this failure.
+    func shouldRetry(after error: any Error) -> Bool
+}
+
+nonisolated extension AgentModelStreaming {
+    public func shouldRetry(after _: any Error) -> Bool { false }
 }
 
 /// A single buffered model response. Short, tool-free features use this path so
