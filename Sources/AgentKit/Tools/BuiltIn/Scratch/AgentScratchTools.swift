@@ -853,7 +853,7 @@ public nonisolated struct ScratchFetchTool: AgentToolDefinition, AgentToolSchema
                 "scratch_path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "format": Self.enumeration(["markdown", "original"]),
             ], required: ["url", "scratch_path"], target: .network,
-            approvalPolicy: .approve, concurrency: .parallel,
+            approvalPolicy: .ask, concurrency: .parallel,
             presentation: .init(
                 symbol: "globe.badge.chevron.backward",
                 activity: .semanticArgument(key: "url", fallback: .url),
@@ -866,7 +866,7 @@ public nonisolated struct ScratchFetchTool: AgentToolDefinition, AgentToolSchema
         let arguments = try Arguments(invocation)
         _ = try AgentWebAddress.validated(arguments.string("url"))
         _ = try AgentScratchWorkspace.normalize(arguments.string("scratch_path"))
-        return AgentToolPreflight(invocation: invocation, approvalPolicy: .approve)
+        return AgentToolPreflight(invocation: invocation, approvalPolicy: .ask)
     }
 
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws

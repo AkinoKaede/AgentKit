@@ -44,10 +44,32 @@ struct AgentKitSmokeTests {
         #expect(!names([.scratch]).contains("scratch_fetch"))
         #expect(names([.scratch, .web]).contains("scratch_fetch"))
     }
+
+    @Test
+    func networkToolsRequireApproval() {
+        let workspace = AgentScratchWorkspace(
+            conversationID: UUID(), base: FileManager.default.temporaryDirectory
+        )
+        let web = StubWebClient()
+        let descriptors = AgentToolCatalog.registry(
+            builtIn: .init(
+                groups: [.scratch, .web], workspace: workspace,
+                web: web, search: web
+            )
+        ).descriptors
+
+        for name in ["fetch", "web_search", "scratch_fetch"] {
+            #expect(descriptors.first { $0.name == name }?.approvalPolicy == .ask, "\(name)")
+        }
+    }
 }
 
-private struct StubWebClient: AgentWebFetching {
+private struct StubWebClient: AgentWebFetching, AgentWebSearching {
     func document(for rawURL: String) async throws -> AgentWebDocument {
         throw AgentWebError.emptyDocument
+    }
+
+    func search(_ query: String, count: Int) async throws -> [AgentWebDocument] {
+        []
     }
 }

@@ -17,7 +17,7 @@ public nonisolated struct FetchTool: AgentToolDefinition, AgentToolSchemaBuildin
                 "url": Self.string(max: 8_192),
                 "format": Self.enumeration(["markdown", "original"]),
             ],
-            required: ["url"], target: .network, approvalPolicy: .approve,
+            required: ["url"], target: .network, approvalPolicy: .ask,
             concurrency: .parallel,
             presentation: .init(
                 symbol: "globe", activity: .semanticArgument(key: "url", fallback: .url),
@@ -28,7 +28,7 @@ public nonisolated struct FetchTool: AgentToolDefinition, AgentToolSchemaBuildin
 
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
         _ = try AgentWebAddress.validated(Arguments(invocation).string("url"))
-        return AgentToolPreflight(invocation: invocation, approvalPolicy: .approve)
+        return AgentToolPreflight(invocation: invocation, approvalPolicy: .ask)
     }
 
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws
@@ -69,7 +69,7 @@ public nonisolated struct WebSearchTool: AgentToolDefinition, AgentToolSchemaBui
             "Search Google, Bing, DuckDuckGo, and Yahoo, then return readable Markdown from the "
                 + "result pages.",
             properties: ["query": Self.string(max: 1_024), "count": Self.integer(min: 1, max: 5)],
-            required: ["query"], target: .network, approvalPolicy: .approve,
+            required: ["query"], target: .network, approvalPolicy: .ask,
             concurrency: .parallel,
             presentation: Self.presentation
         )
@@ -77,7 +77,7 @@ public nonisolated struct WebSearchTool: AgentToolDefinition, AgentToolSchemaBui
 
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
         _ = try Self.query(Arguments(invocation))
-        return AgentToolPreflight(invocation: invocation, approvalPolicy: .approve)
+        return AgentToolPreflight(invocation: invocation, approvalPolicy: .ask)
     }
 
     /// Rejected here rather than inside whichever client the host supplied: a

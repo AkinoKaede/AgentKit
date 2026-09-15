@@ -196,6 +196,8 @@ Approval policy is a property of the call, established locally, never asserted b
 Calls proven read-only or confined to storage the app owns, such as the scratch workspace, are
 marked `.approve`. MCP tools use the locally persisted choice made by the host app; denied tools
 remain registered so an attempted call receives an explicit refusal.
+Outbound `fetch`, `web_search`, and `scratch_fetch` calls are `.ask` even though they read, because
+they contact an external network destination.
 
 | Mode | `.ask` calls |
 | --- | --- |
