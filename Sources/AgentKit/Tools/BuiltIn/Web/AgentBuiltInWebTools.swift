@@ -69,7 +69,7 @@ public nonisolated struct WebSearchTool: AgentToolDefinition, AgentToolSchemaBui
             "Search Google, Bing, DuckDuckGo, and Yahoo, then return readable Markdown from the "
                 + "result pages.",
             properties: ["query": Self.string(max: 1_024), "count": Self.integer(min: 1, max: 5)],
-            required: ["query"], target: .network, approvalPolicy: .ask,
+            required: ["query"], target: .network, approvalPolicy: .approve,
             concurrency: .parallel,
             presentation: Self.presentation
         )
@@ -77,7 +77,7 @@ public nonisolated struct WebSearchTool: AgentToolDefinition, AgentToolSchemaBui
 
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
         _ = try Self.query(Arguments(invocation))
-        return AgentToolPreflight(invocation: invocation, approvalPolicy: .ask)
+        return AgentToolPreflight(invocation: invocation, approvalPolicy: .approve)
     }
 
     /// Rejected here rather than inside whichever client the host supplied: a

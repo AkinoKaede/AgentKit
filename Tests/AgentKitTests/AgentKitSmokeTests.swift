@@ -46,7 +46,7 @@ struct AgentKitSmokeTests {
     }
 
     @Test
-    func networkToolsRequireApproval() {
+    func networkFetchesRequireApprovalWhileSearchIsPreapproved() {
         let workspace = AgentScratchWorkspace(
             conversationID: UUID(), base: FileManager.default.temporaryDirectory
         )
@@ -58,9 +58,10 @@ struct AgentKitSmokeTests {
             )
         ).descriptors
 
-        for name in ["fetch", "web_search", "scratch_fetch"] {
+        for name in ["fetch", "scratch_fetch"] {
             #expect(descriptors.first { $0.name == name }?.approvalPolicy == .ask, "\(name)")
         }
+        #expect(descriptors.first { $0.name == "web_search" }?.approvalPolicy == .approve)
     }
 }
 
