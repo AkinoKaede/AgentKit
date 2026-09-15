@@ -60,10 +60,11 @@ and purpose; the plaintext goes straight to the executor and is excluded from mo
 events, logs, and persistence. Everything a tool returns is wrapped in untrusted-data framing, with
 exactly one documented exception — a skill the user installed, whose provenance is what earns it.
 
-**It runs long conversations.** Compaction cuts at a turn boundary against a recent-token budget,
-keeps the display history intact, and records what it replaced so a relaunch does not silently
-resurrect it. Token accounting uses the provider's own numbers where they exist and says so where it
-is estimating.
+**It runs long conversations.** The main loop imposes no turn or tool-call count limit; it continues
+until the model finishes, the user stops it, a hook terminates it, or an error occurs. Compaction cuts
+at a turn boundary against a recent-token budget, keeps the display history intact, and records what
+it replaced so a relaunch does not silently resurrect it. Token accounting uses the provider's own
+numbers where they exist and says so where it is estimating.
 
 ## What it does
 

@@ -5,8 +5,6 @@ import Foundation
 /// Held as one value so a caller can change how a run behaves without a
 /// twelve-argument initializer, and so the defaults live in one readable place.
 public nonisolated struct AgentLoopConfiguration: Sendable {
-    public var maxTurns = 24
-    public var maxToolCalls = 64
     /// The run-wide default. Individual tools may still force their batch
     /// serial; none can force it parallel. See `AgentToolScheduler`.
     public var toolExecution: AgentToolExecutionMode = .parallel
@@ -245,9 +243,8 @@ public actor AgentRuntime {
             maximumConcurrency: configuration.maximumToolConcurrency
         )
 
-        var toolCount = 0
         do {
-            for index in 0..<configuration.maxTurns {
+            for index in 0... {
                 try Task.checkCancellation()
                 channel.emit(.turnStarted(index: index))
                 if !steering.isEmpty {
@@ -299,15 +296,7 @@ public actor AgentRuntime {
                         reason: AgentRuntimeError.truncatedToolCall.localizedDescription,
                         sourceMessageID: turn.message.id
                     )
-                } else if toolCount + turn.message.toolCalls.count > configuration.maxToolCalls {
-                    refusal = .toolBudgetExceeded
-                    results = scheduler.fail(
-                        turn.message.toolCalls,
-                        reason: AgentRuntimeError.toolBudgetExceeded.localizedDescription,
-                        sourceMessageID: turn.message.id
-                    )
                 } else {
-                    toolCount += turn.message.toolCalls.count
                     results = await scheduler.run(
                         turn.message.toolCalls, sourceMessageID: turn.message.id
                     )
@@ -337,7 +326,6 @@ public actor AgentRuntime {
                     return await complete(snapshot, runID: runID)
                 }
             }
-            throw AgentRuntimeError.turnBudgetExceeded
         } catch is CancellationError {
             acceptsSteering = false
             snapshot.state = .cancelled
@@ -428,7 +416,7 @@ public nonisolated enum AgentRuntimeError: LocalizedError, Sendable {
     case invalidToolCall
     case invalidToolArguments(tool: String)
     case truncatedToolCall
-    case toolBudgetExceeded, turnBudgetExceeded, providerFailed
+    case providerFailed
 
     public var errorDescription: String? {
         switch self {
@@ -437,8 +425,6 @@ public nonisolated enum AgentRuntimeError: LocalizedError, Sendable {
             String(localized: "The model returned malformed JSON arguments for \(tool).", bundle: .module)
         case .truncatedToolCall:
             String(localized: "A truncated model response contained tool calls; none were executed.", bundle: .module)
-        case .toolBudgetExceeded: String(localized: "The agent reached its tool-call limit.", bundle: .module)
-        case .turnBudgetExceeded: String(localized: "The agent reached its turn limit.", bundle: .module)
         case .providerFailed: String(localized: "The model provider failed to complete the response.", bundle: .module)
         }
     }

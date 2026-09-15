@@ -268,10 +268,6 @@
 	<string>這不是有效的服務帳戶金鑰，其中必須包含client_email和private_key。</string>
 	<key>The Chat model has no available credential.</key>
 	<string>對話模型沒有可用認證資訊。</string>
-	<key>The agent reached its tool-call limit.</key>
-	<string>代理已達到工具呼叫上限。</string>
-	<key>The agent reached its turn limit.</key>
-	<string>代理已達到輪次上限。</string>
 	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
 	<string>應用在記錄此工具呼叫結果前已停止。操作是否完成尚不確定；再次執行前請檢查目前狀態。</string>
 	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>

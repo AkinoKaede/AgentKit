@@ -249,8 +249,8 @@ public nonisolated struct AgentUnansweredToolCallRepair: AgentContextTransformin
 /// Bounds what replaying old tool results costs.
 ///
 /// A single command or file read can return hundreds of kilobytes, and every
-/// one of those is sent again on every later turn of the conversation — up to
-/// `maxTurns` times. Two log reads are enough to crowd out the conversation
+/// one of those is sent again on every later turn of the conversation. Two log
+/// reads are enough to crowd out the conversation
 /// they were meant to explain.
 ///
 /// The invariant is that **at most one turn's tool output is ever replayed in

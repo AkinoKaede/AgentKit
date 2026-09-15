@@ -92,6 +92,22 @@ private func probeTool(
     )
 }
 
+private func immediateProbeTool(_ name: String, probe: ConcurrencyProbe) -> AnyAgentTool {
+    let descriptor = AgentToolDescriptor(
+        name: name, summary: name, inputSchema: emptySchema,
+        target: .local, approvalPolicy: .approve, concurrency: .parallel
+    )
+    return AnyAgentTool(
+        descriptor: descriptor,
+        preflight: { invocation in AgentToolPreflight(invocation: invocation, approvalPolicy: .approve) },
+        execute: { invocation, _ in
+            await probe.enter(name)
+            await probe.leave()
+            return AgentToolResult(callID: invocation.call.id, content: name)
+        }
+    )
+}
+
 private func drain(
     _ runtime: AgentRuntime, prompt: String = "go",
     mode: AgentPermissionMode = .askForApproval
@@ -199,29 +215,31 @@ struct AgentToolSchedulerTests {
         #expect(await demoted.peak == 1, "one demoted call did not serialize its batch")
     }
 
-    /// A refused turn must still answer every call it refused. An assistant
-    /// message whose tool calls go unanswered is rejected outright by every
-    /// provider on the *next* request, so the alternative is a conversation
-    /// that can never be continued.
     @Test
-    func aBudgetRefusalStillProducesOneResultPerCall() async {
-        var configuration = AgentLoopConfiguration()
-        configuration.maxToolCalls = 2
+    func mainLoopContinuesPastFormerTurnAndToolCallBudgets() async {
+        let callCount = 65
         let probe = ConcurrencyProbe()
+        let turns: [[AgentModelStreamEvent]] =
+            (0..<callCount).map { index in
+                [
+                    .toolCallSnapshot(
+                        id: "call-\(index)", providerItemID: nil, name: "loop", arguments: "{}"
+                    ),
+                    .finished(.toolCalls),
+                ]
+            } + [[.textDelta("done"), .finished(.completed)]]
         let runtime = allowingRuntime(
-            tools: ["a", "b", "c"].map { probeTool($0, concurrency: .parallel, probe: probe) },
-            turns: callingTurns(["a", "b", "c"]),
-            configuration: configuration
+            tools: [immediateProbeTool("loop", probe: probe)],
+            turns: turns
         )
 
         let events = await drain(runtime)
 
-        #expect(await probe.order.isEmpty, "a refused batch must not run anything")
-        #expect(toolResults(events).count == 3)
-        #expect(
-            events.contains {
-                if case .toolFinished(_, let result) = $0 { result.isError } else { false }
-            })
+        #expect(await probe.order.count == callCount)
+        #expect(toolResults(events).count == callCount)
+        #expect(events.contains(.turnStarted(index: callCount)))
+        #expect(events.contains(.runState(.completed)))
+        #expect(!events.contains { if case .runState(.failed) = $0 { true } else { false } })
     }
 
     /// Salvaged arguments can parse and validate and still be silently

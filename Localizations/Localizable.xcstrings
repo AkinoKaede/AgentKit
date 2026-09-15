@@ -2159,38 +2159,6 @@
         }
       }
     },
-    "The agent reached its tool-call limit.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "代理已达到工具调用上限。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "代理已達到工具呼叫上限。"
-          }
-        }
-      }
-    },
-    "The agent reached its turn limit.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "代理已达到轮次上限。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "代理已達到輪次上限。"
-          }
-        }
-      }
-    },
     "The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.": {
       "localizations": {
         "zh-Hans": {

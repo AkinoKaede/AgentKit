@@ -55,7 +55,7 @@ struct AgentLocalizationTests {
 
     @Test
     func runtimeErrorsAreLocalized() {
-        let message = AgentRuntimeError.turnBudgetExceeded.localizedDescription
+        let message = AgentRuntimeError.providerFailed.localizedDescription
         // `errorDescription` reads `.current`, so this asserts only that the
         // catalog answers at all — an unresolved key would come back verbatim
         // with its interpolation markers intact.
