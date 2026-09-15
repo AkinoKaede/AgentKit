@@ -278,22 +278,3 @@ This repository is licensed under [MIT License](./LICENSE).
 
 SPDX-License-Identifier: [MIT](https://spdx.org/licenses/MIT.html)
 
-### Stable conversation replay (0.8)
-
-User messages can carry an `AgentTurnContextSnapshot`. The runtime captures one before
-saving the prompt; the default context pipeline replays the initial snapshot and only
-subsequent changes, including explicit clearing transitions. Hosts must retain
-`contextSnapshot` and `modelText` alongside each transcript message, and forward the
-snapshot when submitting steering messages. These fields are model replay metadata,
-not user-authored text or live UI state.
-
-`AgentLoopConfiguration.outputProjection` freezes bounded tool output before its
-completion event. Supply a conversation-scoped scratch workspace to retain oversized
-captures for paged reading. `AgentToolResult.modelContent` also survives in result
-metadata for interrupted-run recovery. Default replay no longer age-trims results;
-`AgentToolResultTrimming` remains available as an explicit opt-in transform.
-
-`AgentTextPageReader` reads bounded UTF-8 line windows from chunks and reports the
-next unread line. `scratch_read` uses the same scanner. Provider adapters serialize
-local schemas deterministically, forward a stable `promptCacheKey` to Responses/Chat Completions endpoints without a hostname restriction, mark short
-Anthropic cache breakpoints, and expose `cacheWriteInputTokens` separately from reads.
