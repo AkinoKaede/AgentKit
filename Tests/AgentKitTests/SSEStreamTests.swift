@@ -145,7 +145,67 @@ struct SSEStreamTests {
         } catch { thrown = error }
 
         #expect(events.map(\.data) == ["partial"])
-        #expect(thrown != nil)
+        #expect((thrown as? URLError)?.code == .networkConnectionLost)
+    }
+
+    @Test
+    func aTerminalEventDoesNotReadAhead() async throws {
+        let bytes = ReadProbeBytes("data: done\n\n", failAtEnd: true)
+        var events: [SSEEvent] = []
+        try await SSEStream.consume(from: bytes) { event in
+            events.append(event)
+            return true
+        }
+        #expect(events.map(\.data) == ["done"])
+    }
+
+    @Test
+    func byteBudgetIncludesFramingAndAllowsTheExactLimit() async throws {
+        let body = "data: 主机\n\n"
+        var events: [SSEEvent] = []
+        try await SSEStream.consume(from: ReadProbeBytes(body), maximumBytes: body.utf8.count) { event in
+            events.append(event)
+            return false
+        }
+        #expect(events.map(\.data) == ["主机"])
+        await #expect(throws: SSEStream.ReadError.self) {
+            try await SSEStream.consume(from: ReadProbeBytes(body), maximumBytes: body.utf8.count - 1) { _ in false }
+        }
+    }
+
+    @Test(arguments: ["", "\n", "\r\n", "\r"])
+    func lineBudgetIsEnforcedEvenAtEOF(_ ending: String) async throws {
+        var events: [SSEEvent] = []
+        try await SSEStream.consume(
+            from: ReadProbeBytes("data: abc" + ending), maximumLineBytes: 9
+        ) { event in
+            events.append(event)
+            return false
+        }
+        #expect(events.map(\.data) == ["abc"])
+        await #expect(throws: SSEStreamError.self) {
+            try await SSEStream.consume(
+                from: ReadProbeBytes("data: abcd" + ending), maximumLineBytes: 9
+            ) { _ in false }
+        }
+    }
+
+    @Test
+    func callbackFailurePropagatesWithoutReadingAhead() async {
+        await #expect(throws: AgentProviderError.self) {
+            try await SSEStream.consume(from: ReadProbeBytes("data: malformed\n\n", failAtEnd: true)) { _ in
+                throw AgentProviderError.invalidResponse
+            }
+        }
+    }
+
+    @Test
+    func cancellationIsCheckedBeforeReadingEvenAnEmptySource() async {
+        let task = Task {
+            withUnsafeCurrentTask { $0?.cancel() }
+            try await SSEStream.consume(from: ReadProbeBytes("", failAtEnd: true)) { _ in false }
+        }
+        await #expect(throws: CancellationError.self) { try await task.value }
     }
 
     private func stream(_ body: String) async throws -> [SSEEvent] {
@@ -156,5 +216,29 @@ struct SSEStreamTests {
         var events: [SSEEvent] = []
         for try await event in SSEStream.events(from: bytes) { events.append(event) }
         return events
+    }
+}
+
+/// Throws on a read past the fixture when the consumer must stop early.
+private struct ReadProbeBytes: AsyncSequence, AsyncIteratorProtocol, Sendable {
+    typealias Element = UInt8
+    private let bytes: [UInt8]
+    private let failAtEnd: Bool
+    private var index = 0
+
+    init(_ body: String, failAtEnd: Bool = false) {
+        bytes = Array(body.utf8)
+        self.failAtEnd = failAtEnd
+    }
+
+    func makeAsyncIterator() -> Self { self }
+
+    mutating func next() async throws -> UInt8? {
+        guard index < bytes.count else {
+            if failAtEnd { throw URLError(.networkConnectionLost) }
+            return nil
+        }
+        defer { index += 1 }
+        return bytes[index]
     }
 }

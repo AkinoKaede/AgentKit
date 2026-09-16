@@ -213,6 +213,49 @@ struct AgentProviderCompletionTests {
         for await _ in endpoint.stopped { break }
     }
 
+    @Test(arguments: ["text/event-stream", "application/json"])
+    func fragmentedToolCallsShareOneIdentityAcrossResponseEncodings(_ contentType: String) async throws {
+        let endpoint = CompletionEndpoint(
+            Self.sse(
+                #"{"choices":[{"delta":{"tool_calls":[{"index":0,"id":"call-1","function":{"name":"lookup","arguments":"{\"key\":"}}]}}]}"#,
+                #"{"choices":[{"delta":{"tool_calls":[{"index":0,"function":{"arguments":"1}"}}]}}]}"#,
+                #"{"choices":[{"delta":{},"finish_reason":"tool_calls"}]}"#
+            ), contentType: contentType)
+        defer { endpoint.session.invalidateAndCancel() }
+        let events = try await endpoint.client().complete(Self.request)
+        var ids: [String] = []
+        var names: [String] = []
+        var arguments = ""
+        for event in events {
+            if case .toolCallDelta(let id, let name, let fragment) = event {
+                ids.append(id)
+                if let name { names.append(name) }
+                arguments += fragment
+            }
+        }
+        #expect(ids == ["call-1", "call-1"])
+        #expect(names == ["lookup"])
+        #expect(try AgentJSONValue.decode(Data(arguments.utf8)) == .object(["key": .number(1)]))
+    }
+
+    @Test(arguments: ["text/event-stream", "application/json"])
+    func mislabeledSSEUsesTheSameTerminalAndValidationRules(_ contentType: String) async throws {
+        let endpoint = CompletionEndpoint(
+            try Self.chat("answer") + "data: malformed after completion\n\n", contentType: contentType)
+        defer { endpoint.session.invalidateAndCancel() }
+        #expect(try await endpoint.client().collectText(Self.request).text == "answer")
+    }
+
+    @Test(arguments: ["text/event-stream", "application/json"])
+    func malformedEventsBeforeCompletionAreRejectedForBothEncodings(_ contentType: String) async throws {
+        let endpoint = CompletionEndpoint(
+            "data: malformed\n\n" + (try Self.chat("answer")), contentType: contentType)
+        defer { endpoint.session.invalidateAndCancel() }
+        await #expect(throws: AgentProviderError.self) {
+            try await endpoint.client().complete(Self.request)
+        }
+    }
+
     @Test
     func preservesLengthStopReason() async throws {
         let endpoint = CompletionEndpoint(try Self.chat("partial summary", reason: "length"))

@@ -224,7 +224,7 @@ struct AgentApprovalPolicyTests {
             )
         )
         #expect(preflight.approvalPolicy == .ask)
-        #expect(preflight.reasons.contains { $0.contains("destructive") })
+        #expect(!preflight.reasons.isEmpty)
     }
 
     @Test

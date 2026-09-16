@@ -72,21 +72,10 @@ public nonisolated enum SSEStream {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    var splitter = LineSplitter()
-                    var accumulator = Accumulator()
-                    for try await byte in bytes {
-                        guard splitter.pendingCount <= maximumLineBytes else {
-                            throw SSEStreamError.lineTooLong
-                        }
-                        guard let line = splitter.consume(byte) else { continue }
-                        if let event = accumulator.consume(line) { continuation.yield(event) }
-                    }
-                    // A stream that ends without a trailing newline, or without
-                    // a trailing blank line, still meant to send its last event.
-                    if let line = splitter.flush(), let event = accumulator.consume(line) {
+                    try await consume(from: bytes) { event in
                         continuation.yield(event)
+                        return false
                     }
-                    if let event = accumulator.flush() { continuation.yield(event) }
                     continuation.finish()
                 } catch {
                     continuation.finish(throwing: error)
@@ -98,16 +87,61 @@ public nonisolated enum SSEStream {
 
     /// Events from a complete, already-buffered body.
     public static func events(in body: Data) -> [SSEEvent] {
-        var splitter = LineSplitter()
-        var accumulator = Accumulator()
+        var decoder = Decoder()
         var events: [SSEEvent] = []
         for byte in body {
-            guard let line = splitter.consume(byte) else { continue }
-            if let event = accumulator.consume(line) { events.append(event) }
+            if let event = decoder.consume(byte) { events.append(event) }
         }
-        if let line = splitter.flush(), let event = accumulator.consume(line) { events.append(event) }
-        if let event = accumulator.flush() { events.append(event) }
+        if let event = decoder.finish() { events.append(event) }
         return events
+    }
+
+    enum ReadError: Error {
+        case responseTooLarge
+    }
+
+    /// Reads on the caller's task without an intermediate event queue. Returning
+    /// true from onEvent stops before requesting another byte from the source.
+    static func consume<Bytes: AsyncSequence & Sendable>(
+        from bytes: Bytes, maximumBytes: Int? = nil,
+        maximumLineBytes: Int = SSEStream.maximumLineBytes,
+        onEvent: (SSEEvent) throws -> Bool
+    ) async throws where Bytes.Element == UInt8 {
+        try Task.checkCancellation()
+        var decoder = Decoder()
+        var byteCount = 0
+        for try await byte in bytes {
+            try Task.checkCancellation()
+            if let maximumBytes {
+                guard byteCount < maximumBytes else { throw ReadError.responseTooLarge }
+                byteCount += 1
+            }
+            let event = decoder.consume(byte)
+            guard decoder.pendingLineBytes <= maximumLineBytes else {
+                throw SSEStreamError.lineTooLong
+            }
+            if let event, try onEvent(event) { return }
+        }
+        try Task.checkCancellation()
+        if let event = decoder.finish() { _ = try onEvent(event) }
+    }
+
+    /// Shared framing and EOF handling for live and already-buffered bodies.
+    private struct Decoder {
+        private var splitter = LineSplitter()
+        private var accumulator = Accumulator()
+
+        var pendingLineBytes: Int { splitter.pendingCount }
+
+        mutating func consume(_ byte: UInt8) -> SSEEvent? {
+            guard let line = splitter.consume(byte) else { return nil }
+            return accumulator.consume(line)
+        }
+
+        mutating func finish() -> SSEEvent? {
+            if let line = splitter.flush() { _ = accumulator.consume(line) }
+            return accumulator.flush()
+        }
     }
 
     /// Turns bytes into lines, keeping the blank ones.

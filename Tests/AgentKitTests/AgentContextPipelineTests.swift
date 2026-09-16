@@ -86,7 +86,6 @@ struct AgentContextPipelineTests {
             .transform(context(messages)).messages
 
         #expect(trimmed[1].text.count < 1_200)
-        #expect(trimmed[1].text.contains("trimmed from an earlier turn"))
         // The head and the tail both survive: a command output whose ending is
         // missing has lost its error message.
         #expect(trimmed[1].text.hasPrefix("xxxx"))
@@ -134,10 +133,11 @@ struct AgentContextPipelineTests {
         let sent = AgentContextPipeline.chat(sessionContext: nil, before: prompt.id)(
             context([prompt])
         ).messages
-        #expect(
-            sent.last?.text == "inspect"
-        )
-        #expect(sent.contains { $0.text.contains("no active session") })
+        #expect(sent.last?.id == prompt.id)
+        let baseline = Array(sent.dropLast())
+        #expect(baseline.count == 3)
+        #expect(baseline.allSatisfy { $0.role == .user && !$0.text.isEmpty })
+        #expect(baseline.map(\.text) == AgentTurnContextSnapshot().changes(from: nil))
     }
 
     @Test

@@ -178,6 +178,13 @@ generateContent (including Vertex, whose address is derived from a project and a
 named for the protocol rather than for whoever published it first, because every compatible gateway
 serves one of the four at an address of its own.
 
+Response state is owned by an internal `AgentProviderResponseParser` created for each request,
+not by the HTTP client. Live SSE and SSE mislabeled as JSON share tool-call identity tracking,
+error classification, and terminal handling. `SSEStream` owns byte framing and EOF handling;
+its internal consumer reads on the caller's task so buffered completions can stop at a terminal
+event without queuing more events. Live streams continue past a finish reason to collect usage,
+while buffered responses reject malformed events before completion and ignore data after it.
+
 A `ModelProvider` carries two addresses. `inferenceURL` is the complete address a request goes to,
 with `{model}` where the model id belongs; this package appends no path to it and applies no
 default, so the stored value *is* where requests land — deciding whether a pasted URL already

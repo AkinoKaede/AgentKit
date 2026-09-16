@@ -160,12 +160,16 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
 
     /// One transport and provider parser for live events and buffered results.
     /// Only buffered SSE results have a total byte cap and require a terminal event.
+    /// Parsing state is recreated per request, including provider retries.
     private func receive(
         _ request: AgentModelRequest, buffered: Bool,
         emit: (AgentModelStreamEvent) -> Void
     ) async throws {
         try Task.checkCancellation()
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
+        var parser = AgentProviderResponseParser(
+            format: provider.apiFormat, wireNames: toolNames.wireToQualified, buffered: buffered
+        )
         var urlRequest = try buildRequest(request, streaming: true)
         try await ProviderNetworking.authorize(
             &urlRequest, provider: provider, secret: secret
@@ -190,66 +194,25 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
                 }
                 data.append(byte)
             }
-            let events = try parseBufferedResponse(data, wireNames: toolNames.wireToQualified)
-            if buffered, !events.contains(where: { if case .finished = $0 { true } else { false } }) {
+            let events = try parser.parseResponse(data)
+            if buffered, !parser.isTerminated {
                 throw AgentProviderError.invalidResponse
             }
             for event in events { emit(event) }
             return
         }
 
-        var chatCallIDs: [Int: String] = [:]
-        var anthropicState = AnthropicStreamState()
-        var responseCallIDs: [String: String] = [:]
-        var responseCallNames: [String: String] = [:]
-        var terminated = false
-
-        func consume(_ event: SSEEvent) throws -> Bool {
-            guard !event.data.isEmpty else { return false }
-            if event.data == "[DONE]" {
-                terminated = true
-                return true
+        do {
+            try await SSEStream.consume(
+                from: bytes, maximumBytes: buffered ? Self.maximumResponseBytes : nil
+            ) { event in
+                for item in try parser.consume(event) { emit(item) }
+                return parser.shouldStop
             }
-            if buffered,
-                (try? JSONSerialization.jsonObject(with: Data(event.data.utf8))) as? [String: Any] == nil
-            {
-                throw AgentProviderError.invalidResponse
-            }
-            let events = try parse(
-                event, chatCallIDs: &chatCallIDs, anthropicState: &anthropicState,
-                responseCallIDs: &responseCallIDs, responseCallNames: &responseCallNames,
-                wireNames: toolNames.wireToQualified
-            )
-            for item in events {
-                emit(item)
-                if case .finished = item { terminated = true }
-            }
-            return buffered && terminated
+        } catch SSEStream.ReadError.responseTooLarge {
+            throw AgentProviderError.responseTooLarge
         }
-
-        // Reuse SSEStream's framing components, reading directly so a buffered
-        // response cannot queue unlimited events or read past its terminal marker.
-        var splitter = SSEStream.LineSplitter()
-        var accumulator = SSEStream.Accumulator()
-        var byteCount = 0
-        for try await byte in bytes {
-            try Task.checkCancellation()
-            if buffered {
-                guard byteCount < Self.maximumResponseBytes else {
-                    throw AgentProviderError.responseTooLarge
-                }
-                byteCount += 1
-            }
-            guard splitter.pendingCount <= SSEStream.maximumLineBytes else {
-                throw SSEStreamError.lineTooLong
-            }
-            if let line = splitter.consume(byte), let event = accumulator.consume(line), try consume(event) {
-                return
-            }
-        }
-        if let line = splitter.flush(), let event = accumulator.consume(line), try consume(event) { return }
-        if let event = accumulator.flush(), try consume(event) { return }
-        if buffered, !terminated { throw AgentProviderError.invalidResponse }
+        if buffered, !parser.isTerminated { throw AgentProviderError.invalidResponse }
     }
 
     /// Reads only as much of a failed response as the message will show.
@@ -503,111 +466,6 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
             of: #"claude-(opus|sonnet|haiku)-(4[-.]([6-9])|[5-9])"#,
             options: .regularExpression
         ) != nil
-    }
-
-    private func parse(
-        _ event: SSEEvent, chatCallIDs: inout [Int: String],
-        anthropicState: inout AnthropicStreamState,
-        responseCallIDs: inout [String: String],
-        responseCallNames: inout [String: String],
-        wireNames: [String: String]
-    ) throws -> [AgentModelStreamEvent] {
-        guard let data = event.data.data(using: .utf8),
-            let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else { return [] }
-        // OpenAI's Responses stream normally puts the event discriminator in
-        // the JSON payload (`type`) and leaves the SSE `event:` field unset.
-        // Compatible gateways commonly do the same for every provider.
-        let eventType = Self.streamEventType(event, root: root)
-        if eventType == "error" || eventType == "response.failed" {
-            throw Self.streamFailure(in: root)
-        }
-        switch provider.apiFormat {
-        case .responses:
-            if eventType == "response.completed",
-                root["response"] as? [String: Any] == nil
-            {
-                throw AgentProviderError.invalidResponse
-            }
-            return Self.parseResponses(
-                eventType, root, callIDs: &responseCallIDs,
-                callNames: &responseCallNames
-            )
-        case .chatCompletions:
-            return Self.parseChat(root, callIDs: &chatCallIDs, wireNames: wireNames)
-        case .messages:
-            return Self.parseAnthropic(
-                eventType, root, state: &anthropicState, wireNames: wireNames
-            )
-        case .generateContent: return Self.parseGoogle(root, wireNames: wireNames)
-        }
-    }
-
-    /// A number of OpenAI-compatible gateways accept `stream: true` but return
-    /// one ordinary JSON response. Treat that as a valid completed stream.
-    private func parseBufferedResponse(
-        _ data: Data, wireNames: [String: String]
-    ) throws -> [AgentModelStreamEvent] {
-        if let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-            if let failure = Self.explicitFailure(in: root) { throw failure }
-            switch provider.apiFormat {
-            case .responses:
-                return Self.parseCompletedResponses(root)
-            case .chatCompletions:
-                return Self.parseChat(root, wireNames: wireNames)
-            case .messages:
-                return Self.parseCompletedAnthropic(root, wireNames: wireNames)
-            case .generateContent:
-                return Self.parseGoogle(root, wireNames: wireNames)
-            }
-        }
-
-        // Some gateways label an SSE body as application/json. Fall back to
-        // framing the already-buffered body rather than feeding `data: ...`
-        // into JSONSerialization and surfacing Foundation's opaque error.
-        var chatCallIDs: [Int: String] = [:]
-        var anthropicState = AnthropicStreamState()
-        var responseCallIDs: [String: String] = [:]
-        var responseCallNames: [String: String] = [:]
-        var output: [AgentModelStreamEvent] = []
-        for event in SSEStream.events(in: data) where event.data != "[DONE]" {
-            output += try parse(
-                event, chatCallIDs: &chatCallIDs,
-                anthropicState: &anthropicState,
-                responseCallIDs: &responseCallIDs,
-                responseCallNames: &responseCallNames,
-                wireNames: wireNames
-            )
-        }
-        guard !output.isEmpty else { throw AgentProviderError.invalidResponse }
-        return output
-    }
-
-    private static func explicitFailure(
-        in root: [String: Any]
-    ) -> AgentProviderStreamFailure? {
-        let response = root["response"] as? [String: Any]
-        guard
-            root["type"] as? String == "error"
-                || root["type"] as? String == "response.failed"
-                || response?["status"] as? String == "failed"
-                || root["error"] != nil
-        else { return nil }
-        return streamFailure(in: root)
-    }
-
-    private static func streamFailure(
-        in root: [String: Any]
-    ) -> AgentProviderStreamFailure {
-        let response = root["response"] as? [String: Any]
-        let error = (response?["error"] ?? root["error"]) as? [String: Any]
-        let code = (error?["code"] ?? error?["type"] ?? root["code"]) as? String
-        let message =
-            error?["message"] as? String
-            ?? response?["error"] as? String
-            ?? root["message"] as? String
-            ?? String(localized: "The model provider failed to complete the response.", bundle: .module)
-        return AgentProviderStreamFailure(code: code, message: message)
     }
 
     private static func providerToolObject(
@@ -1547,25 +1405,4 @@ public nonisolated enum AgentProviderError: LocalizedError, Sendable {
             String(localized: "The model endpoint returned \(status): \(body)", bundle: .module)
         }
     }
-}
-
-private nonisolated struct AgentProviderStreamFailure: LocalizedError, Sendable {
-    let code: String?
-    let message: String
-
-    var isRetryable: Bool {
-        guard let code = code?.lowercased() else { return false }
-        return [
-            "api_error",
-            "internal_error",
-            "internal_server_error",
-            "overloaded_error",
-            "rate_limit_error",
-            "rate_limit_exceeded",
-            "server_error",
-            "temporarily_unavailable",
-        ].contains(code)
-    }
-
-    var errorDescription: String? { message }
 }

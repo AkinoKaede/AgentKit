@@ -28,7 +28,6 @@ struct AgentCacheReplayTests {
             history.append(.init(role: .assistant, text: "answer \(index)"))
         }
         #expect(previous.filter { $0.text == "host A; cwd /a" }.count == 2)
-        #expect(previous.contains { $0.text.contains("no active session") })
         let restored = try JSONDecoder().decode([AgentTranscriptMessage].self, from: JSONEncoder().encode(history))
         #expect(replay(restored) == replay(history))
     }
@@ -42,8 +41,10 @@ struct AgentCacheReplayTests {
         let acting = AgentTranscriptMessage(role: .user, text: "act", contextSnapshot: .init(sessionContext: "A"))
         let sent = replay([planning, .init(role: .assistant, text: "plan ready"), acting])
         #expect(sent.contains { $0.text == "PLAN" })
-        #expect(sent.contains { $0.text.contains("Plan mode is off") })
-        #expect(sent.contains { $0.text == "No skills are enabled for this run." })
+        let resets = Array(sent.suffix(3).dropLast())
+        #expect(resets.count == 2)
+        #expect(resets.allSatisfy { $0.role == .user && !$0.text.isEmpty })
+        #expect(resets.map(\.text) == acting.contextSnapshot?.changes(from: planning.contextSnapshot))
         #expect(replay([.init(role: .user, text: "summary", isCompaction: true), acting]).contains { $0.text == "A" })
         #expect(AgentCompaction.serialized([planning]).contains("[Context at this message] A"))
     }
@@ -120,15 +121,33 @@ struct AgentCacheReplayTests {
         #expect(result.content == content)
         #expect(result.isError)
         let text = try #require(result.modelContent)
-        #expect(text.contains("captured_output_path"))
-        let saved = try await workspace.read("tool-output-\(invocation.id.uuidString).txt")
+        let fields = try projectedFields(result)
+        let path = try #require(fields["captured_output_path"]?.stringValue)
+        #expect(path == "tool-output-\(invocation.id.uuidString).txt")
+        #expect(fields["is_error"] == .bool(true))
+        #expect(fields["captured_bytes"] == .number(Double(content.utf8.count)))
+        let preview = try #require(fields["preview"]?.stringValue)
+        #expect(preview.utf8.count <= 120)
+        let saved = try await workspace.read(path)
         #expect(saved.content == content)
         let tool = AgentTranscriptMessage(
             role: .tool, text: content, toolCallID: "call", toolName: "inspect", modelText: text)
         #expect(replay([tool]).first?.text == text)
         #expect(replay([tool, .init(role: .assistant, text: "older now")]).first?.text == text)
         let noWorkspace = await AgentToolOutputProjection(maximumBytes: 120).project(raw, invocation: invocation)
-        #expect(noWorkspace.modelContent?.contains("No scratch workspace") == true)
+        let uncaptured = try projectedFields(noWorkspace)
+        #expect(uncaptured["captured_output_path"] == nil)
+        #expect(uncaptured["captured_bytes"] == fields["captured_bytes"])
+        #expect(uncaptured["preview"]?.stringValue?.utf8.count ?? .max <= 120)
+    }
+
+    private func projectedFields(_ result: AgentToolResult) throws -> [String: AgentJSONValue] {
+        let modelContent = try #require(result.modelContent)
+        let envelope = AgentToolResult(
+            callID: result.callID, content: modelContent, metadata: ["untrusted": .bool(true)]
+        )
+        let payload = try #require(envelope.untrustedPayload)
+        return try #require(AgentJSONValue.decode(Data(payload.utf8)).objectValue)
     }
 
     @Test

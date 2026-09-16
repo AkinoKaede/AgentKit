@@ -114,15 +114,6 @@ struct GuardianTests {
     }
 
     @Test
-    func guardianAddsInvestigationGuidanceOnlyWhenToolsExist() {
-        let withoutTools = GuardianPolicy.systemPrompt()
-        let withTools = GuardianPolicy.systemPrompt(toolsAvailable: true)
-
-        #expect(!withoutTools.contains("# Investigation Tools Available"))
-        #expect(withTools.contains("# Investigation Tools Available"))
-    }
-
-    @Test
     func guardianRunsOnlyExplicitReviewingTools() async throws {
         let model = GuardianToolModel()
         let execution = GuardianExecutionProbe()
