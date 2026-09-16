@@ -104,56 +104,8 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         AsyncThrowingStream { continuation in
             let task = Task {
                 do {
-                    let toolNames = AgentProviderToolNameMap.flat(request.tools)
-                    var chatCallIDs: [Int: String] = [:]
-                    var anthropicState = AnthropicStreamState()
-                    var responseCallIDs: [String: String] = [:]
-                    var responseCallNames: [String: String] = [:]
-                    var urlRequest = try buildRequest(request, streaming: true)
-                    try await ProviderNetworking.authorize(
-                        &urlRequest, provider: provider, secret: secret
-                    )
-                    let (bytes, response) = try await session.bytes(for: urlRequest)
-                    guard let http = response as? HTTPURLResponse else {
-                        throw AgentProviderError.notHTTP
-                    }
-                    guard (200..<300).contains(http.statusCode) else {
-                        throw AgentProviderError.http(
-                            http.statusCode, await Self.errorBody(bytes)
-                        )
-                    }
-                    let contentType =
-                        http.value(forHTTPHeaderField: "Content-Type")?
-                        .lowercased() ?? ""
-                    if contentType.contains("application/json")
-                        || contentType.contains("+json")
-                    {
-                        var data = Data()
-                        for try await byte in bytes {
-                            guard data.count < 16 * 1024 * 1024 else {
-                                throw AgentProviderError.responseTooLarge
-                            }
-                            data.append(byte)
-                        }
-                        for item in try parseBufferedResponse(
-                            data, wireNames: toolNames.wireToQualified
-                        ) {
-                            continuation.yield(item)
-                        }
-                        continuation.finish()
-                        return
-                    }
-                    for try await event in SSEStream.events(from: bytes) {
-                        if event.data == "[DONE]" { break }
-                        for item in try parse(
-                            event, chatCallIDs: &chatCallIDs,
-                            anthropicState: &anthropicState,
-                            responseCallIDs: &responseCallIDs,
-                            responseCallNames: &responseCallNames,
-                            wireNames: toolNames.wireToQualified
-                        ) {
-                            continuation.yield(item)
-                        }
+                    try await receive(request, buffered: false) { item in
+                        continuation.yield(item)
                     }
                     continuation.finish()
                 } catch { continuation.finish(throwing: error) }
@@ -195,29 +147,109 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         .backgroundSessionWasDisconnected,
     ]
 
+    /// Uses streaming transport even when the caller needs one complete result.
+    /// Partial results are discarded on cancellation, malformed data, or a dropped stream.
     public func complete(_ request: AgentModelRequest) async throws -> [AgentModelStreamEvent] {
+        var events: [AgentModelStreamEvent] = []
+        try await receive(request, buffered: true) { events.append($0) }
+        try Task.checkCancellation()
+        return events
+    }
+
+    private static let maximumResponseBytes = 16 * 1024 * 1024
+
+    /// One transport and provider parser for live events and buffered results.
+    /// Only buffered SSE results have a total byte cap and require a terminal event.
+    private func receive(
+        _ request: AgentModelRequest, buffered: Bool,
+        emit: (AgentModelStreamEvent) -> Void
+    ) async throws {
+        try Task.checkCancellation()
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
-        var urlRequest = try buildRequest(request, streaming: false)
+        var urlRequest = try buildRequest(request, streaming: true)
         try await ProviderNetworking.authorize(
             &urlRequest, provider: provider, secret: secret
         )
         let (bytes, response) = try await session.bytes(for: urlRequest)
+        defer { bytes.task.cancel() }
         guard let http = response as? HTTPURLResponse else {
             throw AgentProviderError.notHTTP
         }
-        var data = Data()
-        for try await byte in bytes {
-            guard data.count < 16 * 1024 * 1024 else {
-                throw AgentProviderError.responseTooLarge
-            }
-            data.append(byte)
-        }
         guard (200..<300).contains(http.statusCode) else {
             throw AgentProviderError.http(
-                http.statusCode, String(decoding: data.prefix(4096), as: UTF8.self)
+                http.statusCode, await Self.errorBody(bytes)
             )
         }
-        return try parseBufferedResponse(data, wireNames: toolNames.wireToQualified)
+        let contentType = http.value(forHTTPHeaderField: "Content-Type")?.lowercased() ?? ""
+        if contentType.contains("application/json") || contentType.contains("+json") {
+            var data = Data()
+            for try await byte in bytes {
+                try Task.checkCancellation()
+                guard data.count < Self.maximumResponseBytes else {
+                    throw AgentProviderError.responseTooLarge
+                }
+                data.append(byte)
+            }
+            let events = try parseBufferedResponse(data, wireNames: toolNames.wireToQualified)
+            if buffered, !events.contains(where: { if case .finished = $0 { true } else { false } }) {
+                throw AgentProviderError.invalidResponse
+            }
+            for event in events { emit(event) }
+            return
+        }
+
+        var chatCallIDs: [Int: String] = [:]
+        var anthropicState = AnthropicStreamState()
+        var responseCallIDs: [String: String] = [:]
+        var responseCallNames: [String: String] = [:]
+        var terminated = false
+
+        func consume(_ event: SSEEvent) throws -> Bool {
+            guard !event.data.isEmpty else { return false }
+            if event.data == "[DONE]" {
+                terminated = true
+                return true
+            }
+            if buffered,
+                (try? JSONSerialization.jsonObject(with: Data(event.data.utf8))) as? [String: Any] == nil
+            {
+                throw AgentProviderError.invalidResponse
+            }
+            let events = try parse(
+                event, chatCallIDs: &chatCallIDs, anthropicState: &anthropicState,
+                responseCallIDs: &responseCallIDs, responseCallNames: &responseCallNames,
+                wireNames: toolNames.wireToQualified
+            )
+            for item in events {
+                emit(item)
+                if case .finished = item { terminated = true }
+            }
+            return buffered && terminated
+        }
+
+        // Reuse SSEStream's framing components, reading directly so a buffered
+        // response cannot queue unlimited events or read past its terminal marker.
+        var splitter = SSEStream.LineSplitter()
+        var accumulator = SSEStream.Accumulator()
+        var byteCount = 0
+        for try await byte in bytes {
+            try Task.checkCancellation()
+            if buffered {
+                guard byteCount < Self.maximumResponseBytes else {
+                    throw AgentProviderError.responseTooLarge
+                }
+                byteCount += 1
+            }
+            guard splitter.pendingCount <= SSEStream.maximumLineBytes else {
+                throw SSEStreamError.lineTooLong
+            }
+            if let line = splitter.consume(byte), let event = accumulator.consume(line), try consume(event) {
+                return
+            }
+        }
+        if let line = splitter.flush(), let event = accumulator.consume(line), try consume(event) { return }
+        if let event = accumulator.flush(), try consume(event) { return }
+        if buffered, !terminated { throw AgentProviderError.invalidResponse }
     }
 
     /// Reads only as much of a failed response as the message will show.

@@ -120,9 +120,9 @@ nonisolated extension AgentModelStreaming {
     public func shouldRetry(after _: any Error) -> Bool { false }
 }
 
-/// A single buffered model response. Short, tool-free features use this path so
-/// their success does not depend on SSE framing or a provider-specific [DONE]
-/// event.
+/// A single buffered model result for short, tool-free features.
+/// Buffering describes delivery to the caller, not the wire protocol: provider
+/// clients use streaming transport and return only after collecting the result.
 public nonisolated protocol AgentModelCompleting: Sendable {
     func complete(_ request: AgentModelRequest) async throws -> [AgentModelStreamEvent]
 }

@@ -51,7 +51,7 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func commandGeneratorRequestUsesBufferedJSONInsteadOfSSE() throws {
+    func commandGeneratorRequestUsesStreamingTransport() throws {
         var provider = ModelProvider(name: "Gateway", inferenceURL: "https://example.test/v1/responses")
         provider.apiFormat = .responses
         let client = AgentProviderClient(
@@ -61,14 +61,14 @@ struct AgentProviderAdapterTests {
             systemPrompt: "Generate", messages: [], tools: []
         )
 
-        let request = try client.buildRequest(modelRequest, streaming: false)
+        let request = try client.buildRequest(modelRequest, streaming: true)
         let bodyData = try #require(request.httpBody)
         let body = try #require(
             JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
         )
 
-        #expect(request.value(forHTTPHeaderField: "Accept") == "application/json")
-        #expect(body["stream"] as? Bool == false)
+        #expect(request.value(forHTTPHeaderField: "Accept") == "text/event-stream")
+        #expect(body["stream"] as? Bool == true)
         #expect(body["tools"] == nil)
     }
 
