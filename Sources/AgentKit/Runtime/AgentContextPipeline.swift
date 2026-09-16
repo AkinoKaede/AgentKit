@@ -263,7 +263,7 @@ public nonisolated struct AgentUnansweredToolCallRepair: AgentContextTransformin
 /// concluded stay whole at any age — the conclusion is frequently the compact
 /// form of the output being trimmed underneath it.
 ///
-/// `load_skill` is exempt, and it is the one exemption. What this bounds is
+/// A bounded SKILL.md result is exempt, and it is the one exemption. What this bounds is
 /// replayed *output*: a log the model has already drawn its conclusion from,
 /// where the head and the tail carry what mattered. A skill is not output. It is
 /// the procedure the model is still working through, so half of it is worse than
@@ -290,7 +290,15 @@ public nonisolated struct AgentToolResultTrimming: AgentContextTransforming {
         }
         for index in result.messages.indices {
             guard result.messages[index].role == .tool else { continue }
-            guard result.messages[index].toolName != LoadSkillTool.name else { continue }
+            let message = result.messages[index]
+            // Legacy names remain readable without keeping an executable legacy tool.
+            if message.toolName == "load_skill" { continue }
+            if message.toolName == SkillReadFileTool.name,
+                let object = try? AgentJSONValue.decode(Data(message.text.utf8)).objectValue,
+                object["path"]?.stringValue == "SKILL.md"
+            {
+                continue
+            }
             if let recent, index > recent { continue }
             result.messages[index].text = Self.trimmed(result.messages[index].text, limit: limit)
         }

@@ -9,10 +9,8 @@ import Foundation
 /// fetched only once it does. That split is the whole design; a library of full
 /// runbooks in every request would cost more than it saves.
 ///
-/// User-installed, and only user-installed. Nothing a model, a remote MCP server
-/// or a fetched page produces can add, edit or enable one — which is what makes
-/// it safe for `load_skill` to return a body the model may act on rather than
-/// the untrusted data every other tool returns.
+/// Installed through the host's editor or an authorized skill management tool.
+/// Procedures never authorize actions; supporting resources remain reference data.
 public nonisolated struct AgentSkill: Identifiable, Hashable, Sendable, Codable {
     /// Past this, a description has stopped being a trigger and become the
     /// skill. pi's limit, and its reasoning.
@@ -22,7 +20,7 @@ public nonisolated struct AgentSkill: Identifiable, Hashable, Sendable, Codable 
     public static let maximumBodyBytes = 32 * 1_024
 
     public var id: UUID = UUID()
-    /// The model-facing name, and the argument `load_skill` takes. Locked once
+    /// The model-facing name, and the argument `skill_read_file` takes. Locked once
     /// saved, the way `MCPServer.namespaceID` is: it is how a conversation
     /// already in progress refers to this skill.
     public var name: String
@@ -33,8 +31,9 @@ public nonisolated struct AgentSkill: Identifiable, Hashable, Sendable, Codable 
     /// and when to use it. The only part that decides whether it is loaded at
     /// all, which is why the editor says so.
     public var summary: String = ""
-    /// Markdown. Returned whole by `load_skill`.
+    /// Markdown. Returned whole by `skill_read_file`.
     public var body: String = ""
+    public var package: AgentSkillPackage?
     public var isEnabled: Bool = true
     /// The file this was imported from, if it was. Informational — nothing is
     /// read from disk after the import, so this is not a link.
@@ -45,7 +44,7 @@ public nonisolated struct AgentSkill: Identifiable, Hashable, Sendable, Codable 
     public init(
         id: UUID = UUID(), name: String, title: String = "", summary: String = "",
         body: String = "", isEnabled: Bool = true, importedFrom: String = "",
-        createdAt: Date = .now, updatedAt: Date = .now
+        createdAt: Date = .now, updatedAt: Date = .now, package: AgentSkillPackage? = nil
     ) {
         self.id = id
         self.name = name
@@ -56,6 +55,7 @@ public nonisolated struct AgentSkill: Identifiable, Hashable, Sendable, Codable 
         self.importedFrom = importedFrom
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.package = package
     }
 
     /// The name a person sees. A skill with no title is shown by the one thing
@@ -185,6 +185,7 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
         self.warnings = warnings
     }
 
+    public var package = AgentSkillPackage()
     public var name: String
     public var description: String
     public var body: String
@@ -249,27 +250,33 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
                 ))
         }
 
-        return AgentSkillDocument(
+        var document = AgentSkillDocument(
             name: name, description: description, body: body,
             additionalFields: fields.filter { present.contains($0.key) },
             warnings: warnings
         )
+        document.package.frontmatter = auxiliaryFrontmatter(text)
+        return document
     }
 
-    /// Writes a `SKILL.md`.
-    ///
-    /// Only the two fields acted on. Anything inert that came in with an
-    /// import is reported at the time and not stored, so an export claims no
-    /// more than the app actually keeps.
+    /// Renders editable fields while preserving all uninterpreted frontmatter and nested metadata.
     public static func render(_ skill: AgentSkill) -> String {
-        """
-        ---
-        name: \(skill.effectiveName)
-        description: \(escaped(skill.summary))
-        ---
+        let extra = skill.package?.frontmatter ?? ""
+        return "---\nname: \(skill.effectiveName)\ndescription: \(escaped(skill.summary))\n"
+            + (extra.isEmpty ? "" : extra + "\n") + "---\n\n" + skill.body
+    }
 
-        \(skill.body)
-        """
+    private static func auxiliaryFrontmatter(_ text: String) -> String {
+        let lines = text.replacingOccurrences(of: "\r\n", with: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n")
+        guard lines.first == "---", let end = lines.dropFirst().firstIndex(of: "---") else { return "" }
+        var keep = true
+        return lines[1..<end].filter { line in
+            if let first = line.first, !first.isWhitespace, !line.hasPrefix("#"), let colon = line.firstIndex(of: ":") {
+                keep = !["name", "description"].contains(String(line[..<colon]).lowercased())
+            }
+            return keep
+        }.joined(separator: "\n")
     }
 
     /// A frontmatter value that would otherwise break the block. Quoted rather
@@ -314,7 +321,7 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
 
         var fields: [String: String] = [:]
         for line in lines[1..<end] {
-            guard let separator = line.firstIndex(of: ":") else { continue }
+            guard line.first?.isWhitespace == false, let separator = line.firstIndex(of: ":") else { continue }
             let key = line[..<separator].trimmingCharacters(in: .whitespaces).lowercased()
             guard !key.isEmpty, !key.hasPrefix("#") else { continue }
             let value = unquoted(
@@ -322,6 +329,14 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
                     .trimmingCharacters(in: .whitespaces)
             )
             fields[key] = value
+        }
+        // YAML block descriptions are common in portable skills.
+        if let value = fields["description"], ["|", ">", "|-", ">-"].contains(value),
+            let start = lines[1..<end].firstIndex(where: { $0.hasPrefix("description:") })
+        {
+            let continuation = lines[(start + 1)..<end].prefix { $0.isEmpty || $0.first?.isWhitespace == true }
+            fields["description"] = continuation.map { $0.trimmingCharacters(in: .whitespaces) }
+                .joined(separator: value.hasPrefix(">") ? " " : "\n")
         }
         let body = lines[lines.index(after: end)...]
             .joined(separator: "\n")
@@ -401,7 +416,7 @@ public nonisolated struct AgentSkillCatalog: Hashable, Sendable {
 
     /// What the model is told it has.
     ///
-    /// Names and descriptions only. The bodies are what `load_skill` is for, and
+    /// Names and descriptions only. The bodies are what `skill_read_file` is for, and
     /// sending them here would spend the context this design exists to save.
     public var catalogBlock: String {
         let entries = skills.map { skill in
@@ -416,7 +431,7 @@ public nonisolated struct AgentSkillCatalog: Hashable, Sendable {
             \(entries.joined(separator: "\n"))
             </available_skills>
 
-            When a task is covered by one, call load_skill first and follow what it says. Until \
+            When a task is covered by one, call skill_read_file with path SKILL.md first and follow what it says. Until \
             you load it you have the name and the description and nothing else, so do not guess \
             at a skill's contents or claim to have used one you did not load.
             """
