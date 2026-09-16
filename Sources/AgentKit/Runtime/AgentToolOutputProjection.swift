@@ -22,7 +22,7 @@ public nonisolated struct AgentToolOutputProjection: Sendable {
         guard invocation.call.name != "request_user_secret", !result.isProviderNative else { return result }
         var projected = result
         let clean = AgentSensitiveDataRedactor.visibleText(result.content)
-        if invocation.call.name == LoadSkillTool.name || result.hasBoundedModelContent || !exceedsLimit(clean) {
+        if result.hasBoundedModelContent || !exceedsLimit(clean) {
             projected.modelContent = clean
             return projected
         }

@@ -4,6 +4,7 @@ import Foundation
 /// The model-facing context captured when a user message was submitted.
 /// Nil fields are explicit absence; a nil snapshot means legacy, unknown context.
 public nonisolated struct AgentTurnContextSnapshot: Hashable, Sendable, Codable {
+    public var memorySessionID: UUID?
     public var sessionContext: String?
     public var skillCatalog: String?
     public var planContract: String?
@@ -11,8 +12,9 @@ public nonisolated struct AgentTurnContextSnapshot: Hashable, Sendable, Codable 
 
     public init(
         sessionContext: String? = nil, skillCatalog: String? = nil, planContract: String? = nil,
-        toolAvailability: [String: Bool]? = nil
+        toolAvailability: [String: Bool]? = nil, memorySessionID: UUID? = nil
     ) {
+        self.memorySessionID = memorySessionID
         self.sessionContext = Self.cleaned(sessionContext)
         self.skillCatalog = Self.cleaned(skillCatalog)
         self.planContract = Self.cleaned(planContract)
@@ -22,7 +24,7 @@ public nonisolated struct AgentTurnContextSnapshot: Hashable, Sendable, Codable 
     public func withSessionContext(_ text: String?) -> Self {
         Self(
             sessionContext: text, skillCatalog: skillCatalog, planContract: planContract,
-            toolAvailability: toolAvailability)
+            toolAvailability: toolAvailability, memorySessionID: memorySessionID)
     }
 
     public var characterCount: Int {

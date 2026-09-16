@@ -33,11 +33,12 @@ public nonisolated struct AgentToolGroup: RawRepresentable, Hashable, Sendable {
     public static let planning = Self("planning")
     /// `manage_tasks`. Needs a task list.
     public static let tasks = Self("tasks")
-    /// `load_skill`. Needs a non-empty catalog; an empty one removes the tool
+    /// `skill_read_file`. Needs a non-empty catalog; an empty one removes the tool
     /// rather than offering one with nothing to read.
     public static let skills = Self("skills")
     /// Whatever the configured MCP servers advertise. Needs servers.
     public static let mcp = Self("mcp")
+    public static let memory = Self("memory")
 
 }
 nonisolated
@@ -48,7 +49,7 @@ nonisolated
     /// nothing. Opting *out* rather than in: an app that adds a capability to a
     /// later release should not have to remember to enable it here.
     public static let all: Self = [
-        .scratch, .web, .userInteraction, .planning, .tasks, .skills, .mcp,
+        .scratch, .web, .userInteraction, .planning, .tasks, .skills, .memory, .mcp,
     ]
 }
 
@@ -75,6 +76,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
     public var plans: AgentPlanRecorder?
     /// Snapshotted for the run by the caller — see `AgentSkillCatalog`.
     public var skills = AgentSkillCatalog()
+    public var skillInventory: [AgentSkill]?
+    public var skillLibrary: (any AgentSkillLibraryManaging)?
+    public var memory: (any AgentMemoryAccessing)?
     public var mcpServers: [(server: MCPServer, bearerToken: String?)] = []
     public var mcpClient = MCPClient()
 
@@ -87,6 +91,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         tasks: AgentTaskList? = nil,
         plans: AgentPlanRecorder? = nil,
         skills: AgentSkillCatalog = AgentSkillCatalog(),
+        skillInventory: [AgentSkill]? = nil,
+        skillLibrary: (any AgentSkillLibraryManaging)? = nil,
+        memory: (any AgentMemoryAccessing)? = nil,
         mcpServers: [(server: MCPServer, bearerToken: String?)] = [],
         mcpClient: MCPClient = MCPClient()
     ) {
@@ -98,6 +105,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         self.tasks = tasks
         self.plans = plans
         self.skills = skills
+        self.skillInventory = skillInventory
+        self.skillLibrary = skillLibrary
+        self.memory = memory
         self.mcpServers = mcpServers
         self.mcpClient = mcpClient
     }
@@ -158,11 +168,11 @@ public nonisolated enum AgentToolCatalog {
     /// Renamed tools' old IDs are included: a card outlives the name it was
     /// written under.
     public static var builtInPresenters: [AgentToolDetailPresenter] {
-        definitions.map(\.presenter) + legacyPresenters
+        definitions.map(\.presenter) + legacyPresenters + [SkillReadFileTool.legacyPresenter]
     }
 
     private static let definitions: [Registration] =
-        webTools + userTools + scratchTools + planningTools + taskTools + skillTools
+        webTools + userTools + scratchTools + planningTools + taskTools + skillTools + memoryTools
 
     private static let webTools: [Registration] = [
         .init(FetchTool.self) { configuration in
@@ -235,13 +245,35 @@ public nonisolated enum AgentToolCatalog {
         }
     ]
 
+    private static let memoryTools: [Registration] = [
+        .init(MemoryTool.self, availableIn: [.acting]) { configuration in
+            guard configuration.includes(.memory), let memory = configuration.memory else { return nil }
+            return MemoryTool(store: memory)
+        },
+        .init(SessionSearchTool.self) { configuration in
+            guard configuration.includes(.memory), let memory = configuration.memory else { return nil }
+            return SessionSearchTool(store: memory)
+        },
+    ]
+
     private static let skillTools: [Registration] = [
-        .init(LoadSkillTool.self) { configuration in
+        .init(SkillReadFileTool.self) { configuration in
             guard configuration.includes(.skills), !configuration.skills.isEmpty else {
                 return nil
             }
-            return LoadSkillTool(skills: configuration.skills)
-        }
+            return SkillReadFileTool(skills: configuration.skills)
+        },
+        .init(SkillsListTool.self) { configuration in
+            guard configuration.includes(.skills),
+                configuration.skillInventory != nil || configuration.skillLibrary != nil
+                    || !configuration.skills.isEmpty
+            else { return nil }
+            return SkillsListTool(skills: configuration.skillInventory ?? configuration.skills.skills)
+        },
+        .init(SkillManageTool.self, availableIn: [.acting]) { configuration in
+            guard configuration.includes(.skills), let library = configuration.skillLibrary else { return nil }
+            return SkillManageTool(library: library)
+        },
     ]
 }
 nonisolated
