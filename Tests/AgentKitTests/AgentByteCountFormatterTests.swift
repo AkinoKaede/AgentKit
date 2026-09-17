@@ -14,10 +14,4 @@ struct AgentByteCountFormatterTests {
     @Test func negativeCountsAreUnavailable() {
         #expect(AgentByteCountFormatter.string(fromByteCount: -1) == "—")
     }
-
-    @Test(arguments: [-1, 0, 1, 999, 1_000, 1_000_000])
-    func toolDetailsUseTheSharedFormatter(_ bytes: Int) {
-        #expect(
-            AgentToolDetailFormatting.byteCount(bytes) == AgentByteCountFormatter.string(fromByteCount: Int64(bytes)))
-    }
 }

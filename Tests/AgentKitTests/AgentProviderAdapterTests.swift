@@ -51,28 +51,6 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func commandGeneratorRequestUsesStreamingTransport() throws {
-        var provider = ModelProvider(name: "Gateway", inferenceURL: "https://example.test/v1/responses")
-        provider.apiFormat = .responses
-        let client = AgentProviderClient(
-            provider: provider, model: AIModel(id: "gpt-test"), secret: "test"
-        )
-        let modelRequest = AgentModelRequest(
-            systemPrompt: "Generate", messages: [], tools: []
-        )
-
-        let request = try client.buildRequest(modelRequest, streaming: true)
-        let bodyData = try #require(request.httpBody)
-        let body = try #require(
-            JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
-        )
-
-        #expect(request.value(forHTTPHeaderField: "Accept") == "text/event-stream")
-        #expect(body["stream"] as? Bool == true)
-        #expect(body["tools"] == nil)
-    }
-
-    @Test
     func guardianPrefersLowReasoningThenClampsUpward() {
         let provider = ModelProvider(name: "Gateway")
         var lowModel = AIModel(id: "low-reviewer")
@@ -111,8 +89,8 @@ struct AgentProviderAdapterTests {
         #expect((highBody["reasoning"] as? [String: String])?["effort"] == "high")
     }
 
-    @Test(arguments: ModelAPIFormat.allCases)
-    func structuredOutputUsesEachProvidersNativeEnvelope(format: ModelAPIFormat) throws {
+    @Test(arguments: ModelAPIFormat.allCases, [false, true])
+    func structuredOutputUsesEachProvidersNativeEnvelope(format: ModelAPIFormat, strict: Bool) throws {
         var provider = ModelProvider(name: "Structured", apiFormat: format)
         if format == .generateContent {
             provider.inferenceURL = "https://example.test/v1beta/models/{model}:generateContent"
@@ -123,10 +101,13 @@ struct AgentProviderAdapterTests {
             name: "decision",
             schema: .object([
                 "type": .string("object"),
-                "properties": .object(["outcome": .object(["type": .string("string")])]),
+                "properties": .object([
+                    "outcome": .object(["type": .string("string")]),
+                    "note": .object(["type": .string("string")]),
+                ]),
                 "required": .array([.string("outcome")]),
                 "additionalProperties": .bool(false),
-            ])
+            ]), strict: strict
         )
         let body = AgentProviderClient(
             provider: provider, model: model, secret: "test"
@@ -136,18 +117,40 @@ struct AgentProviderAdapterTests {
             )
         )
 
+        let wireFormat: [String: Any]
         switch format {
         case .responses:
-            #expect(((body["text"] as? [String: Any])?["format"] as? [String: Any])?["name"] as? String == "decision")
+            wireFormat = try #require((body["text"] as? [String: Any])?["format"] as? [String: Any])
+            #expect(wireFormat["type"] as? String == "json_schema")
         case .chatCompletions:
-            #expect((body["response_format"] as? [String: Any])?["type"] as? String == "json_schema")
+            let responseFormat = try #require(body["response_format"] as? [String: Any])
+            #expect(responseFormat["type"] as? String == "json_schema")
+            wireFormat = try #require(responseFormat["json_schema"] as? [String: Any])
         case .messages:
             let config = try #require(body["output_config"] as? [String: Any])
-            #expect((config["format"] as? [String: Any])?["type"] as? String == "json_schema")
+            wireFormat = try #require(config["format"] as? [String: Any])
+            #expect(wireFormat["type"] as? String == "json_schema")
         case .generateContent:
             let config = try #require(body["generationConfig"] as? [String: Any])
-            #expect((config["responseFormat"] as? [String: Any])?["text"] != nil)
+            wireFormat = try #require((config["responseFormat"] as? [String: Any])?["text"] as? [String: Any])
+            #expect(wireFormat["mimeType"] as? String == "application/json")
         }
+        let isOpenAI = format == .responses || format == .chatCompletions
+        if isOpenAI {
+            #expect(wireFormat["name"] as? String == "decision")
+            #expect(wireFormat["strict"] as? Bool == strict)
+        }
+        let schema = try #require(wireFormat["schema"] as? [String: Any])
+        let decoded = try AgentJSONValue.decode(JSONSerialization.data(withJSONObject: schema))
+        if strict && isOpenAI {
+            #expect(decoded.objectValue?["required"] == .array([.string("note"), .string("outcome")]))
+            let note = decoded.objectValue?["properties"]?.objectValue?["note"]?.objectValue
+            #expect(note?["type"] == .array([.string("string"), .string("null")]))
+            #expect(decoded.objectValue?["additionalProperties"] == .bool(false))
+        } else {
+            #expect(decoded == output.schema)
+        }
+        #expect(output.schema.objectValue?["required"] == .array([.string("outcome")]))
     }
 
     @Test

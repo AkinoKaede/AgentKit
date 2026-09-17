@@ -36,7 +36,7 @@ nonisolated struct AgentProviderResponseParser {
             return []
         }
         // Gateways commonly omit the SSE event field and use the JSON type.
-        let eventType = AgentProviderClient.streamEventType(event, root: root)
+        let eventType = AgentProviderResponseDecoder.streamEventType(event, root: root)
         if eventType == "error" || eventType == "response.failed" {
             throw Self.streamFailure(in: root)
         }
@@ -46,17 +46,17 @@ nonisolated struct AgentProviderResponseParser {
             if eventType == "response.completed", root["response"] as? [String: Any] == nil {
                 throw AgentProviderError.invalidResponse
             }
-            events = AgentProviderClient.parseResponses(
+            events = AgentProviderResponseDecoder.parseResponses(
                 eventType, root, callIDs: &responseCallIDs, callNames: &responseCallNames
             )
         case .chatCompletions:
-            events = AgentProviderClient.parseChat(root, callIDs: &chatCallIDs, wireNames: wireNames)
+            events = AgentProviderResponseDecoder.parseChat(root, callIDs: &chatCallIDs, wireNames: wireNames)
         case .messages:
-            events = AgentProviderClient.parseAnthropic(
+            events = AgentProviderResponseDecoder.parseAnthropic(
                 eventType, root, state: &anthropicState, wireNames: wireNames
             )
         case .generateContent:
-            events = AgentProviderClient.parseGoogle(root, wireNames: wireNames)
+            events = AgentProviderResponseDecoder.parseGoogle(root, wireNames: wireNames)
         }
         recordTermination(in: events)
         return events
@@ -69,10 +69,10 @@ nonisolated struct AgentProviderResponseParser {
             if let failure = Self.explicitFailure(in: root) { throw failure }
             let events: [AgentModelStreamEvent]
             switch format {
-            case .responses: events = AgentProviderClient.parseCompletedResponses(root)
-            case .chatCompletions: events = AgentProviderClient.parseChat(root, wireNames: wireNames)
-            case .messages: events = AgentProviderClient.parseCompletedAnthropic(root, wireNames: wireNames)
-            case .generateContent: events = AgentProviderClient.parseGoogle(root, wireNames: wireNames)
+            case .responses: events = AgentProviderResponseDecoder.parseCompletedResponses(root)
+            case .chatCompletions: events = AgentProviderResponseDecoder.parseChat(root, wireNames: wireNames)
+            case .messages: events = AgentProviderResponseDecoder.parseCompletedAnthropic(root, wireNames: wireNames)
+            case .generateContent: events = AgentProviderResponseDecoder.parseGoogle(root, wireNames: wireNames)
             }
             recordTermination(in: events)
             return events

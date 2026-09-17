@@ -144,6 +144,21 @@ func runAgent(
 | [`Services`](Sources/AgentKit/Services) | 由主應用程式呼叫、位於主循環之外且不使用工具的功能 | `ConversationTitleService`、`AgentMemoryLearningService` |
 | [`AgentKitScrubber`](Sources/AgentKitScrubber) | 實作網頁擷取與搜尋的選用產品 | `ScrubberWebClient` |
 
+### 模型服務內部邊界
+
+`AgentProviderClient` 負責 HTTP 傳輸、認證資訊、取消、大小限制與重試分類。
+內部的 `AgentProviderRequestEncoder` 統一準備工具順序與模型能力，再建立所選協定的原生請求結構，
+不存取網路。
+
+`AgentProviderResponseParser` 管理每個回應的工具呼叫識別值與終止狀態，即時與緩衝回應均透過
+`AgentProviderResponseDecoder` 解碼；各協定實作分別位於 `+Responses`、`+ChatCompletions`、`+Anthropic`
+與 `+Google` 檔案中。新請求或重試均使用全新狀態。`AgentProviderClient` 上的公開靜態介接方法
+繼續保留為相容入口。
+
+共用程式碼以協定語義為依據：兩種 OpenAI 格式共用結構化輸出 schema 編碼與 token 用量轉換，
+Anthropic 的獨立快取計數則另外處理。即時 Chat Completions 收到結束原因後仍繼續讀取，
+因為用量資料可能隨後抵達。
+
 ### 執行階段保障
 
 - **策略在本機決定。** 預檢決定每次呼叫的核准策略與並行方式。模型宣告與遠端 MCP 註解不能核准呼叫；

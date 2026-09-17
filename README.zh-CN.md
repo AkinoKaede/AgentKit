@@ -144,6 +144,21 @@ func runAgent(
 | [`Services`](Sources/AgentKit/Services) | 由宿主调用、位于主循环之外且不使用工具的功能 | `ConversationTitleService`、`AgentMemoryLearningService` |
 | [`AgentKitScrubber`](Sources/AgentKitScrubber) | 实现网页抓取和搜索的可选产品 | `ScrubberWebClient` |
 
+### 模型服务内部边界
+
+`AgentProviderClient` 负责 HTTP 传输、凭据、取消、大小限制和重试分类。
+内部的 `AgentProviderRequestEncoder` 统一准备工具顺序和模型能力，再构建所选协议的原生请求结构，
+不访问网络。
+
+`AgentProviderResponseParser` 管理每个响应的工具调用标识和终止状态，实时与缓冲响应均通过
+`AgentProviderResponseDecoder` 解码；各协议实现分别位于 `+Responses`、`+ChatCompletions`、`+Anthropic`
+和 `+Google` 文件中。新请求或重试均使用全新状态。`AgentProviderClient` 上的公开静态适配方法
+继续保留为兼容入口。
+
+共用代码以协议语义为依据：两种 OpenAI 格式复用结构化输出 schema 编码和 token 用量转换，
+Anthropic 的独立缓存计数则单独处理。实时 Chat Completions 收到结束原因后仍继续读取，
+因为用量数据可能随后到达。
+
 ### 运行时保障
 
 - **策略在本地确定。** 预检决定每次调用的审批策略和并发方式。模型声明和远程 MCP 注解不能批准调用；

@@ -149,6 +149,21 @@ optional product.
 | [`Services`](Sources/AgentKit/Services) | Host-invoked, tool-free features outside the main loop | `ConversationTitleService`, `AgentMemoryLearningService` |
 | [`AgentKitScrubber`](Sources/AgentKitScrubber) | Optional product implementing web fetch and search | `ScrubberWebClient` |
 
+### Provider internals
+
+`AgentProviderClient` owns HTTP transport, credentials, cancellation, size limits, and retry
+classification. Its internal `AgentProviderRequestEncoder` prepares tool ordering and model
+capabilities once, then builds the selected native request envelope without accessing the network.
+
+`AgentProviderResponseParser` owns each response's tool identities and termination state. It uses
+`AgentProviderResponseDecoder` for both live and buffered responses; the format-specific decoders
+live in `+Responses`, `+ChatCompletions`, `+Anthropic`, and `+Google` files. A new request or retry
+gets fresh state. The public static adapters on `AgentProviderClient` remain compatibility entry points.
+
+Shared code follows protocol semantics: the two OpenAI formats reuse structured-output schema
+encoding and token-usage conversion, while Anthropic's disjoint cache counts stay separate.
+Live Chat Completions keep reading after a finish reason because usage may follow it.
+
 ### Runtime guarantees
 
 - **Locally established policy.** Preflight determines each call's approval policy and concurrency.

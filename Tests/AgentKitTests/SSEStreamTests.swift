@@ -15,14 +15,6 @@ import Testing
 @Suite
 struct SSEStreamTests {
     @Test
-    func blankLineDispatchesEachEventSeparately() async throws {
-        let events = try await stream("data: one\n\ndata: two\n\n")
-
-        #expect(events.count == 2)
-        #expect(events.map(\.data) == ["one", "two"])
-    }
-
-    @Test
     func aStreamOfChatChunksDoesNotCollapseIntoOneEvent() async throws {
         let body = """
             data: {"choices":[{"delta":{"content":"Let me check."}}]}
@@ -62,73 +54,46 @@ struct SSEStreamTests {
         #expect(parsed.contains { if case .finished(.toolCalls) = $0 { true } else { false } })
     }
 
-    @Test
-    func bufferedAndStreamedFramingAgree() async throws {
-        let bodies = [
-            "data: one\n\ndata: two\n\n",
-            "event: endpoint\ndata: /messages?id=1\n\n",
-            "data: a\ndata: b\n\nid: 7\ndata: c\n\n",
-            ": keep-alive\n\ndata: after heartbeat\n\n",
-            "data: no trailing blank line\n",
-            "data: no trailing newline at all",
-            "data: crlf\r\n\r\ndata: second\r\n\r\n",
-        ]
-
-        for body in bodies {
-            let streamed = try await stream(body)
-            let buffered = SSEStream.events(in: Data(body.utf8))
-            #expect(streamed == buffered, "framing diverged for \(body.debugDescription)")
-        }
+    struct FramingFixture: Sendable, CustomTestStringConvertible {
+        let testDescription: String
+        let body: String
+        let expected: [SSEEvent]
     }
 
-    @Test
-    func lineTerminatorsMayBeLFOrCRLFOrBareCR() async throws {
-        #expect(try await stream("data: a\n\ndata: b\n\n").map(\.data) == ["a", "b"])
-        #expect(try await stream("data: a\r\n\r\ndata: b\r\n\r\n").map(\.data) == ["a", "b"])
-        #expect(try await stream("data: a\r\rdata: b\r\r").map(\.data) == ["a", "b"])
-    }
-
-    @Test
-    func aTrailingEventWithoutABlankLineIsStillDelivered() async throws {
-        #expect(try await stream("data: only\n").map(\.data) == ["only"])
-        #expect(try await stream("data: only").map(\.data) == ["only"])
-    }
-
-    @Test
-    func heartbeatsAndUnknownFieldsAreDroppedWithoutDispatching() async throws {
-        let events = try await stream(": ping\n\nretry: 500\nx-vendor: 1\ndata: real\n\n")
-
-        #expect(events.count == 1)
-        #expect(events[0].data == "real")
-    }
-
-    @Test
-    func multipleDataLinesJoinWithNewlinesAndKeepLeadingSpaces() async throws {
-        let events = try await stream("data: first\ndata:  second\n\n")
-
-        #expect(events.count == 1)
-        // Exactly one space after the colon is framing; the rest is payload.
-        #expect(events[0].data == "first\n second")
-    }
-
-    @Test
-    func eventNameAndIDTravelWithTheirEvent() async throws {
-        let events = try await stream("event: endpoint\nid: 42\ndata: /post\n\ndata: next\n\n")
-
-        #expect(events.count == 2)
-        #expect(events[0].event == "endpoint")
-        #expect(events[0].id == "42")
-        #expect(events[0].data == "/post")
-        // Fields do not leak into the following event.
-        #expect(events[1].event == "message")
-        #expect(events[1].id == nil)
-    }
-
-    @Test
-    func framingSurvivesMultiByteCharactersSplitAcrossReads() async throws {
-        let events = try await stream("data: 主机列表 🌐\n\ndata: 完成\n\n")
-
-        #expect(events.map(\.data) == ["主机列表 🌐", "完成"])
+    @Test(arguments: [
+        FramingFixture(
+            testDescription: "LF dispatch", body: "data: one\n\ndata: two\n\n",
+            expected: [SSEEvent(data: "one"), SSEEvent(data: "two")]),
+        FramingFixture(
+            testDescription: "CRLF dispatch", body: "data: one\r\n\r\ndata: two\r\n\r\n",
+            expected: [SSEEvent(data: "one"), SSEEvent(data: "two")]),
+        FramingFixture(
+            testDescription: "bare CR dispatch", body: "data: one\r\rdata: two\r\r",
+            expected: [SSEEvent(data: "one"), SSEEvent(data: "two")]),
+        FramingFixture(
+            testDescription: "EOF after line", body: "data: only\n", expected: [SSEEvent(data: "only")]),
+        FramingFixture(
+            testDescription: "EOF inside line", body: "data: only", expected: [SSEEvent(data: "only")]),
+        FramingFixture(
+            testDescription: "heartbeats and unknown fields", body: ": ping\n\nretry: 500\nx-vendor: 1\ndata: real\n\n",
+            expected: [SSEEvent(data: "real")]),
+        FramingFixture(
+            testDescription: "multiline data preserves leading space", body: "data: first\ndata:  second\n\n",
+            expected: [SSEEvent(data: "first\n second")]),
+        FramingFixture(
+            testDescription: "event fields do not leak", body: "event: endpoint\nid: 42\ndata: /post\n\ndata: next\n\n",
+            expected: [SSEEvent(event: "endpoint", data: "/post", id: "42"), SSEEvent(data: "next")]),
+        FramingFixture(
+            testDescription: "fragmented UTF-8", body: "data: 主机列表 🌐\n\ndata: 完成\n\n",
+            expected: [SSEEvent(data: "主机列表 🌐"), SSEEvent(data: "完成")]),
+        FramingFixture(testDescription: "empty source", body: "", expected: []),
+        FramingFixture(testDescription: "heartbeat without data", body: ": ping\n\n", expected: []),
+    ])
+    func streamedAndBufferedFramingMatchExpectedEvents(_ fixture: FramingFixture) async throws {
+        // Assert both paths against independent expectations, not just each other:
+        // a shared framing regression must not make two wrong results pass.
+        #expect(try await stream(fixture.body) == fixture.expected)
+        #expect(SSEStream.events(in: Data(fixture.body.utf8)) == fixture.expected)
     }
 
     @Test

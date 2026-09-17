@@ -182,23 +182,68 @@ struct AgentCacheReplayTests {
         #expect(results.first?.isError == true)
     }
 
-    @Test
-    func cacheWritesAreCountedSeparatelyAndStreamingReportsMergeOnce() throws {
-        let events = AgentProviderClient.parseCompletedResponses([
-            "object": "response", "status": "completed", "output": [],
-            "usage": [
-                "input_tokens": 1000, "output_tokens": 30,
-                "input_tokens_details": ["cached_tokens": 600, "cache_write_tokens": 300],
-            ],
-        ])
-        let usage = try #require(
-            events.compactMap { event -> AgentTokenUsage? in
+    @Test(arguments: ModelAPIFormat.allCases)
+    func providerUsagePreservesCacheSemanticsAndMergesOnce(_ format: ModelAPIFormat) throws {
+        let root: [String: Any]
+        switch format {
+        case .responses:
+            root = [
+                "object": "response", "status": "completed", "output": [],
+                "usage": [
+                    "input_tokens": 1000.0, "output_tokens": 30.0,
+                    "input_tokens_details": ["cached_tokens": 600.0, "cache_write_tokens": 300.0],
+                ],
+            ]
+        case .chatCompletions:
+            root = [
+                "choices": [],
+                "usage": [
+                    "prompt_tokens": 1000.0, "completion_tokens": 30.0,
+                    "prompt_tokens_details": ["cached_tokens": 600.0, "cache_write_tokens": 300.0],
+                ],
+            ]
+        case .messages:
+            root = [
+                "type": "message", "content": [],
+                "usage": [
+                    "input_tokens": 100.0, "output_tokens": 30.0,
+                    "cache_read_input_tokens": 600.0, "cache_creation_input_tokens": 300.0,
+                ],
+            ]
+        case .generateContent:
+            root = [
+                "candidates": [],
+                "usageMetadata": [
+                    "promptTokenCount": 1000.0, "candidatesTokenCount": 30.0,
+                    "cachedContentTokenCount": 600.0,
+                ],
+            ]
+        }
+        let usageKey = format == .generateContent ? "usageMetadata" : "usage"
+        // Full, empty, and absent usage are different wire states: empty usage
+        // emits a zero report, while absent usage emits no report at all.
+        for payload in [
+            root, root.merging([usageKey: [String: Any]()]) { _, new in new },
+            root.filter { $0.key != usageKey },
+        ] {
+            var parser = AgentProviderResponseParser(format: format, wireNames: [:], buffered: false)
+            let events = try parser.parseResponse(JSONSerialization.data(withJSONObject: payload))
+            let reports = events.compactMap { event -> AgentTokenUsage? in
                 if case .usage(let value) = event { return value }
                 return nil
-            }.first)
-        #expect(usage.inputTokens == 1000)
-        #expect(usage.cacheWriteInputTokens == 300)
-        #expect(usage.merging(usage) == usage)
+            }
+            guard let counters = payload[usageKey] as? [String: Any] else {
+                #expect(reports.isEmpty)
+                continue
+            }
+            #expect(reports.count == 1)
+            let usage = try #require(reports.first)
+            #expect(usage.inputTokens == (counters.isEmpty ? 0 : 1000))
+            #expect(usage.outputTokens == (counters.isEmpty ? 0 : 30))
+            #expect(usage.cachedInputTokens == (counters.isEmpty ? 0 : 600))
+            #expect(usage.cacheWriteInputTokens == (counters.isEmpty || format == .generateContent ? 0 : 300))
+            #expect(usage.merging(usage) == usage)
+        }
     }
 }
 

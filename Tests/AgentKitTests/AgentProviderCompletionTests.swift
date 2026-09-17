@@ -159,14 +159,16 @@ struct AgentProviderCompletionTests {
         let request = try #require(endpoint.requests.first)
         #expect(endpoint.requests.count == 1)
         #expect(request.value(forHTTPHeaderField: "Accept") == "text/event-stream")
+        let requestBody = try #require(request.httpBody)
+        let wireBody = try #require(try JSONSerialization.jsonObject(with: requestBody) as? [String: Any])
+        #expect(wireBody["tools"] == nil)
         if format == .generateContent {
             #expect(request.url?.path.contains(":streamGenerateContent") == true)
             #expect(
                 URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems?.contains(
                     URLQueryItem(name: "alt", value: "sse")) == true)
         } else {
-            let body = try #require(try JSONSerialization.jsonObject(with: request.httpBody!) as? [String: Any])
-            #expect(body["stream"] as? Bool == true)
+            #expect(wireBody["stream"] as? Bool == true)
         }
     }
 
