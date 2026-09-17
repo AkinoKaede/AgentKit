@@ -77,6 +77,8 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
     /// Snapshotted for the run by the caller — see `AgentSkillCatalog`.
     public var skills = AgentSkillCatalog()
     public var skillInventory: [AgentSkill]?
+    public var readOnlySkillNames: Set<String>
+    public var skillPackageResolver: (any AgentSkillPackageResolving)?
     public var skillLibrary: (any AgentSkillLibraryManaging)?
     public var memory: (any AgentMemoryAccessing)?
     public var mcpServers: [(server: MCPServer, bearerToken: String?)] = []
@@ -92,6 +94,8 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         plans: AgentPlanRecorder? = nil,
         skills: AgentSkillCatalog = AgentSkillCatalog(),
         skillInventory: [AgentSkill]? = nil,
+        readOnlySkillNames: Set<String> = [],
+        skillPackageResolver: (any AgentSkillPackageResolving)? = nil,
         skillLibrary: (any AgentSkillLibraryManaging)? = nil,
         memory: (any AgentMemoryAccessing)? = nil,
         mcpServers: [(server: MCPServer, bearerToken: String?)] = [],
@@ -106,6 +110,8 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         self.plans = plans
         self.skills = skills
         self.skillInventory = skillInventory
+        self.readOnlySkillNames = readOnlySkillNames
+        self.skillPackageResolver = skillPackageResolver
         self.skillLibrary = skillLibrary
         self.memory = memory
         self.mcpServers = mcpServers
@@ -257,6 +263,12 @@ public nonisolated enum AgentToolCatalog {
     ]
 
     private static let skillTools: [Registration] = [
+        .init(SkillInstallTool.self, availableIn: [.acting]) { configuration in
+            guard configuration.includes(.skills), let library = configuration.skillLibrary,
+                let resolver = configuration.skillPackageResolver
+            else { return nil }
+            return SkillInstallTool(library: library, resolver: resolver)
+        },
         .init(SkillReadFileTool.self) { configuration in
             guard configuration.includes(.skills), !configuration.skills.isEmpty else {
                 return nil
@@ -268,7 +280,9 @@ public nonisolated enum AgentToolCatalog {
                 configuration.skillInventory != nil || configuration.skillLibrary != nil
                     || !configuration.skills.isEmpty
             else { return nil }
-            return SkillsListTool(skills: configuration.skillInventory ?? configuration.skills.skills)
+            return SkillsListTool(
+                skills: configuration.skillInventory ?? configuration.skills.skills,
+                readOnlyNames: configuration.readOnlySkillNames)
         },
         .init(SkillManageTool.self, availableIn: [.acting]) { configuration in
             guard configuration.includes(.skills), let library = configuration.skillLibrary else { return nil }

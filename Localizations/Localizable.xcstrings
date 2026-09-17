@@ -3470,6 +3470,23 @@
           }
         }
       }
+    },
+    "GitHub returned HTTP %lld. Check that the skill is public and try again later.": {
+      "extractionState": "manual",
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub返回HTTP %lld。请确认技能已公开，然后稍后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub傳回HTTP %lld。請確認技能已公開，然後稍後重試。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -40,12 +40,16 @@ public nonisolated struct AgentSkillPackage: Codable, Hashable, Sendable {
 public nonisolated struct AgentSkillLibrarySnapshot: Sendable {
     public var skills: [AgentSkill]
     public let revision: String
+    public let readOnlyNames: Set<String>
 
-    public init(_ skills: [AgentSkill]) {
+    public init(_ skills: [AgentSkill], readOnlyNames: Set<String> = []) {
         self.skills = skills
+        self.readOnlyNames = readOnlyNames
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        let data = (try? encoder.encode(skills)) ?? Data()
+        let data =
+            ((try? encoder.encode(skills)) ?? Data())
+            + ((try? encoder.encode(readOnlyNames.sorted())) ?? Data())
         revision = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 }
@@ -54,6 +58,41 @@ public nonisolated struct AgentSkillLibrarySnapshot: Sendable {
 public nonisolated protocol AgentSkillLibraryManaging: Sendable {
     func skillSnapshot() async throws -> AgentSkillLibrarySnapshot
     func applySkillOperations(_ operations: [AgentSkillOperation], expectedRevision: String) async throws
+    func installSkill(_ skill: AgentSkill, expectedRevision: String) async throws
+}
+
+extension AgentSkillLibraryManaging {
+    public func installSkill(_ skill: AgentSkill, expectedRevision: String) async throws {
+        throw AgentToolError.invalidArguments("This library does not support package installation.")
+    }
+}
+
+extension AgentSkillLibrarySnapshot {
+    public func adding(_ skill: AgentSkill) throws -> [AgentSkill] {
+        guard !readOnlyNames.contains(skill.effectiveName),
+            !skills.contains(where: { $0.effectiveName == skill.effectiveName || $0.id == skill.id })
+        else {
+            throw AgentToolError.invalidArguments(
+                "The skill name is reserved or already installed. Choose another name.")
+        }
+        try skill.validateForInstallation()
+        return skills + [skill]
+    }
+}
+
+extension AgentSkill {
+    public func validateForInstallation() throws {
+        guard isComplete, body.utf8.count <= Self.maximumBodyBytes,
+            summary.count <= Self.maximumSummaryCharacters
+        else { throw AgentToolError.invalidArguments("A skill needs a bounded description and non-empty body.") }
+        try package?.validate()
+        try AgentKnowledgeContentScanner.validate(body)
+        try AgentKnowledgeContentScanner.validate(summary)
+        if let package { try AgentKnowledgeContentScanner.validate(package.frontmatter) }
+        for data in package?.files.values ?? [String: Data]().values {
+            if let text = String(data: data, encoding: .utf8) { try AgentKnowledgeContentScanner.validate(text) }
+        }
+    }
 }
 
 public nonisolated struct AgentSkillOperation: Codable, Hashable, Sendable {
@@ -91,12 +130,18 @@ public nonisolated struct AgentSkillOperation: Codable, Hashable, Sendable {
         self.enabled = enabled
     }
 
-    public static func applying(_ operations: [Self], to original: [AgentSkill]) throws -> [AgentSkill] {
+    public static func applying(
+        _ operations: [Self], to original: [AgentSkill], readOnlyNames: Set<String> = []
+    ) throws -> [AgentSkill] {
         guard !operations.isEmpty, operations.count <= 32 else {
             throw AgentToolError.invalidArguments("Supply between 1 and 32 skill operations.")
         }
         var skills = original
         for operation in operations {
+            guard !readOnlyNames.contains(operation.name) else {
+                throw AgentToolError.invalidArguments(
+                    "This built-in skill is read-only. Create a skill with another name.")
+            }
             guard AgentSkillNaming.isValid(operation.name) else {
                 throw AgentToolError.invalidArguments("Invalid skill name: \(operation.name).")
             }
@@ -174,15 +219,7 @@ public nonisolated struct AgentSkillOperation: Codable, Hashable, Sendable {
             }
         }
         for skill in skills where operations.contains(where: { $0.name == skill.name && $0.action != .delete }) {
-            guard skill.isComplete, skill.body.utf8.count <= AgentSkill.maximumBodyBytes,
-                skill.summary.count <= AgentSkill.maximumSummaryCharacters
-            else { throw AgentToolError.invalidArguments("A skill needs a bounded description and non-empty body.") }
-            try skill.package?.validate()
-            try AgentKnowledgeContentScanner.validate(skill.body)
-            try AgentKnowledgeContentScanner.validate(skill.summary)
-            for data in skill.package?.files.values ?? [String: Data]().values {
-                if let text = String(data: data, encoding: .utf8) { try AgentKnowledgeContentScanner.validate(text) }
-            }
+            try skill.validateForInstallation()
         }
         return skills
     }

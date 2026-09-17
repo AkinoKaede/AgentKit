@@ -106,7 +106,11 @@ public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchem
 public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(id: "builtin.skills_list", present: SkillManageTool.present)
     public let skills: [AgentSkill]
-    public init(skills: [AgentSkill]) { self.skills = skills }
+    public let readOnlyNames: Set<String>
+    public init(skills: [AgentSkill], readOnlyNames: Set<String> = []) {
+        self.skills = skills
+        self.readOnlyNames = readOnlyNames
+    }
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
             "skills_list", "List the installed skill snapshot, including disabled skills.",
@@ -126,6 +130,7 @@ public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBu
                         .object([
                             "name": .string($0.name), "description": .string($0.summary),
                             "enabled": .bool($0.isEnabled),
+                            "read_only": .bool(readOnlyNames.contains($0.effectiveName)),
                         ])
                     })
             ]))
@@ -164,7 +169,8 @@ public nonisolated struct SkillManageTool: AgentToolDefinition, AgentToolSchemaB
     }
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
         let snapshot = try await library.skillSnapshot()
-        _ = try AgentSkillOperation.applying(operations(invocation), to: snapshot.skills)
+        _ = try AgentSkillOperation.applying(
+            operations(invocation), to: snapshot.skills, readOnlyNames: snapshot.readOnlyNames)
         return AgentToolPreflight(
             invocation: invocation, approvalPolicy: .ask,
             executionMetadata: ["skill_revision": .string(snapshot.revision)])

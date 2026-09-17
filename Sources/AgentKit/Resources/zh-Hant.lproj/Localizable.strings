@@ -126,6 +126,8 @@
 	<string>從</string>
 	<key>Full access</key>
 	<string>完整存取權限</string>
+	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
+	<string>GitHub傳回HTTP %lld。請確認技能已公開，然後稍後重試。</string>
 	<key>Google answered the sign-in without a token.</key>
 	<string>Google已完成登入回應，但未傳回權杖。</string>
 	<key>Google refused the sign-in — %@</key>
