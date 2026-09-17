@@ -2,7 +2,8 @@ import Foundation
 
 public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let name = "skill_read_file"
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.skill_read_file", present: present)
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.skill_read_file", present: present, presentArguments: presentArguments)
     /// Presentation compatibility only. This never registers an executable legacy tool.
     public static let legacyPresenter = AgentToolDetailPresenter(id: "builtin.load_skill", present: present)
     public let skills: AgentSkillCatalog
@@ -90,21 +91,10 @@ public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchem
         return result
     }
 
-    public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
-        AgentToolDetailFormatting.objectItems(input) { object in
-            [
-                .text(
-                    .init(
-                        title: object["title"]?.stringValue,
-                        text: object["content"]?.stringValue ?? object["instructions"]?.stringValue ?? "",
-                        style: .plain))
-            ]
-        }
-    }
 }
 
 public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBuilding {
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.skills_list", present: SkillManageTool.present)
+    public static let presenter = AgentToolDetailPresenter(id: "builtin.skills_list", present: present)
     public let skills: [AgentSkill]
     public let readOnlyNames: Set<String>
     public init(skills: [AgentSkill], readOnlyNames: Set<String> = []) {
@@ -116,7 +106,7 @@ public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBu
             "skills_list", "List the installed skill snapshot, including disabled skills.",
             properties: [:], required: [], target: .local, approvalPolicy: .approve, concurrency: .parallel,
             presentation: .init(
-                symbol: "books.vertical", activity: .semanticArgument(key: "name", fallback: .skill),
+                symbol: "books.vertical", activity: .semanticLabel(.skills),
                 output: .json, actionKind: .list))
     }
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws
@@ -138,7 +128,8 @@ public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBu
 }
 
 public nonisolated struct SkillManageTool: AgentToolDefinition, AgentToolSchemaBuilding {
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.skill_manage", present: present)
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.skill_manage", present: present, presentArguments: presentArguments)
     public let library: any AgentSkillLibraryManaging
     public init(library: any AgentSkillLibraryManaging) { self.library = library }
     public var descriptor: AgentToolDescriptor {
@@ -160,8 +151,8 @@ public nonisolated struct SkillManageTool: AgentToolDefinition, AgentToolSchemaB
                         ], required: ["action", "name"]), max: 32)
             ], required: ["operations"], target: .local, approvalPolicy: .ask,
             presentation: .init(
-                symbol: "book.closed", activity: .semanticArgument(key: "name", fallback: .skill),
-                output: .json, actionKind: .write))
+                symbol: "book.closed", activity: .semanticLabel(.skills),
+                output: .json, actionKind: .update))
     }
     private func operations(_ invocation: AgentToolInvocation) throws -> [AgentSkillOperation] {
         let value = try Arguments(invocation).object["operations"] ?? .null
@@ -183,10 +174,5 @@ public nonisolated struct SkillManageTool: AgentToolDefinition, AgentToolSchemaB
         }
         try await library.applySkillOperations(operations(invocation), expectedRevision: revision)
         return Self.result(invocation, .object(["saved": .bool(true), "available": .string("next_run")]))
-    }
-    public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
-        AgentToolDetailFormatting.objectItems(input) { object in
-            [.text(.init(text: AgentJSONValue.object(object).encodedString, style: .plain))]
-        }
     }
 }

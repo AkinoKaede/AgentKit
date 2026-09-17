@@ -19,7 +19,7 @@ public nonisolated protocol AgentSkillPackageResolving: Sendable {
 /// Construct per run. Reviewed bytes live only in this tool's bounded, in-memory staging area.
 public nonisolated struct SkillInstallTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.skill_install", present: SkillManageTool.present)
+        id: "builtin.skill_install", present: present, presentArguments: presentArguments)
     private let library: any AgentSkillLibraryManaging
     private let resolver: any AgentSkillPackageResolving
     private let staging = SkillInstallStaging()
@@ -37,7 +37,7 @@ public nonisolated struct SkillInstallTool: AgentToolDefinition, AgentToolSchema
             required: ["source_url"], target: .local, approvalPolicy: .ask,
             presentation: .init(
                 symbol: "square.and.arrow.down", activity: .semanticArgument(key: "name", fallback: .skill),
-                output: .json, actionKind: .write))
+                output: .json, actionKind: .install))
     }
 
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {

@@ -1,7 +1,8 @@
 import Foundation
 
 public nonisolated struct MemoryTool: AgentToolDefinition, AgentToolSchemaBuilding {
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.memory", present: SkillManageTool.present)
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.memory", present: present, presentArguments: presentArguments)
     public let store: any AgentMemoryAccessing
     public init(store: any AgentMemoryAccessing) { self.store = store }
     public static var operationSchema: AgentJSONValue {
@@ -19,8 +20,8 @@ public nonisolated struct MemoryTool: AgentToolDefinition, AgentToolSchemaBuildi
             properties: ["operations": Self.array(items: Self.operationSchema, max: 32)], required: ["operations"],
             target: .local, approvalPolicy: .approve,
             presentation: .init(
-                symbol: "brain", activity: .semanticArgument(key: "target", fallback: .skill),
-                output: .json, actionKind: .write))
+                symbol: "brain", activity: .semanticLabel(.memory),
+                output: .json, actionKind: .update))
     }
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws
         -> AgentToolResult
@@ -34,7 +35,7 @@ public nonisolated struct MemoryTool: AgentToolDefinition, AgentToolSchemaBuildi
 
 public nonisolated struct SessionSearchTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.session_search", present: SkillManageTool.present)
+        id: "builtin.session_search", present: present, presentArguments: presentArguments)
     public let store: any AgentMemoryAccessing
     public init(store: any AgentMemoryAccessing) { self.store = store }
     public var descriptor: AgentToolDescriptor {
@@ -47,8 +48,8 @@ public nonisolated struct SessionSearchTool: AgentToolDefinition, AgentToolSchem
             ],
             required: [], target: .local, approvalPolicy: .approve, concurrency: .parallel,
             presentation: .init(
-                symbol: "magnifyingglass", activity: .semanticArgument(key: "query", fallback: .skill),
-                output: .json, actionKind: .read))
+                symbol: "magnifyingglass", activity: .semanticArgument(key: "query", fallback: .sessions),
+                output: .json, actionKind: .search))
     }
     public func execute(_ invocation: AgentToolInvocation, context: AgentToolExecutionContext) async throws
         -> AgentToolResult

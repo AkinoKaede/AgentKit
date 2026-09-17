@@ -40,6 +40,8 @@
 	<string>技能需要一個名稱。</string>
 	<key>A truncated model response contained tool calls; none were executed.</key>
 	<string>截斷的模型回應中包含工具呼叫，均未執行。</string>
+	<key>Add memory</key>
+	<string>新增記憶</string>
 	<key>Answer</key>
 	<string>回答</string>
 	<key>Answered in %lld ms</key>
@@ -48,6 +50,8 @@
 	<string>替我核准</string>
 	<key>Ask for approval</key>
 	<string>要求核准</string>
+	<key>Assistant</key>
+	<string>助理</string>
 	<key>Attachments</key>
 	<string>附件</string>
 	<key>Audio</key>
@@ -70,6 +74,10 @@
 	<string>自動審查已取消，操作未執行。</string>
 	<key>Automatic</key>
 	<string>自動</string>
+	<key>Available on the next run</key>
+	<string>下次執行可用</string>
+	<key>Binary resource. Export it from the skill editor to use its original bytes.</key>
+	<string>這是二進位資源。請從技能編輯器匯出以使用原始檔案。</string>
 	<key>Case sensitive</key>
 	<string>區分大小寫</string>
 	<key>Changes</key>
@@ -80,6 +88,8 @@
 	<string>指令</string>
 	<key>Command Generator</key>
 	<string>指令產生器</string>
+	<key>Commit</key>
+	<string>提交版本</string>
 	<key>Completed without output</key>
 	<string>已完成，無輸出</string>
 	<key>Connecting</key>
@@ -92,24 +102,38 @@
 	<string>內容型別</string>
 	<key>Conversation</key>
 	<string>對話</string>
+	<key>Conversation ID</key>
+	<string>對話識別碼</string>
 	<key>Copied</key>
 	<string>已複製</string>
+	<key>Create skill</key>
+	<string>建立技能</string>
 	<key>Created</key>
 	<string>已建立</string>
 	<key>Critical</key>
 	<string>嚴重</string>
+	<key>Current memory</key>
+	<string>目前記憶</string>
+	<key>Delete skill</key>
+	<string>刪除技能</string>
 	<key>Deleted</key>
 	<string>已刪除</string>
+	<key>Description</key>
+	<string>描述</string>
 	<key>Destination</key>
 	<string>目標</string>
 	<key>Diff</key>
 	<string>差異</string>
 	<key>Directory</key>
 	<string>目錄</string>
+	<key>Disabled</key>
+	<string>已停用</string>
 	<key>Embedding</key>
 	<string>嵌入</string>
 	<key>Empty file</key>
 	<string>空檔案</string>
+	<key>Enabled</key>
+	<string>已啟用</string>
 	<key>Exited</key>
 	<string>已結束</string>
 	<key>Extra High</key>
@@ -150,6 +174,8 @@
 	<string>型別</string>
 	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
 	<string>舊版傳輸方式，使用GET串流和個別的POST端點。</string>
+	<key>Limit</key>
+	<string>數量上限</string>
 	<key>Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.</key>
 	<string>第%1$lld行超出每頁%2$lld位元組的限制。請按位元組擷取所需片段或搜尋。</string>
 	<key>Line endings</key>
@@ -160,22 +186,38 @@
 	<string>低</string>
 	<key>Markdown</key>
 	<string>Markdown</string>
+	<key>Matching text</key>
+	<string>比對文字</string>
 	<key>Max</key>
 	<string>最高</string>
 	<key>Medium</key>
 	<string>中</string>
+	<key>Memory operations processed</key>
+	<string>已處理記憶操作</string>
+	<key>Message</key>
+	<string>訊息</string>
 	<key>Minimal</key>
 	<string>最低</string>
+	<key>More results are available</key>
+	<string>還有更多結果</string>
 	<key>Moved</key>
 	<string>已移動</string>
 	<key>No</key>
 	<string>否</string>
 	<key>No Chat model is configured.</key>
 	<string>尚未設定對話模型。</string>
+	<key>No conversations found</key>
+	<string>找不到對話</string>
 	<key>No differences</key>
 	<string>無差異</string>
+	<key>No files</key>
+	<string>沒有檔案</string>
+	<key>No lines returned</key>
+	<string>未傳回文字行</string>
 	<key>No matches</key>
 	<string>沒有相符項目</string>
+	<key>No messages found</key>
+	<string>找不到訊息</string>
 	<key>No model is configured for conversation titles.</key>
 	<string>尚未為對話標題設定模型。</string>
 	<key>No model list at this address. Check the base URL.</key>
@@ -184,10 +226,14 @@
 	<string>沒有可讀的網頁內容</string>
 	<key>No results</key>
 	<string>無結果</string>
+	<key>No skills available</key>
+	<string>沒有可用技能</string>
 	<key>None</key>
 	<string>無</string>
 	<key>Off</key>
 	<string>關閉</string>
+	<key>Offset</key>
+	<string>起始位置</string>
 	<key>Original HTML</key>
 	<string>原始HTML</string>
 	<key>Overwrite</key>
@@ -196,30 +242,50 @@
 	<string>已覆寫</string>
 	<key>PDF</key>
 	<string>PDF</string>
+	<key>Patch skill</key>
+	<string>修訂技能</string>
 	<key>Path</key>
 	<string>路徑</string>
 	<key>Permissions</key>
 	<string>權限</string>
+	<key>Persistent memory</key>
+	<string>持久化記憶</string>
 	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
 	<string>計畫模式已開啟，因此未執行%@——它會更改本應用外部的內容。請先讀取所需資訊，在草稿工作區擬定計畫並呼叫present_plan，由使用者決定是否執行。</string>
 	<key>Plan presented from %@</key>
 	<string>已從%@提交計畫</string>
 	<key>Purpose</key>
 	<string>目的</string>
+	<key>Query</key>
+	<string>搜尋內容</string>
 	<key>Question</key>
 	<string>問題</string>
 	<key>Question unavailable</key>
 	<string>問題不可用</string>
+	<key>Read-only</key>
+	<string>唯讀</string>
 	<key>Reasoning</key>
 	<string>推理</string>
+	<key>Recent conversations</key>
+	<string>最近對話</string>
 	<key>Remote path</key>
 	<string>远程路径</string>
+	<key>Remove memory</key>
+	<string>移除記憶</string>
+	<key>Remove skill file</key>
+	<string>移除技能檔案</string>
+	<key>Replace memory</key>
+	<string>取代記憶</string>
 	<key>Replaced</key>
 	<string>已取代</string>
+	<key>Replacement text</key>
+	<string>取代文字</string>
 	<key>Request</key>
 	<string>請求</string>
 	<key>Rerank</key>
 	<string>重新排序</string>
+	<key>Resolved source</key>
+	<string>解析後的來源</string>
 	<key>Result</key>
 	<string>結果</string>
 	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
@@ -238,6 +304,8 @@
 	<string>機密句柄</string>
 	<key>Secret received securely</key>
 	<string>已安全接收機密資訊</string>
+	<key>Set skill availability</key>
+	<string>設定技能啟用狀態</string>
 	<key>Showing %lld of %lld matching lines</key>
 	<string>正在顯示%1$lld/%2$lld個匹配行</string>
 	<key>Signing failed: %@.</key>
@@ -246,12 +314,20 @@
 	<string>大小</string>
 	<key>Skill</key>
 	<string>技能</string>
+	<key>Skill changes saved</key>
+	<string>已儲存技能變更</string>
+	<key>Skill installed</key>
+	<string>已安裝技能</string>
+	<key>Skills</key>
+	<string>技能</string>
 	<key>Skipped</key>
 	<string>跳過</string>
 	<key>Skipped %lld binary files</key>
 	<string>已略過%lld個二進位檔案</string>
 	<key>Source</key>
 	<string>來源</string>
+	<key>Source URL</key>
+	<string>來源URL</string>
 	<key>Status</key>
 	<string>狀態</string>
 	<key>Streamable HTTP</key>
@@ -260,8 +336,12 @@
 	<string>結構化輸出</string>
 	<key>Symlink</key>
 	<string>符號連結</string>
+	<key>System</key>
+	<string>系統</string>
 	<key>System prompt</key>
 	<string>系統提示</string>
+	<key>Target</key>
+	<string>目標</string>
 	<key>Text</key>
 	<string>文字</string>
 	<key>Text is identical; line endings differ: %@ → %@</key>
@@ -374,6 +454,8 @@
 	<string>標題</string>
 	<key>To</key>
 	<string>改為</string>
+	<key>Tool</key>
+	<string>工具</string>
 	<key>Tool input was rejected: %@</key>
 	<string>工具輸入被拒絕：%@</string>
 	<key>Tool results</key>
@@ -392,10 +474,18 @@
 	<string>未知工具：%@</string>
 	<key>Unnamed entry</key>
 	<string>未命名條目</string>
+	<key>Untitled conversation</key>
+	<string>未命名對話</string>
 	<key>Untitled result</key>
 	<string>無標題結果</string>
+	<key>Update skill</key>
+	<string>更新技能</string>
 	<key>Used for chat, tools, and the Assistant sidebar.</key>
 	<string>用於對話、工具和助手側邊欄。</string>
+	<key>User</key>
+	<string>使用者</string>
+	<key>User profile</key>
+	<string>使用者資料</string>
 	<key>Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.</key>
 	<string>Vertex列出的是Model Garden條目，而非此專案可呼叫的模型。請新增你實際使用的模型。</string>
 	<key>Video</key>
@@ -414,6 +504,8 @@
 	<string>工作區為空</string>
 	<key>Workspace usage</key>
 	<string>工作區使用情況</string>
+	<key>Write skill file</key>
+	<string>寫入技能檔案</string>
 	<key>Yes</key>
 	<string>是</string>
 	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
