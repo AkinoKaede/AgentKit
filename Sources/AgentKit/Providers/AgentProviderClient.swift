@@ -172,7 +172,7 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         )
         var urlRequest = try buildRequest(request, streaming: true)
         try await ProviderNetworking.authorize(
-            &urlRequest, provider: provider, secret: secret
+            &urlRequest, provider: provider, secret: secret, omittingEmptyCredential: true
         )
         let (bytes, response) = try await session.bytes(for: urlRequest)
         defer { bytes.task.cancel() }

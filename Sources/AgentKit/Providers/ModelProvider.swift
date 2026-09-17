@@ -195,7 +195,7 @@ public nonisolated struct ModelProvider: Identifiable, Hashable, Sendable {
     }
 
     public var canFetchModels: Bool {
-        hasCredential && resolvedModelsURL != nil
+        resolvedModelsURL != nil
     }
 
     /// Whether this wire protocol has anywhere to *put* a server-side search

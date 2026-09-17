@@ -62,7 +62,7 @@ public nonisolated struct ChatProbe: Sendable {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try Self.body(for: model, on: provider)
         try await ProviderNetworking.authorize(
-            &request, provider: provider, secret: secret
+            &request, provider: provider, secret: secret, omittingEmptyCredential: true
         )
 
         let started = Date()
