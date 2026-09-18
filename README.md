@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.13.2")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.13.3")
 ```
 
 Then add the core product to your target:
