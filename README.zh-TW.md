@@ -16,7 +16,7 @@
 加入套件相依項目：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.13.3")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.14.0")
 ```
 
 接著將核心產品加入目標：
@@ -285,7 +285,7 @@ Guardian 在隔離的 `.reviewing` 模式下執行，預設不註冊調查工具
 `ReviewerReadOnlyApproval` 只允許已標記為 `.approve` 的呼叫，且沒有升級核准途徑，避免遞迴審查。
 `GuardianSessionStore` 在多次執行之間保存有界的授權基準與決定，不會將它們混入主對話。
 
-使用者輸入的機密值透過 `SecretBroker`，以一次性控制代碼傳遞，並繫結至執行個體、工具與用途；
+使用者輸入的機密值透過可清除的 `AgentSecret` 儲存空間和 `SecretBroker`，以一次性控制代碼傳遞，並繫結至執行個體、工具與用途；
 明文不會進入模型輸入、審查、事件與持久儲存紀錄。工具輸出一律視為不可信資料。
 唯一的有限例外是已安裝技能的 `SKILL.md`：它可以提供操作流程，但不能授予權限；
 輔助檔案仍是不可信的參考資料。

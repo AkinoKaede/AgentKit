@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.13.3")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.14.0")
 ```
 
 Then add the core product to your target:
@@ -298,7 +298,7 @@ it. Guardian runs in an isolated `.reviewing` mode, with no investigation tools 
 preventing recursive review. `GuardianSessionStore` keeps bounded authorization baselines and decisions
 across runs without mixing them into the main conversation.
 
-User-entered secrets travel through `SecretBroker` as single-use handles bound to run, tool, and
+User-entered secrets move through wipeable `AgentSecret` storage and `SecretBroker` as single-use handles bound to run, tool, and
 purpose; the plaintext is excluded from model input, reviews, events, and persistence. Tool output
 is untrusted data. The narrow exception is an installed skill's `SKILL.md`, which may supply
 procedures but never permissions; its supporting files remain untrusted reference data.

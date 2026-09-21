@@ -297,18 +297,20 @@ public actor SecretBroker {
     public init() {}
 
     private struct Entry {
-        var secret: String
+        var secret: AgentSecret
         var binding: SecretBinding
     }
     private var entries: [SecretHandle.ID: Entry] = [:]
 
-    public func issue(_ secret: String, binding: SecretBinding) -> SecretHandle {
+    public func issue(_ secret: AgentSecret, binding: SecretBinding) throws -> SecretHandle {
         let handle = SecretHandle(id: UUID())
-        entries[handle.id] = Entry(secret: secret, binding: binding)
+        entries[handle.id] = Entry(
+            secret: try secret.transferringOwnership(), binding: binding
+        )
         return handle
     }
 
-    public func consume(_ handle: SecretHandle, matching binding: SecretBinding) throws -> String {
+    public func consume(_ handle: SecretHandle, matching binding: SecretBinding) throws -> AgentSecret {
         guard let entry = entries[handle.id] else { throw SecretBrokerError.notFound }
         guard entry.binding == binding else { throw SecretBrokerError.bindingMismatch }
         entries[handle.id] = nil
@@ -316,10 +318,16 @@ public actor SecretBroker {
     }
 
     public func discardSecrets(for runID: UUID) {
+        for entry in entries.values where entry.binding.runID == runID {
+            entry.secret.clear()
+        }
         entries = entries.filter { $0.value.binding.runID != runID }
     }
 
-    public func discardAll() { entries.removeAll() }
+    public func discardAll() {
+        for entry in entries.values { entry.secret.clear() }
+        entries.removeAll()
+    }
 
     public var count: Int { entries.count }
 }
@@ -490,7 +498,7 @@ public nonisolated struct AgentUserInputAnswer: Hashable, Sendable {
         /// allowed, alongside — them. Kept structured rather than flattened to
         /// a string so the tool can hand the model ids it chose itself.
         case choice(selectedIDs: [String], custom: String?)
-        case secret(String)
+        case secret(AgentSecret)
     }
 
     public var questionID: String

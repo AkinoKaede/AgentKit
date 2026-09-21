@@ -226,7 +226,7 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
                     "The secret prompt returned ordinary text."
                 )
             }
-            let handle = await context.secretBroker.issue(
+            let handle = try await context.secretBroker.issue(
                 secret,
                 binding: SecretBinding(
                     runID: context.runID, toolName: toolName, hostID: hostID, purpose: purpose
