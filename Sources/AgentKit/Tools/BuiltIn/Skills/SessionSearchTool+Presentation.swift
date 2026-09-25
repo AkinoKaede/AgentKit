@@ -7,8 +7,14 @@ nonisolated extension SessionSearchTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
+        let queryItems: [AgentToolDetail.Item]
+        if let query = F.nonempty(input.arguments["query"]?.stringValue) {
+            queryItems = AgentKnowledgeToolDetail.fields(["query": .string(query)], locale: input.locale)
+        } else {
+            queryItems = []
+        }
         guard let object = input.result.objectValue else {
-            return F.genericItems(input.result, locale: input.locale)
+            return queryItems + F.genericItems(input.result, locale: input.locale)
         }
         let locale = input.locale
         var items: [AgentToolDetail.Item] = []
@@ -47,9 +53,9 @@ nonisolated extension SessionSearchTool {
                             title: "\(title) — \(F.localized(role, locale: locale))", text: content, style: .plain)))
             }
         } else {
-            return F.genericItems(input.result, locale: locale)
+            return queryItems + F.genericItems(input.result, locale: locale)
         }
         items += AgentKnowledgeToolDetail.more(object, locale: locale)
-        return items
+        return queryItems + items
     }
 }

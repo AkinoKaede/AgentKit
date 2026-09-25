@@ -178,15 +178,35 @@ public nonisolated protocol AgentMemoryAccessing: Sendable {
 
 extension AgentMemoryAccessing {
     public func searchMemories(_ request: AgentMemorySearchRequest) async throws -> AgentJSONValue {
-        let words = request.query.split(whereSeparator: \.isWhitespace).map(String.init)
-        guard !words.isEmpty, words.count <= 8, request.query.count <= 256 else {
+        let query = AgentSearchQuery(request.query)
+        guard !query.terms.isEmpty, query.terms.count <= 32, request.query.count <= 256 else {
             throw AgentToolError.invalidArguments("Supply a short memory search query.")
         }
         let state = try await memoryState()
-        let matches = state.entries.filter { entry in
-            (request.target == nil || entry.target == request.target)
-                && words.allSatisfy { entry.content.localizedCaseInsensitiveContains($0) }
-        }.sorted { $0.updatedAt > $1.updatedAt }
+        let candidates = state.entries.filter { request.target == nil || $0.target == request.target }
+        let normalized = candidates.map { entry in
+            entry.content.folding(options: [.caseInsensitive], locale: Locale(identifier: "en_US_POSIX"))
+        }
+        let documentFrequencies = query.terms.map { term in normalized.filter { $0.contains(term) }.count }
+        let ranked = zip(candidates, normalized).compactMap { pair -> (AgentMemoryEntry, Int, Double)? in
+            let (entry, content) = pair
+            let matched = query.terms.enumerated().filter { _, term in content.contains(term) }
+            guard !matched.isEmpty else { return nil }
+            let rarity = matched.reduce(0.0) { score, match in
+                score + log(Double(candidates.count + 1) / Double(documentFrequencies[match.offset] + 1)) + 1
+            }
+            let phrase = content.contains(
+                query.literalQuery.folding(
+                    options: [.caseInsensitive], locale: Locale(identifier: "en_US_POSIX")))
+            return (entry, matched.count, rarity + (phrase ? 2 : 0))
+        }
+        let strict = ranked.filter { $0.1 == query.terms.count }
+        let matches = (strict.isEmpty ? ranked : strict).sorted { left, right in
+            if left.1 != right.1 { return left.1 > right.1 }
+            if left.2 != right.2 { return left.2 > right.2 }
+            if left.0.updatedAt != right.0.updatedAt { return left.0.updatedAt > right.0.updatedAt }
+            return left.0.id.uuidString < right.0.id.uuidString
+        }.map(\.0)
         let offset = min(matches.count, max(0, request.offset))
         var selected: [AgentJSONValue] = []
         var size = 0

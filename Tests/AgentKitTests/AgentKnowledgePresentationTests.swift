@@ -152,6 +152,22 @@ import Testing
         #expect(read == [.text(.init(title: "Current memory", text: snapshot, style: .plain))])
     }
 
+    @Test func memorySearchShowsQueryInActivityAndDetails() {
+        let tool = MemorySearchTool(store: PresentationMemoryAccess())
+        #expect(tool.descriptor.presentation?.activity == .semanticArgument(key: "query", fallback: .memory))
+        let arguments: [String: AgentJSONValue] = [
+            "query": .string("服务器部署"), "target": .string("user"), "limit": .number(5),
+        ]
+        let argumentItems = MemorySearchTool.presenter.presentArguments(
+            .init(arguments: arguments, locale: locale))
+        #expect(argumentItems?.contains(.text(.init(title: "Query", text: "服务器部署", style: .plain))) == true)
+        #expect(argumentItems?.contains(.field(.init(label: "Target", value: "User profile"))) == true)
+        let resultItems = MemorySearchTool.presenter.present(
+            input(.object(["entries": .array([]), "next_offset": .null]), args: arguments))
+        #expect(resultItems.contains(.text(.init(title: "Query", text: "服务器部署", style: .plain))))
+        #expect(text(resultItems).contains("User profile"))
+    }
+
     @Test func sessionResultsHideIDsButKeepMessageRolesOrderAndPagination() {
         let items = SessionSearchTool.present(
             input(
@@ -169,6 +185,14 @@ import Testing
         #expect(!text(items).contains("secret-id"))
         #expect(!text(items).contains("internal-id"))
         #expect(text(items).contains("More results"))
+    }
+
+    @Test func sessionSearchDetailsKeepQueryAndBrowseWithoutOneIsUnchanged() {
+        let result: AgentJSONValue = .object(["sessions": .array([])])
+        let browse = SessionSearchTool.present(input(result))
+        let search = SessionSearchTool.present(input(result, args: ["query": .string("服务器 部署")]))
+        #expect(search.first == .text(.init(title: "Query", text: "服务器 部署", style: .plain)))
+        #expect(Array(search.dropFirst()) == browse)
     }
 
     @Test func emptyListsAndMalformedResultsNeverDisappearOrClaimSuccess() {
@@ -220,4 +244,10 @@ import Testing
             }
         }.joined(separator: "\n")
     }
+}
+
+private struct PresentationMemoryAccess: AgentMemoryAccessing {
+    func memoryState() async throws -> AgentMemoryState { .init() }
+    func applyMemory(_ operations: [AgentMemoryOperation]) async throws -> AgentMemoryState { .init() }
+    func searchSessions(_ request: AgentSessionSearchRequest) async throws -> AgentJSONValue { .array([]) }
 }

@@ -213,8 +213,12 @@ registered only when their dependencies are available; selecting a group does no
   Installation never executes scripts.
 - `AgentMemoryAccessing` supplies on-demand memory and saved-session search. Use `AgentMemoryContext`
   in a context pipeline to inject a revocable retrieval policy without memory contents. `memory_search`
-  returns bounded, complete entries. `AgentMemoryLearningService` proposes validated updates from
-  bounded reference data; the host decides when to review and apply them.
+  returns bounded, complete entries. Its lexical search splits natural questions into terms (including
+  Chinese words), tries entries matching every meaningful term first, and broadens to any matching term
+  only when that finds nothing. It does not infer synonyms or translate between languages.
+  `AgentSearchQuery` shares this query parsing and safe FTS5 term quoting with host-owned
+  `session_search` stores. `AgentMemoryLearningService` proposes validated updates from bounded
+  reference data; the host decides when to review and apply them.
 
 Tool registration and context injection are separate: pass the enabled catalog's `catalogBlock`
 through `AgentTurnContextSnapshot.skillCatalog` so the model can discover procedures without loading
