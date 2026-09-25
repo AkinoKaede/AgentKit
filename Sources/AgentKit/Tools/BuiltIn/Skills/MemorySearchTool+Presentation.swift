@@ -7,7 +7,7 @@ nonisolated extension MemorySearchTool {
         if let target = input.arguments["target"]?.stringValue {
             let value: String
             switch target {
-            case "memory": value = F.localized("Persistent memory", locale: input.locale)
+            case "memory": value = F.localized("memory", locale: input.locale)
             case "user": value = F.localized("User profile", locale: input.locale)
             default: value = target
             }

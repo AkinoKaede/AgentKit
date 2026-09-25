@@ -102,7 +102,7 @@ nonisolated enum AgentKnowledgeToolDetail {
                 excluded.insert("target")
                 items.append(
                     F.field(
-                        "Target", F.localized(target == "user" ? "User profile" : "Persistent memory", locale: locale),
+                        "Target", F.localized(target == "user" ? "User profile" : "memory", locale: locale),
                         locale: locale))
             }
             items += fields(

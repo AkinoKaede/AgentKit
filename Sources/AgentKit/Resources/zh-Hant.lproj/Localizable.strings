@@ -248,8 +248,6 @@
 	<string>路徑</string>
 	<key>Permissions</key>
 	<string>權限</string>
-	<key>Persistent memory</key>
-	<string>持久化記憶</string>
 	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
 	<string>計畫模式已開啟，因此未執行%@——它會更改本應用外部的內容。請先讀取所需資訊，在草稿工作區擬定計畫並呼叫present_plan，由使用者決定是否執行。</string>
 	<key>Plan presented from %@</key>
@@ -510,6 +508,8 @@
 	<string>是</string>
 	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
 	<string>allowed-tools僅作參考保留，技能永遠不會預先核准任何工具。</string>
+	<key>memory</key>
+	<string>記憶</string>
 	<key>no reason given</key>
 	<string>沒有給出理由</string>
 	<key>not a PKCS#8 RSA private key</key>

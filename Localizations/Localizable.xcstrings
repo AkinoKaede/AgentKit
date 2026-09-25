@@ -27,7 +27,7 @@
     "Remove skill file": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"移除技能文件"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"移除技能檔案"}}}},
     "Target": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"目标"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"目標"}}}},
     "User profile": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"用户资料"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"使用者資料"}}}},
-    "Persistent memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"持久化记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"持久化記憶"}}}},
+    "memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"記憶"}}}},
     "Binary resource. Export it from the skill editor to use its original bytes.": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"这是二进制资源。请从技能编辑器导出以使用原始文件。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"這是二進位資源。請從技能編輯器匯出以使用原始檔案。"}}}},
     "No lines returned": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未返回文本行"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"未傳回文字行"}}}},
     "Skills": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"技能"}}}},

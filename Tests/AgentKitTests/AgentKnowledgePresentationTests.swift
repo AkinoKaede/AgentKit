@@ -150,6 +150,14 @@ import Testing
         #expect(items.last == .text(.init(title: "Current memory", text: snapshot, style: .plain)))
         let read = MemoryTool.present(input(.object(["memory": .string(snapshot)]), args: ["operations": .array([])]))
         #expect(read == [.text(.init(title: "Current memory", text: snapshot, style: .plain))])
+        let memoryTarget = MemoryTool.presentArguments(
+            .init(
+                arguments: [
+                    "operations": .array([
+                        .object(["action": .string("add"), "target": .string("memory"), "content": .string("first")])
+                    ])
+                ], locale: locale))
+        #expect(memoryTarget.contains(.field(.init(label: "Target", value: "memory"))))
     }
 
     @Test func memorySearchShowsQueryInActivityAndDetails() {
@@ -166,6 +174,16 @@ import Testing
             input(.object(["entries": .array([]), "next_offset": .null]), args: arguments))
         #expect(resultItems.contains(.text(.init(title: "Query", text: "服务器部署", style: .plain))))
         #expect(text(resultItems).contains("User profile"))
+        let memoryTarget = MemorySearchTool.presenter.presentArguments(
+            .init(arguments: ["query": .string("服务器部署"), "target": .string("memory")], locale: locale))
+        #expect(memoryTarget?.contains(.field(.init(label: "Target", value: "memory"))) == true)
+        for (language, expected) in [("zh-Hans", "记忆"), ("zh-Hant", "記憶")] {
+            let items = MemorySearchTool.presenter.presentArguments(
+                .init(
+                    arguments: ["query": .string("服务器部署"), "target": .string("memory")],
+                    locale: Locale(identifier: language)))
+            #expect(items?.contains(.field(.init(label: language == "zh-Hans" ? "目标" : "目標", value: expected))) == true)
+        }
     }
 
     @Test func sessionResultsHideIDsButKeepMessageRolesOrderAndPagination() {
