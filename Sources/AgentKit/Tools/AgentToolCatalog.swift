@@ -252,6 +252,10 @@ public nonisolated enum AgentToolCatalog {
     ]
 
     private static let memoryTools: [Registration] = [
+        .init(MemorySearchTool.self) { configuration in
+            guard configuration.includes(.memory), let memory = configuration.memory else { return nil }
+            return MemorySearchTool(store: memory)
+        },
         .init(MemoryTool.self, availableIn: [.acting]) { configuration in
             guard configuration.includes(.memory), let memory = configuration.memory else { return nil }
             return MemoryTool(store: memory)

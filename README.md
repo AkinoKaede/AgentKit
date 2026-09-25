@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.14.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.15.0")
 ```
 
 Then add the core product to your target:
@@ -198,7 +198,7 @@ registered only when their dependencies are available; selecting a group does no
 | `.planning` | `present_plan` | A workspace and `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`; acting runs only |
 | `.skills` | `skill_read_file`, `skills_list`, `skill_manage`, `skill_install` | Catalog/inventory for reads; `skillLibrary` for management; also `skillPackageResolver` for installation |
-| `.memory` | `memory`, `session_search` | `memory: AgentMemoryAccessing`; mutations through `memory` are acting-only |
+| `.memory` | `memory_search`, `memory`, `session_search` | `memory: AgentMemoryAccessing`; mutations through `memory` are acting-only |
 | `.mcp` | Tools advertised by configured servers | `mcpServers` entries |
 
 ### Skills and memory
@@ -211,9 +211,10 @@ registered only when their dependencies are available; selecting a group does no
 - `GitHubSkillPackageResolver` resolves public GitHub packages for installation. Preflight downloads
   and stages an immutable package; approval gates saving those reviewed bytes, not the download.
   Installation never executes scripts.
-- `AgentMemoryAccessing` supplies bounded memory and saved-session search. Use `AgentMemoryContext`
-  in a context pipeline to inject a revocable snapshot. `AgentMemoryLearningService` can propose
-  validated memory updates; the host decides when to review and apply them.
+- `AgentMemoryAccessing` supplies on-demand memory and saved-session search. Use `AgentMemoryContext`
+  in a context pipeline to inject a revocable retrieval policy without memory contents. `memory_search`
+  returns bounded, complete entries. `AgentMemoryLearningService` proposes validated updates from
+  bounded reference data; the host decides when to review and apply them.
 
 Tool registration and context injection are separate: pass the enabled catalog's `catalogBlock`
 through `AgentTurnContextSnapshot.skillCatalog` so the model can discover procedures without loading

@@ -16,7 +16,7 @@
 加入套件相依項目：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.14.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.15.0")
 ```
 
 接著將核心產品加入目標：
@@ -189,7 +189,7 @@ Anthropic 的獨立快取計數則另外處理。即時 Chat Completions 收到�
 | `.planning` | `present_plan` | 暫存區與 `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`；僅限行動模式 |
 | `.skills` | `skill_read_file`、`skills_list`、`skill_manage`、`skill_install` | 讀取需要技能目錄或清單；管理需要 `skillLibrary`；安裝還需要 `skillPackageResolver` |
-| `.memory` | `memory`、`session_search` | `memory: AgentMemoryAccessing`；透過 `memory` 修改記憶僅限行動模式 |
+| `.memory` | `memory_search`、`memory`、`session_search` | `memory: AgentMemoryAccessing`；透過 `memory` 修改記憶僅限行動模式 |
 | `.mcp` | 已設定伺服器公布的工具 | `mcpServers` 項目 |
 
 ### 技能與記憶
@@ -202,9 +202,10 @@ Anthropic 的獨立快取計數則另外處理。即時 Chat Completions 收到�
 - `GitHubSkillPackageResolver` 解析公開 GitHub 儲存庫中的技能套件。
   預檢會下載並暫存不可變的技能套件；核准控管的是保存已審查的內容，而不是下載動作。
   安裝過程不會執行指令稿。
-- `AgentMemoryAccessing` 提供容量受限的記憶與已保存對話搜尋。
-  在上下文管線中使用 `AgentMemoryContext` 可以注入可撤銷的快照。
-  `AgentMemoryLearningService` 可以提出經過驗證的記憶更新，由主應用程式決定何時審查與套用。
+- `AgentMemoryAccessing` 提供隨需記憶檢索與已儲存對話搜尋。
+  在上下文管線中使用 `AgentMemoryContext` 只注入可撤銷的檢索策略，不注入記憶內文。
+  `memory_search` 傳回有界的完整項目。`AgentMemoryLearningService` 根據有界參考資料提出
+  經過驗證的更新，由主應用程式決定何時審查與套用。
 
 工具註冊與上下文注入彼此獨立：透過 `AgentTurnContextSnapshot.skillCatalog` 傳入已啟用技能目錄的
 `catalogBlock`，模型就能探索適用流程，而不必載入所有技能內文。

@@ -63,13 +63,19 @@ import Testing
         #expect(registry["skill_read_file"] != nil)
         #expect(AgentToolCatalog.builtInPresenters.contains { $0.id == "builtin.load_skill" })
     }
-    @Test func memoryIsIdempotentAndUsesUnicodeScalarCapacity() throws {
+    @Test func memoryIsIdempotentAndHasNoTotalCapacity() throws {
         let entry = String(repeating: "中", count: 2_200)
         let operation = AgentMemoryOperation(action: .add, target: .memory, content: entry)
         let state = try AgentMemoryState().applying([operation, operation])
         #expect(state.entries.count == 1)
         #expect(state.usage(.memory) == 2_200)
-        #expect(throws: (any Error).self) { try state.applying([.init(action: .add, target: .memory, content: "a")]) }
+        let expanded = try state.applying([
+            .init(action: .add, target: .memory, content: String(repeating: "a", count: 5_000))
+        ])
+        #expect(expanded.usage(.memory) > 5_000)
+        #expect(throws: (any Error).self) {
+            try state.applying([.init(action: .add, target: .memory, content: String(repeating: "b", count: 8_193))])
+        }
     }
     @Test func memoryBatchChecksFinalCapacityAndRejectsAmbiguity() throws {
         let initial = AgentMemoryState(entries: [
@@ -95,16 +101,78 @@ import Testing
             }
         }
     }
-    @Test func revokedSnapshotStopsInjection() {
-        let snapshot = AgentMemoryContext(snapshot: "Prefers concise replies")
+    @Test func policyOnlyContextNeedsSearchToolAndCanBeRevoked() {
+        let memory = AgentMemoryContext()
         let context = AgentModelContext(systemPrompt: "Base", messages: [], tools: [])
-        #expect(snapshot.transform(context).systemPrompt.contains("Prefers concise replies"))
-        snapshot.invalidate()
-        #expect(snapshot.transform(context).systemPrompt == "Base")
+        #expect(memory.transform(context).systemPrompt == "Base")
+        var searchable = context
+        searchable.tools = [MemorySearchTool(store: TestMemoryAccess()).descriptor]
+        #expect(memory.transform(searchable).systemPrompt.contains("<memory-policy>"))
+        #expect(!memory.transform(searchable).systemPrompt.contains("Prefers concise replies"))
+        memory.invalidate()
+        #expect(memory.transform(searchable).systemPrompt == "Base")
+    }
+    @Test func memorySearchPaginatesCompleteChineseAndMultiwordMatches() async throws {
+        let long = String(repeating: "记", count: 6_000) + " 服务器 部署"
+        let access = TestMemoryAccess(
+            state: .init(entries: [
+                .init(target: .memory, content: long, updatedAt: .now),
+                .init(target: .memory, content: "服务器 部署 第二条", updatedAt: .now.addingTimeInterval(-1)),
+                .init(target: .memory, content: "服务器 维护", updatedAt: .now.addingTimeInterval(-2)),
+            ]))
+        let first = try await access.searchMemories(.init(query: "服务器 部署", limit: 1))
+        #expect(first.encodedString.contains(long))
+        #expect(first.encodedString.contains("next_offset"))
+        let second = try await access.searchMemories(.init(query: "服务器 部署", limit: 1, offset: 1))
+        #expect(second.encodedString.contains("第二条"))
+        #expect(!second.encodedString.contains(long))
+        let short = try await access.searchMemories(.init(query: "服", limit: 20))
+        #expect(short.encodedString.contains("维护"))
+        let registry = AgentToolCatalog.registry(builtIn: .init(groups: [.memory], memory: access))
+        #expect(registry.available(in: .planning)["memory_search"] != nil)
+        #expect(registry.available(in: .acting)["memory_search"] != nil)
+        #expect(registry.available(in: .planning)["memory"] == nil)
+    }
+    @Test func learningReferenceIsBoundedAndCannotReplaceAnOmittedEntry() async throws {
+        let state = AgentMemoryState(entries: [
+            .init(target: .memory, content: "blue " + String(repeating: "a", count: 8_000)),
+            .init(target: .memory, content: "replace me " + String(repeating: "b", count: 8_000)),
+        ])
+        let reference = state.reference(matching: "blue", characterBudget: 12_000)
+        #expect(reference.count <= 12_000)
+        #expect(reference.contains("entries omitted"))
+        #expect(!reference.contains("replace me"))
+        let reply =
+            #"{"operations":[{"action":"replace","target":"memory","old_text":"replace me","content":"updated"}]}"#
+        let model = MemoryReplyModel(reply: reply)
+        await #expect(throws: (any Error).self) {
+            try await AgentMemoryLearningService().review(
+                messages: [.init(role: .user, text: "blue preference")], state: state, model: model)
+        }
+        let request = try #require(await model.lastRequest)
+        #expect(!request.systemPrompt.contains("replace me"))
+        #expect(!request.messages[0].text.contains("replace me"))
     }
     @Test func legacySkillDecodingHasNoPackage() throws {
         let skill = AgentSkill(name: "example", summary: "Example", body: "Example")
         let data = try JSONEncoder().encode(skill)
         #expect(try JSONDecoder().decode(AgentSkill.self, from: data).package == nil)
+    }
+}
+
+private struct TestMemoryAccess: AgentMemoryAccessing {
+    var state = AgentMemoryState()
+    func memoryState() async throws -> AgentMemoryState { state }
+    func applyMemory(_ operations: [AgentMemoryOperation]) async throws -> AgentMemoryState { .init() }
+    func searchSessions(_ request: AgentSessionSearchRequest) async throws -> AgentJSONValue { .array([]) }
+}
+
+private actor MemoryReplyModel: AgentModelCompleting {
+    let reply: String
+    private(set) var lastRequest: AgentModelRequest?
+    init(reply: String) { self.reply = reply }
+    func complete(_ request: AgentModelRequest) async throws -> [AgentModelStreamEvent] {
+        lastRequest = request
+        return [.textDelta(reply), .finished(.completed)]
     }
 }
