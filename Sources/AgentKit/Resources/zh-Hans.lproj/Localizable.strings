@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%@ context</key>
+	<string>上下文窗口%@</string>
 	<key>%@ failed (%lld): %@</key>
 	<string>%1$@失败（%2$lld）：%3$@</string>
 	<key>%@ is not a valid URL.</key>
@@ -20,6 +22,10 @@
 	<string>%lld个文件</string>
 	<key>%lld matching lines in %lld files</key>
 	<string>在%2$lld个文件中找到%1$lld个匹配行</string>
+	<key>%lld messages read</key>
+	<string>已读取%lld条消息</string>
+	<key>%lld models</key>
+	<string>%lld个模型</string>
 	<key>%lld replacements applied</key>
 	<string>已应用%lld处替换</string>
 	<key>%lld tasks · %lld completed</key>
@@ -40,6 +46,8 @@
 	<string>技能需要一个名称。</string>
 	<key>A truncated model response contained tool calls; none were executed.</key>
 	<string>截断的模型响应中包含工具调用，均未执行。</string>
+	<key>Accepted</key>
+	<string>已接受</string>
 	<key>Add memory</key>
 	<string>新增记忆</string>
 	<key>Answer</key>
@@ -78,18 +86,28 @@
 	<string>下次运行可用</string>
 	<key>Binary resource. Export it from the skill editor to use its original bytes.</key>
 	<string>这是二进制资源。请从技能编辑器导出以使用原始文件。</string>
+	<key>Cancelled</key>
+	<string>已取消</string>
 	<key>Case sensitive</key>
 	<string>区分大小写</string>
 	<key>Changes</key>
 	<string>变动</string>
 	<key>Chat</key>
 	<string>对话</string>
+	<key>Chat list unavailable</key>
+	<string>对话列表不可用</string>
+	<key>Chat status unavailable</key>
+	<string>对话状态不可用</string>
+	<key>Chat unavailable</key>
+	<string>对话不可用</string>
 	<key>Command</key>
 	<string>命令</string>
 	<key>Command Generator</key>
 	<string>命令生成器</string>
 	<key>Commit</key>
 	<string>提交版本</string>
+	<key>Completed</key>
+	<string>已完成</string>
 	<key>Completed without output</key>
 	<string>已完成，无输出</string>
 	<key>Connecting</key>
@@ -118,6 +136,8 @@
 	<string>删除技能</string>
 	<key>Deleted</key>
 	<string>已删除</string>
+	<key>Delivered</key>
+	<string>已送达</string>
 	<key>Description</key>
 	<string>描述</string>
 	<key>Destination</key>
@@ -138,6 +158,8 @@
 	<string>已退出</string>
 	<key>Extra High</key>
 	<string>极高</string>
+	<key>Failed</key>
+	<string>已失败</string>
 	<key>File</key>
 	<string>文件</string>
 	<key>Files</key>
@@ -162,6 +184,8 @@
 	<string>HTTP %lld</string>
 	<key>High</key>
 	<string>高</string>
+	<key>Idle</key>
+	<string>空闲</string>
 	<key>Image</key>
 	<string>图像</string>
 	<key>Image Generation</key>
@@ -170,6 +194,8 @@
 	<string>已导入为“%@”。</string>
 	<key>Input</key>
 	<string>输入</string>
+	<key>Interrupted</key>
+	<string>已中断</string>
 	<key>Kind</key>
 	<string>类型</string>
 	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
@@ -196,8 +222,12 @@
 	<string>已处理记忆操作</string>
 	<key>Message</key>
 	<string>消息</string>
+	<key>Messages followed by tool activity cannot be edited.</key>
+	<string>后续有工具活动的消息无法编辑。</string>
 	<key>Minimal</key>
 	<string>最低</string>
+	<key>Model list unavailable</key>
+	<string>模型列表不可用</string>
 	<key>More results are available</key>
 	<string>还有更多结果</string>
 	<key>Moved</key>
@@ -206,6 +236,8 @@
 	<string>否</string>
 	<key>No Chat model is configured.</key>
 	<string>尚未配置对话模型。</string>
+	<key>No chats</key>
+	<string>没有对话</string>
 	<key>No conversations found</key>
 	<string>未找到会话</string>
 	<key>No differences</key>
@@ -252,6 +284,10 @@
 	<string>计划模式已开启，因此未运行%@——它会更改本应用外部的内容。请先读取所需信息，在草稿工作区拟定计划并调用present_plan，由用户决定是否执行。</string>
 	<key>Plan presented from %@</key>
 	<string>提交计划%@</string>
+	<key>Preparing</key>
+	<string>正在准备</string>
+	<key>Provider</key>
+	<string>提供商</string>
 	<key>Purpose</key>
 	<string>目的</string>
 	<key>Query</key>
@@ -260,6 +296,8 @@
 	<string>问题</string>
 	<key>Question unavailable</key>
 	<string>问题不可用</string>
+	<key>Queued</key>
+	<string>已排队</string>
 	<key>Read-only</key>
 	<string>只读</string>
 	<key>Reasoning</key>
@@ -286,6 +324,8 @@
 	<string>解析后的来源</string>
 	<key>Result</key>
 	<string>结果</string>
+	<key>Reviewing</key>
+	<string>正在审核</string>
 	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
 	<string>在自动批准前审查命令。自动模式会选择最佳的可用审查模型。</string>
 	<key>Running</key>
@@ -468,6 +508,8 @@
 	<string>将当前终端输入整理为一条命令。请选择速度较快的模型。</string>
 	<key>URL</key>
 	<string>URL</string>
+	<key>Undelivered</key>
+	<string>未送达</string>
 	<key>Unknown tool: %@</key>
 	<string>未知工具：%@</string>
 	<key>Unnamed entry</key>
@@ -490,6 +532,14 @@
 	<string>视频</string>
 	<key>Video Generation</key>
 	<string>视频生成</string>
+	<key>Wait stopped by user input</key>
+	<string>等待已因用户输入停止</string>
+	<key>Wait timed out</key>
+	<string>等待超时</string>
+	<key>Waiting for approval</key>
+	<string>等待批准</string>
+	<key>Waiting for user</key>
+	<string>等待用户</string>
 	<key>Web Search</key>
 	<string>网页搜索</string>
 	<key>Web search run by the model provider.</key>

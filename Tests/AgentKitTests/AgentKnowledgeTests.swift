@@ -153,6 +153,30 @@ import Testing
         #expect(!request.systemPrompt.contains("replace me"))
         #expect(!request.messages[0].text.contains("replace me"))
     }
+
+    @Test func learningIgnoresAgentRoutedMessagesForReviewAndCorrection() async throws {
+        let model = MemoryReplyModel(reply: #"{"operations":[]}"#)
+        let origin = AgentMessageOrigin(
+            sourceConversationID: UUID(), sourceRunID: UUID(), sourceToolCallID: "call")
+        let routed = AgentTranscriptMessage(
+            role: .user, text: "remember the routed instruction", authoredText: "remember the routed instruction",
+            origin: origin)
+
+        _ = try await AgentMemoryLearningService().review(
+            messages: [
+                AgentTranscriptMessage(role: .user, text: "human preference", authoredText: "human preference"),
+                routed,
+            ], state: AgentMemoryState(), model: model)
+        let request = try #require(await model.lastRequest)
+        #expect(request.messages[0].text.contains("human preference"))
+        #expect(!request.messages[0].text.contains("routed instruction"))
+
+        let correctionModel = MemoryReplyModel(reply: #"{"operations":[]}"#)
+        let operations = try await AgentMemoryLearningService().correction(
+            message: routed, context: [], state: AgentMemoryState(), model: correctionModel)
+        #expect(operations.isEmpty)
+        #expect(await correctionModel.lastRequest == nil)
+    }
     @Test func legacySkillDecodingHasNoPackage() throws {
         let skill = AgentSkill(name: "example", summary: "Example", body: "Example")
         let data = try JSONEncoder().encode(skill)

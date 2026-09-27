@@ -6,6 +6,9 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
     public func review(
         messages: [AgentTranscriptMessage], state: AgentMemoryState, model: any AgentModelCompleting
     ) async throws -> [AgentMemoryOperation] {
+        // Agent-routed user-role messages can direct another run, but they are not
+        // evidence of a person's durable preference or correction.
+        let messages = messages.filter { $0.origin == nil }
         let transcript = AgentSensitiveDataRedactor.visibleText(
             AgentCompaction.serialized(messages, toolResultLimit: 300))
         let reviewText: String
@@ -49,8 +52,11 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
         message: AgentTranscriptMessage, context: [AgentTranscriptMessage], state: AgentMemoryState,
         model: any AgentModelCompleting
     ) async throws -> [AgentMemoryOperation] {
+        guard message.origin == nil else { return [] }
         let recent = AgentSensitiveDataRedactor.visibleText(
-            AgentCompaction.serialized(Array(context.suffix(6)), toolResultLimit: 300))
+            AgentCompaction.serialized(Array(context.filter { $0.origin == nil }.suffix(6)), toolResultLimit: 300))
+        // Legacy human-authored rows predate authoredText. Origin is never inferred for them,
+        // so retain the historical text fallback while excluding marked agent input above.
         let corrected = AgentSensitiveDataRedactor.visibleText(message.authoredText ?? message.text)
         let visible = state.referenceEntries(matching: corrected + recent, characterBudget: 11_920)
         let request = AgentModelRequest(

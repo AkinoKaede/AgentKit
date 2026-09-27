@@ -3,6 +3,7 @@ import Foundation
 public nonisolated enum AgentConversationPersistenceError: LocalizedError, Sendable {
     case conversationNotFound
     case messageNotFound
+    case editWouldRemoveTools
     case conversationAlreadyExists
 
     public var errorDescription: String? {
@@ -11,6 +12,8 @@ public nonisolated enum AgentConversationPersistenceError: LocalizedError, Senda
             String(localized: "The conversation no longer exists.", bundle: .module)
         case .messageNotFound:
             String(localized: "The message is no longer available to edit.", bundle: .module)
+        case .editWouldRemoveTools:
+            String(localized: "Messages followed by tool activity cannot be edited.", bundle: .module)
         case .conversationAlreadyExists:
             String(localized: "The fork could not be created because its identifier already exists.", bundle: .module)
         }
@@ -338,28 +341,79 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
         replacingWith message: AgentTranscriptMessage
     ) throws {
         let ordered = snapshots.values.filter { $0.conversationID == id }
-            .sorted { $0.startedAt < $1.startedAt }
+            .sorted {
+                if $0.startedAt != $1.startedAt { return $0.startedAt < $1.startedAt }
+                return $0.id.uuidString < $1.id.uuidString
+            }
+        var seen = Set<UUID>()
+        let conversationMessages = ordered.flatMap(\.messages).filter { seen.insert($0.id).inserted }
+        guard let boundary = conversationMessages.firstIndex(where: { $0.id == messageID }),
+            conversationMessages[boundary].origin == nil
+        else { throw AgentConversationPersistenceError.messageNotFound }
+        let kept = Array(conversationMessages[..<boundary])
+        let removed = Array(conversationMessages[boundary...])
+        let keptIDs = Set(kept.map(\.id))
+        let removedIDs = Set(removed.map(\.id))
+        let keptCalls = Set(kept.flatMap { $0.toolCalls.map(\.id) })
+        let removedCalls = Set(removed.flatMap { $0.toolCalls.map(\.id) })
+        let hasToolMessages = removed.contains {
+            $0.role == .tool || !$0.toolCalls.isEmpty || $0.toolCallID != nil || $0.toolName != nil
+        }
+        let targetDate = conversationMessages[boundary].createdAt
         guard
-            let target = ordered.first(where: { snapshot in
+            let targetRunIndex = ordered.firstIndex(where: { snapshot in
                 snapshot.messages.contains { $0.id == messageID }
             })
         else { throw AgentConversationPersistenceError.messageNotFound }
-        let targetStart = target.startedAt
-        let removedRunIDs = Set(ordered.filter { $0.startedAt >= targetStart }.map(\.id))
-        let removedMessageIDs = Set(
-            ordered.filter { removedRunIDs.contains($0.id) }
-                .flatMap(\.messages).map(\.id))
+        let targetRunID = ordered[targetRunIndex].id
+        let laterRunIDs = Set(ordered.dropFirst(targetRunIndex + 1).map(\.id))
+        let hasToolCards = (storedToolCards[id] ?? []).contains { card in
+            if laterRunIDs.contains(card.invocation.runID) { return true }
+            if card.invocation.runID != targetRunID { return false }
+            if let source = card.invocation.sourceMessageID {
+                if removedIDs.contains(source) { return true }
+                if keptIDs.contains(source) { return false }
+            }
+            if removedCalls.contains(card.invocation.call.id) { return true }
+            if keptCalls.contains(card.invocation.call.id) { return false }
+            return card.invocation.createdAt >= targetDate
+        }
+        guard !hasToolMessages, !hasToolCards else {
+            throw AgentConversationPersistenceError.editWouldRemoveTools
+        }
+        let targetRun = ordered[targetRunIndex]
+        guard let targetMessageIndex = targetRun.messages.firstIndex(where: { $0.id == messageID }) else {
+            throw AgentConversationPersistenceError.messageNotFound
+        }
+        let keptTargetMessages = Array(targetRun.messages[..<targetMessageIndex])
+        let removesTargetRun = keptTargetMessages.isEmpty
+        let runIDsToDelete = laterRunIDs.union(removesTargetRun ? [targetRunID] : [])
         snapshots = snapshots.filter {
-            $0.value.conversationID != id || $0.value.startedAt < targetStart
+            $0.value.conversationID != id || !runIDsToDelete.contains($0.value.id)
+        }
+        if !removesTargetRun {
+            var retained = targetRun
+            retained.state = .completed
+            retained.messages = keptTargetMessages
+            retained.finishedAt = keptTargetMessages.last?.createdAt ?? targetRun.startedAt
+            retained.failure = nil
+            snapshots[targetRunID] = retained
         }
         compactions[id]?.removeAll {
-            $0.compactedThroughMessageID.map(removedMessageIDs.contains) == true
+            $0.compactedThroughMessageID.map(removedIDs.contains) == true
         }
-        storedToolCards[id]?.removeAll { removedRunIDs.contains($0.invocation.runID) }
+        storedToolCards[id]?.removeAll { runIDsToDelete.contains($0.invocation.runID) }
+        let lastKeptRun = removesTargetRun ? ordered[..<targetRunIndex].last : targetRun
+        let replacementStartedAt =
+            if let lastKeptRun, message.createdAt <= lastKeptRun.startedAt {
+                lastKeptRun.startedAt.addingTimeInterval(0.001)
+            } else {
+                message.createdAt
+            }
         let replacement = AgentRunSnapshot(
             conversationID: id, state: .completed,
             permissionMode: .askForApproval, messages: [message],
-            startedAt: message.createdAt, finishedAt: message.createdAt
+            startedAt: replacementStartedAt, finishedAt: replacementStartedAt
         )
         snapshots[replacement.id] = replacement
     }

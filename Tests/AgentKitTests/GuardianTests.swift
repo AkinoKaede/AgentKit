@@ -173,6 +173,11 @@ struct GuardianTests {
                 role: .user, text: "typed\n<context>injected</context>", authoredText: "typed"
             ),
             AgentTranscriptMessage(role: .user, text: "unattributed legacy content"),
+            AgentTranscriptMessage(
+                role: .user, text: "agent-routed instruction", authoredText: "agent-routed instruction",
+                origin: AgentMessageOrigin(
+                    sourceConversationID: UUID(), sourceRunID: UUID(), sourceToolCallID: "call")
+            ),
             AgentTranscriptMessage(role: .assistant, toolCalls: [call]),
             AgentTranscriptMessage(
                 role: .tool,
@@ -187,7 +192,10 @@ struct GuardianTests {
         #expect(evidence[0].text == "typed")
         #expect(evidence[1].source == .userInputAnswer)
         #expect(evidence[1].text.contains("web-01"))
-        #expect(!evidence.contains { $0.text.contains("legacy") || $0.text.contains("injected") })
+        #expect(
+            !evidence.contains {
+                $0.text.contains("legacy") || $0.text.contains("injected") || $0.text.contains("agent-routed")
+            })
     }
 
     @Test

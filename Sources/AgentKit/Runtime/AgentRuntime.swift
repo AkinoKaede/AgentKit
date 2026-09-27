@@ -189,10 +189,10 @@ public actor AgentRuntime {
             id: request.promptID, role: .user, text: request.prompt,
             authoredText: request.authoredPrompt, images: request.promptImages,
             contextAttachments: request.promptContextAttachments,
-            contextSnapshot: activeContextSnapshot
+            contextSnapshot: activeContextSnapshot, origin: request.promptOrigin
         )
         let evidenceLog = GuardianEvidenceLog(request.authorizationEvidence)
-        if let authored = request.authoredPrompt,
+        if request.promptOrigin == nil, let authored = request.authoredPrompt,
             !authored.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         {
             await evidenceLog.append([

@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.15.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.16.0")
 ```
 
 Then add the core product to your target:
@@ -199,7 +199,14 @@ registered only when their dependencies are available; selecting a group does no
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`; acting runs only |
 | `.skills` | `skill_read_file`, `skills_list`, `skill_manage`, `skill_install` | Catalog/inventory for reads; `skillLibrary` for management; also `skillPackageResolver` for installation |
 | `.memory` | `memory_search`, `memory`, `session_search` | `memory: AgentMemoryAccessing`; mutations through `memory` are acting-only |
+| `.chatCollaboration` | `list_models`, `create_new_chat`, `list_chats`, `read_chat`, `send_to_chat`, `wait_chats` | `chatModels: AgentChatModelCatalog` for model listing; `chats: AgentChatCoordinating` and `chatSource` for chat operations |
 | `.mcp` | Tools advertised by configured servers | `mcpServers` entries |
+
+Chat collaboration tools use `.approve` and register only when the host supplies their services.
+The host owns chat lifetimes, persistence, and durable delivery deduplication. Trusted presenters
+show compact destinations and status without repeating prompts, sent messages, or transcripts.
+Preserve `AgentTranscriptMessage.origin` when storing and restoring agent-authored messages;
+these messages are excluded from human authorization evidence and memory-learning source text.
 
 ### Skills and memory
 

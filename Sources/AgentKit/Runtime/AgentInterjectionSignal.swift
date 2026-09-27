@@ -40,7 +40,10 @@ public nonisolated final class AgentInterjectionSignal: @unchecked Sendable {
         await withTaskCancellationHandler {
             await withCheckedContinuation { continuation in
                 let armed: Bool = lock.withLock {
-                    if isPending { return true }
+                    // A cancellation handler may run before this operation starts.
+                    // Recheck while holding the same lock used by `onCancel` so a
+                    // pre-cancelled waiter cannot register after its cleanup ran.
+                    if isPending || Task.isCancelled { return true }
                     waiters[id] = continuation
                     return false
                 }

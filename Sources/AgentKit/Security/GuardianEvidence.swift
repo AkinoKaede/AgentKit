@@ -7,6 +7,7 @@ extension GuardianEvidence {
     public static func collect(from messages: [AgentTranscriptMessage]) -> [Self] {
         var evidence = messages.compactMap { message -> Self? in
             guard message.role == .user,
+                message.origin == nil,
                 let authored = message.authoredText?.trimmingCharacters(in: .whitespacesAndNewlines),
                 !authored.isEmpty
             else { return nil }

@@ -178,6 +178,7 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
             public static let request = Self("request")
             public static let run = Self("run")
             public static let search = Self("search")
+            public static let send = Self("send")
             public static let suggest = Self("suggest")
             public static let update = Self("update")
             public static let use = Self("use")
@@ -206,6 +207,10 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
             public static let skill = Self("skill")
             public static let skills = Self("skills")
             public static let memory = Self("memory")
+            public static let model = Self("model")
+            public static let models = Self("models")
+            public static let chat = Self("chat")
+            public static let chats = Self("chats")
             public static let sessions = Self("sessions")
             public static let taskList = Self("taskList")
             public static let url = Self("url")
@@ -893,6 +898,31 @@ public nonisolated struct AgentReasoningBlock: Identifiable, Hashable, Sendable,
     public var createdAt: Date = .now
 }
 
+/// Trustworthy app-authored provenance for a user-role message delivered by another agent.
+///
+/// Providers never decode or construct this value. A host attaches it while routing a message
+/// between conversations so authorization, memory learning, persistence, and presentation can
+/// distinguish a person's words from agent-authored input without changing provider role grammar.
+public nonisolated struct AgentMessageOrigin: Hashable, Sendable, Codable {
+    public init(
+        sourceConversationID: UUID,
+        sourceRunID: UUID,
+        sourceToolCallID: String,
+        sourceTitle: String? = nil
+    ) {
+        self.sourceConversationID = sourceConversationID
+        self.sourceRunID = sourceRunID
+        self.sourceToolCallID = sourceToolCallID
+        self.sourceTitle = sourceTitle
+    }
+
+    public var sourceConversationID: UUID
+    public var sourceRunID: UUID
+    public var sourceToolCallID: String
+    /// Display-only snapshot. Navigation always uses `sourceConversationID`.
+    public var sourceTitle: String?
+}
+
 public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendable, Codable {
     public init(
         id: UUID = UUID(),
@@ -910,6 +940,7 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
         isCompaction: Bool = false,
         contextSnapshot: AgentTurnContextSnapshot? = nil,
         modelText: String? = nil,
+        origin: AgentMessageOrigin? = nil,
         createdAt: Date = .now
     ) {
         self.id = id
@@ -927,6 +958,7 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
         self.isCompaction = isCompaction
         self.contextSnapshot = contextSnapshot
         self.modelText = modelText
+        self.origin = origin
         self.createdAt = createdAt
     }
 
@@ -960,6 +992,8 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
     public var contextSnapshot: AgentTurnContextSnapshot?
     /// Immutable tool output projection. The complete captured result stays in text.
     public var modelText: String?
+    /// Present only for app-routed agent messages. Never infer this for legacy rows.
+    public var origin: AgentMessageOrigin?
     public var createdAt: Date = .now
 }
 
@@ -1152,6 +1186,8 @@ public nonisolated struct AgentRunRequest: Sendable {
     public var promptID: UUID
     public var prompt: String
     public var authoredPrompt: String?
+    /// App-routed provenance for this prompt. When present, `authoredPrompt` must be nil.
+    public var promptOrigin: AgentMessageOrigin?
     public var promptImages: [AgentImageAttachment]
     public var promptContextAttachments: [AgentContextAttachment]
     public var permissionMode: AgentPermissionMode
@@ -1182,6 +1218,7 @@ public nonisolated struct AgentRunRequest: Sendable {
         promptID: UUID = UUID(),
         prompt: String,
         authoredPrompt: String? = nil,
+        promptOrigin: AgentMessageOrigin? = nil,
         promptImages: [AgentImageAttachment] = [],
         promptContextAttachments: [AgentContextAttachment] = [],
         permissionMode: AgentPermissionMode,
@@ -1196,6 +1233,7 @@ public nonisolated struct AgentRunRequest: Sendable {
         self.promptID = promptID
         self.prompt = prompt
         self.authoredPrompt = authoredPrompt
+        self.promptOrigin = promptOrigin
         self.promptImages = promptImages
         self.promptContextAttachments = promptContextAttachments
         self.permissionMode = permissionMode
@@ -1212,6 +1250,7 @@ public nonisolated struct AgentRunRequest: Sendable {
         promptID: UUID = UUID(),
         prompt: String,
         authoredPrompt: String? = nil,
+        promptOrigin: AgentMessageOrigin? = nil,
         permissionMode: AgentPermissionMode,
         mode: AgentRunMode,
         systemPrompt: String = AgentSystemPrompt.default,
@@ -1220,7 +1259,7 @@ public nonisolated struct AgentRunRequest: Sendable {
     ) {
         self.init(
             conversationID: conversationID, promptID: promptID, prompt: prompt,
-            authoredPrompt: authoredPrompt, permissionMode: permissionMode,
+            authoredPrompt: authoredPrompt, promptOrigin: promptOrigin, permissionMode: permissionMode,
             isPlanning: mode == .planning, systemPrompt: systemPrompt,
             priorMessages: priorMessages, authorizationEvidence: authorizationEvidence
         )

@@ -16,7 +16,7 @@
 添加包依赖：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.15.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.16.0")
 ```
 
 然后将核心产品添加到目标：
@@ -190,7 +190,12 @@ Anthropic 的独立缓存计数则单独处理。实时 Chat Completions 收到�
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`；仅限执行模式 |
 | `.skills` | `skill_read_file`、`skills_list`、`skill_manage`、`skill_install` | 读取需要技能目录或清单；管理需要 `skillLibrary`；安装还需要 `skillPackageResolver` |
 | `.memory` | `memory_search`、`memory`、`session_search` | `memory: AgentMemoryAccessing`；通过 `memory` 修改记忆仅限执行模式 |
+| `.chatCollaboration` | `list_models`、`create_new_chat`、`list_chats`、`read_chat`、`send_to_chat`、`wait_chats` | 模型列表需要 `chatModels: AgentChatModelCatalog`；对话操作需要 `chats: AgentChatCoordinating` 和 `chatSource` |
 | `.mcp` | 已配置服务器公布的工具 | `mcpServers` 条目 |
+
+对话协作工具采用 `.approve`，仅在宿主提供相应服务时注册。宿主负责对话生命周期、持久化和持久投递去重。
+可信展示器只提供精简的目标与状态，不重复展示提示词、发送正文或对话记录。保存和恢复 Agent 消息时，
+应保留 `AgentTranscriptMessage.origin`；这类消息不会被用作用户授权依据或记忆学习的源文本。
 
 ### 技能与记忆
 

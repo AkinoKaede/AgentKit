@@ -24,18 +24,26 @@ public nonisolated struct AgentToolDetail: Equatable, Sendable {
             label: String,
             value: String,
             isMonospaced: Bool = false,
-            url: String? = nil
+            url: String? = nil,
+            navigation: NavigationReference? = nil
         ) {
             self.label = label
             self.value = value
             self.isMonospaced = isMonospaced
             self.url = url
+            self.navigation = navigation
         }
 
         public var label: String
         public var value: String
         public var isMonospaced = false
         public var url: String? = nil
+        /// Trusted local navigation selected by a built-in presenter.
+        public var navigation: NavigationReference? = nil
+    }
+
+    public nonisolated enum NavigationReference: Equatable, Sendable {
+        case chat(UUID)
     }
 
     public nonisolated enum Tint: Equatable, Sendable {
@@ -70,7 +78,8 @@ public nonisolated struct AgentToolDetail: Equatable, Sendable {
             badges: [String] = [],
             symbol: String? = nil,
             tint: Tint = .secondary,
-            url: String? = nil
+            url: String? = nil,
+            navigation: NavigationReference? = nil
         ) {
             self.title = title
             self.subtitle = subtitle
@@ -79,6 +88,7 @@ public nonisolated struct AgentToolDetail: Equatable, Sendable {
             self.symbol = symbol
             self.tint = tint
             self.url = url
+            self.navigation = navigation
         }
 
         public var title: String
@@ -88,6 +98,7 @@ public nonisolated struct AgentToolDetail: Equatable, Sendable {
         public var symbol: String? = nil
         public var tint: Tint = .secondary
         public var url: String? = nil
+        public var navigation: NavigationReference? = nil
     }
 
     public nonisolated struct ListBlock: Equatable, Sendable {
@@ -346,8 +357,21 @@ public nonisolated enum AgentToolDetailFormatting {
 
     public static func statusLabel(_ status: String, locale: Locale) -> String {
         switch status {
+        case "accepted": localized("Accepted", locale: locale)
+        case "cancelled": localized("Cancelled", locale: locale)
+        case "completed": localized("Completed", locale: locale)
         case "connecting": localized("Connecting", locale: locale)
+        case "delivered": localized("Delivered", locale: locale)
+        case "failed": localized("Failed", locale: locale)
+        case "idle": localized("Idle", locale: locale)
+        case "interrupted": localized("Interrupted", locale: locale)
+        case "preparing": localized("Preparing", locale: locale)
+        case "queued": localized("Queued", locale: locale)
+        case "reviewing": localized("Reviewing", locale: locale)
         case "running": localized("Running", locale: locale)
+        case "undelivered": localized("Undelivered", locale: locale)
+        case "waitingForApproval": localized("Waiting for approval", locale: locale)
+        case "waitingForUser": localized("Waiting for user", locale: locale)
         case "exited": localized("Exited", locale: locale)
         default: humanized(status).capitalized
         }

@@ -39,6 +39,9 @@ public nonisolated struct AgentToolGroup: RawRepresentable, Hashable, Sendable {
     /// Whatever the configured MCP servers advertise. Needs servers.
     public static let mcp = Self("mcp")
     public static let memory = Self("memory")
+    /// Local model discovery and cross-chat coordination. Each definition is
+    /// omitted when its corresponding injected dependency is absent.
+    public static let chatCollaboration = Self("chatCollaboration")
 
 }
 nonisolated
@@ -49,7 +52,8 @@ nonisolated
     /// nothing. Opting *out* rather than in: an app that adds a capability to a
     /// later release should not have to remember to enable it here.
     public static let all: Self = [
-        .scratch, .web, .userInteraction, .planning, .tasks, .skills, .memory, .mcp,
+        .scratch, .web, .userInteraction, .planning, .tasks, .skills, .memory,
+        .chatCollaboration, .mcp,
     ]
 }
 
@@ -81,6 +85,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
     public var skillPackageResolver: (any AgentSkillPackageResolving)?
     public var skillLibrary: (any AgentSkillLibraryManaging)?
     public var memory: (any AgentMemoryAccessing)?
+    public var chatModels: (any AgentChatModelCatalog)?
+    public var chats: (any AgentChatCoordinating)?
+    public var chatSource: AgentChatSourceContext?
     public var mcpServers: [(server: MCPServer, bearerToken: String?)] = []
     public var mcpClient = MCPClient()
 
@@ -98,6 +105,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         skillPackageResolver: (any AgentSkillPackageResolving)? = nil,
         skillLibrary: (any AgentSkillLibraryManaging)? = nil,
         memory: (any AgentMemoryAccessing)? = nil,
+        chatModels: (any AgentChatModelCatalog)? = nil,
+        chats: (any AgentChatCoordinating)? = nil,
+        chatSource: AgentChatSourceContext? = nil,
         mcpServers: [(server: MCPServer, bearerToken: String?)] = [],
         mcpClient: MCPClient = MCPClient()
     ) {
@@ -114,6 +124,9 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         self.skillPackageResolver = skillPackageResolver
         self.skillLibrary = skillLibrary
         self.memory = memory
+        self.chatModels = chatModels
+        self.chats = chats
+        self.chatSource = chatSource
         self.mcpServers = mcpServers
         self.mcpClient = mcpClient
     }
@@ -179,6 +192,7 @@ public nonisolated enum AgentToolCatalog {
 
     private static let definitions: [Registration] =
         webTools + userTools + scratchTools + planningTools + taskTools + skillTools + memoryTools
+        + chatTools
 
     private static let webTools: [Registration] = [
         .init(FetchTool.self) { configuration in
@@ -263,6 +277,45 @@ public nonisolated enum AgentToolCatalog {
         .init(SessionSearchTool.self) { configuration in
             guard configuration.includes(.memory), let memory = configuration.memory else { return nil }
             return SessionSearchTool(store: memory)
+        },
+    ]
+
+    private static let chatTools: [Registration] = [
+        .init(ListModelsTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let catalog = configuration.chatModels else {
+                return nil
+            }
+            return ListModelsTool(catalog: catalog)
+        },
+        .init(CreateNewChatTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let chats = configuration.chats,
+                let source = configuration.chatSource
+            else { return nil }
+            return CreateNewChatTool(coordinator: chats, source: source)
+        },
+        .init(ListChatsTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let chats = configuration.chats,
+                let source = configuration.chatSource
+            else { return nil }
+            return ListChatsTool(coordinator: chats, source: source)
+        },
+        .init(ReadChatTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let chats = configuration.chats,
+                let source = configuration.chatSource
+            else { return nil }
+            return ReadChatTool(coordinator: chats, source: source)
+        },
+        .init(SendToChatTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let chats = configuration.chats,
+                let source = configuration.chatSource
+            else { return nil }
+            return SendToChatTool(coordinator: chats, source: source)
+        },
+        .init(WaitChatsTool.self) { configuration in
+            guard configuration.includes(.chatCollaboration), let chats = configuration.chats,
+                let source = configuration.chatSource
+            else { return nil }
+            return WaitChatsTool(coordinator: chats, source: source)
         },
     ]
 

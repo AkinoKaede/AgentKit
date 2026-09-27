@@ -1,6 +1,30 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ context": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"上下文窗口%@"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"內容窗口%@"}}}},
+    "%lld messages read": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已读取%lld条消息"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已讀取%lld則訊息"}}}},
+    "%lld models": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"%lld个模型"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"%lld個模型"}}}},
+    "Accepted": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已接受"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已接受"}}}},
+    "Cancelled": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已取消"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已取消"}}}},
+    "Completed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已完成"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已完成"}}}},
+    "Delivered": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已送达"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已送達"}}}},
+    "Failed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已失败"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已失敗"}}}},
+    "Idle": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"空闲"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"閒置"}}}},
+    "Interrupted": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已中断"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已中斷"}}}},
+    "Preparing": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"正在准备"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"正在準備"}}}},
+    "Queued": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已排队"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已排入佇列"}}}},
+    "Reviewing": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"正在审核"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"正在審核"}}}},
+    "Undelivered": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未送达"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"未送達"}}}},
+    "Waiting for approval": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待批准"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待核准"}}}},
+    "Waiting for user": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待用户"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待使用者"}}}},
+    "Chat list unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话列表不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話列表無法使用"}}}},
+    "Chat status unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话状态不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話狀態無法使用"}}}},
+    "Chat unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話無法使用"}}}},
+    "Model list unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"模型列表不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"模型列表無法使用"}}}},
+    "No chats": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"没有对话"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"沒有對話"}}}},
+    "Provider": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"提供商"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"供應商"}}}},
+    "Wait stopped by user input": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待已因用户输入停止"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待已因使用者輸入停止"}}}},
+    "Wait timed out": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待超时"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待逾時"}}}},
     "Source URL": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"来源URL"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"來源URL"}}}},
     "Resolved source": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"解析后的来源"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"解析後的來源"}}}},
     "Commit": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"提交版本"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"提交版本"}}}},
@@ -47,6 +71,7 @@
     "Tool": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"工具"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"工具"}}}},
     "System": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"系统"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"系統"}}}},
     "Message": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"消息"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"訊息"}}}},
+    "Messages followed by tool activity cannot be edited.": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"后续有工具活动的消息无法编辑。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"後續有工具活動的訊息無法編輯。"}}}},
     "%@ failed (%lld): %@": {
       "localizations": {
         "zh-Hans": {
