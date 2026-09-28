@@ -52,20 +52,9 @@ public nonisolated struct MCPClient: Sendable {
         }
     }
 
-    /// The version this client asks for.
-    ///
-    /// Not the newest one. MCP `2026-07-28` dropped the `initialize` handshake
-    /// and `Mcp-Session-Id` for a stateless per-request model a month ago;
-    /// implementing that today would mean failing against the servers people
-    /// actually run. `2025-06-18` is what is deployed, and the specification
-    /// gives the transport below it a twelve-month offramp, so this has room.
-    ///
-    /// What comes back from `initialize` is used from then on regardless — a
-    /// server that answers with a different version is answered in that version.
-    public static let preferredVersion = "2025-06-18"
-
-    /// The version the legacy transport speaks.
+    public static let preferredVersion = "2026-07-28"
     public static let legacyVersion = "2024-11-05"
+    public static let supportedVersions = [preferredVersion, "2025-11-25", "2025-06-18", legacyVersion]
 
     private let session: URLSession
     /// How this client introduces itself in `initialize`.
@@ -140,60 +129,103 @@ public nonisolated struct MCPClient: Sendable {
     private func discoverStreamable(
         at url: URL, server: MCPServer, bearerToken: String?
     ) async throws -> MCPDiscovery {
-        var context = RequestContext(
-            url: url,
-            version: Self.preferredVersion,
-            sessionID: nil,
-            server: server,
-            bearerToken: bearerToken
-        )
-
-        let initialize: InitializeResult
+        let negotiated: (RequestContext, String)
         do {
-            initialize = try await send(
-                .initialize(version: Self.preferredVersion, clientInfo: clientInfo),
-                id: 1, context: &context)
-        } catch MCPError.http(let status) where (400..<500).contains(status) {
-            // 404 and 405 are exactly what a server running only the older
-            // transport answers a POST with. Said plainly rather than retried
-            // silently, because the transport is a setting the user chose and
-            // quietly overriding it would make that setting a lie.
-            throw MCPError.wrongTransport(status: status)
+            negotiated = try await negotiate(at: url, server: server, bearerToken: bearerToken)
+        } catch MCPError.wrongTransport {
+            return try await discoverSSE(at: url, server: server, bearerToken: bearerToken)
         }
-
-        // From here on, speak whatever the server agreed to.
-        context.version = initialize.protocolVersion ?? Self.preferredVersion
-
-        try await notify(.initialized, context: context)
-        let tools = try await listTools(context: &context)
-        await endSession(context)
-
-        return MCPDiscovery(
-            protocolVersion: context.version,
-            serverName: initialize.serverInfo?.name ?? server.name,
-            tools: tools
-        )
+        var (context, serverName) = negotiated
+        do {
+            let tools = try await listTools(context: &context)
+            await endSession(context)
+            return MCPDiscovery(protocolVersion: context.version, serverName: serverName, tools: tools)
+        } catch {
+            await endSession(context)
+            throw error
+        }
     }
 
     private func callStreamable(
         at url: URL, server: MCPServer, name: String, arguments: AgentJSONValue,
         bearerToken: String?
     ) async throws -> MCPCallResult {
+        var context: RequestContext
+        do {
+            (context, _) = try await negotiate(at: url, server: server, bearerToken: bearerToken)
+        } catch MCPError.wrongTransport {
+            return try await callSSE(
+                at: url, server: server, name: name, arguments: arguments, bearerToken: bearerToken)
+        }
+        do {
+            if context.version == Self.preferredVersion {
+                let tools = try await listTools(context: &context)
+                guard let tool = tools.first(where: { $0.id == name }),
+                    let headers = Self.parameterHeaders(schema: tool.inputSchema, arguments: arguments)
+                else {
+                    throw MCPError.malformedResponse("tools/call: invalid tool schema")
+                }
+                context.parameterHeaders = headers
+            }
+            let called: ToolsCallResult = try await send(
+                .toolsCall(name: name, arguments: arguments), id: 100, context: &context)
+            await endSession(context)
+            return MCPCallResult(value: called.value, isError: called.isError ?? false)
+        } catch {
+            await endSession(context)
+            throw error
+        }
+    }
+
+    /// Probe only before execution. Never replay a tool call following a transport failure.
+    private func negotiate(at url: URL, server: MCPServer, bearerToken: String?) async throws -> (
+        RequestContext, String
+    ) {
         var context = RequestContext(
             url: url, version: Self.preferredVersion, sessionID: nil,
-            server: server, bearerToken: bearerToken
-        )
-        let initialize: InitializeResult = try await send(
-            .initialize(version: Self.preferredVersion, clientInfo: clientInfo),
-            id: 1, context: &context
-        )
-        context.version = initialize.protocolVersion ?? Self.preferredVersion
-        try await notify(.initialized, context: context)
-        let called: ToolsCallResult = try await send(
-            .toolsCall(name: name, arguments: arguments), id: 2, context: &context
-        )
-        await endSession(context)
-        return MCPCallResult(value: called.value, isError: called.isError ?? false)
+            server: server, bearerToken: bearerToken)
+        var fallbackVersion = "2025-11-25"
+        do {
+            let discovered: DiscoverResult = try await send(.discover, id: 1, context: &context)
+            guard let version = Self.supportedVersions.first(where: discovered.supportedVersions.contains) else {
+                throw MCPError.malformedResponse("server/discover: no supported version")
+            }
+            if version == Self.preferredVersion {
+                return (
+                    context,
+                    discovered._meta?["io.modelcontextprotocol/serverInfo"]?.objectValue?["name"]?.stringValue
+                        ?? server.name
+                )
+            }
+            fallbackVersion = version
+        } catch MCPError.unsupportedVersion(let supported) {
+            guard let version = Self.supportedVersions.first(where: supported.contains),
+                version != Self.preferredVersion
+            else {
+                throw MCPError.unsupportedVersion(supported)
+            }
+            fallbackVersion = version
+        } catch MCPError.http(let status) where [400, 404, 405].contains(status) {
+            // An older endpoint cannot understand the per-request metadata probe.
+        } catch MCPError.rpc(let method, let code, _) where (code == -32601 && method != "HTTP") || code == -32002 {
+            // Legacy servers commonly report method-not-found or not-initialized.
+        }
+        context.version = fallbackVersion
+        context.sessionID = nil
+        do {
+            let initialized: InitializeResult = try await send(
+                .initialize(version: fallbackVersion, clientInfo: clientInfo), id: 1, context: &context)
+            guard let version = initialized.protocolVersion,
+                Self.supportedVersions.dropFirst().contains(version)
+            else {
+                throw MCPError.malformedResponse("initialize: unsupported protocol version")
+            }
+            context.version = version
+            try await notify(.initialized, context: context)
+            return (context, initialized.serverInfo?.name ?? server.name)
+        } catch MCPError.http(let status) where [400, 404, 405].contains(status) {
+            throw MCPError.wrongTransport(status: status)
+        }
     }
 
     /// One JSON-RPC request, and its response.
@@ -211,11 +243,22 @@ public nonisolated struct MCPClient: Sendable {
         // Both, always: the server picks which one it answers with.
         request.setValue("application/json, text/event-stream", forHTTPHeaderField: "Accept")
         context.apply(to: &request)
-        request.httpBody = try call.body(id: id)
+        request.httpBody = try call.body(id: id, modern: context.version == Self.preferredVersion ? clientInfo : nil)
+        if context.version == Self.preferredVersion {
+            request.setValue(context.version, forHTTPHeaderField: "MCP-Protocol-Version")
+            for (name, value) in context.parameterHeaders { request.setValue(value, forHTTPHeaderField: name) }
+            request.setValue(call.method, forHTTPHeaderField: "Mcp-Method")
+            if case .toolsCall(let name, _) = call {
+                request.setValue(Self.headerValue(name), forHTTPHeaderField: "Mcp-Name")
+            }
+            request.setValue(nil, forHTTPHeaderField: "Mcp-Session-Id")
+        }
 
         let (data, response) = try await perform(request)
 
-        if let assigned = response.value(forHTTPHeaderField: "Mcp-Session-Id"), !assigned.isEmpty {
+        if context.version != Self.preferredVersion,
+            let assigned = response.value(forHTTPHeaderField: "Mcp-Session-Id"), !assigned.isEmpty
+        {
             context.sessionID = assigned
         }
 
@@ -230,6 +273,13 @@ public nonisolated struct MCPClient: Sendable {
             payload = data
         }
 
+        guard JSONRPC.id(of: payload) == id else { throw MCPError.malformedResponse(call.method) }
+        if context.version == Self.preferredVersion {
+            let envelope = try? AgentJSONValue.decode(payload).objectValue
+            if let result = envelope?["result"]?.objectValue, result["resultType"]?.stringValue != "complete" {
+                throw MCPError.malformedResponse(call.method)
+            }
+        }
         return try JSONRPC.result(Result.self, from: payload, method: call.method)
     }
 
@@ -308,7 +358,10 @@ public nonisolated struct MCPClient: Sendable {
         let initialize: InitializeResult = try await exchange(
             .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
             id: 1, context: context, events: events)
-        context.version = initialize.protocolVersion ?? Self.legacyVersion
+        guard initialize.protocolVersion == Self.legacyVersion else {
+            throw MCPError.malformedResponse("initialize: unsupported legacy version")
+        }
+        context.version = Self.legacyVersion
 
         try await notify(.initialized, context: context)
 
@@ -318,7 +371,15 @@ public nonisolated struct MCPClient: Sendable {
         for _ in 0..<Self.pageLimit {
             let page: ToolsListResult = try await exchange(
                 .toolsList(cursor: cursor), id: id, context: context, events: events)
-            tools += (page.tools ?? []).map { $0.tool() }
+            tools += (page.tools ?? []).compactMap { row in
+                let tool = row.tool()
+                if context.version == Self.preferredVersion,
+                    Self.parameterHeaders(schema: tool.inputSchema, arguments: .object([:])) == nil
+                {
+                    return nil
+                }
+                return tool
+            }
             guard let next = page.nextCursor, !next.isEmpty else { break }
             cursor = next
             id += 1
@@ -359,7 +420,10 @@ public nonisolated struct MCPClient: Sendable {
             .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
             id: 1, context: context, events: events
         )
-        context.version = initialize.protocolVersion ?? Self.legacyVersion
+        guard initialize.protocolVersion == Self.legacyVersion else {
+            throw MCPError.malformedResponse("initialize: unsupported legacy version")
+        }
+        context.version = Self.legacyVersion
         try await notify(.initialized, context: context)
         let called: ToolsCallResult = try await exchange(
             .toolsCall(name: name, arguments: arguments), id: 2,
@@ -388,6 +452,68 @@ public nonisolated struct MCPClient: Sendable {
 
     // MARK: - Shared
 
+    /// Validate annotations even when the corresponding argument is absent.
+    static func parameterHeaders(schema: AgentJSONValue, arguments: AgentJSONValue) -> [String: String]? {
+        var headers: [String: String] = [:]
+        var names = Set<String>()
+        func walk(_ schema: AgentJSONValue, _ value: AgentJSONValue?, reachable: Bool, root: Bool = false) -> Bool {
+            guard let object = schema.objectValue else { return true }
+            if let annotation = object["x-mcp-header"] {
+                guard reachable, let name = annotation.stringValue, !name.isEmpty,
+                    name.utf8.allSatisfy({ byte in
+                        (48...57).contains(byte) || (65...90).contains(byte) || (97...122).contains(byte)
+                            || "!#$%&'*+-.^_`|~".utf8.contains(byte)
+                    }), names.insert(name.lowercased()).inserted,
+                    let type = object["type"]?.stringValue, ["string", "integer", "boolean"].contains(type)
+                else { return false }
+                if let value, value != .null {
+                    let rendered: String
+                    switch (type, value) {
+                    case ("string", .string(let string)): rendered = string
+                    case ("boolean", .bool(let bool)): rendered = bool ? "true" : "false"
+                    case ("integer", .number(let number))
+                    where number.isFinite && number.rounded() == number && abs(number) <= 9_007_199_254_740_991:
+                        rendered = String(Int64(number))
+                    default: return false
+                    }
+                    headers["Mcp-Param-" + name] = headerValue(rendered)
+                }
+            }
+            for (key, child) in object where key != "x-mcp-header" {
+                if key == "properties", let properties = child.objectValue {
+                    for (name, property) in properties {
+                        if !walk(property, value?.objectValue?[name], reachable: reachable || root) { return false }
+                    }
+                } else if ["$defs", "definitions", "patternProperties", "dependentSchemas", "dependencies"].contains(
+                    key),
+                    let children = child.objectValue
+                {
+                    for child in children.values where !walk(child, nil, reachable: false) { return false }
+                } else if [
+                    "items", "additionalItems", "additionalProperties", "unevaluatedProperties", "unevaluatedItems",
+                    "propertyNames", "contains", "not", "if", "then", "else", "contentSchema",
+                ].contains(key) {
+                    if !walk(child, nil, reachable: false) { return false }
+                    for child in child.arrayValue ?? [] where !walk(child, nil, reachable: false) { return false }
+                } else if ["allOf", "anyOf", "oneOf", "prefixItems"].contains(key), let children = child.arrayValue {
+                    for child in children where !walk(child, nil, reachable: false) { return false }
+                }
+            }
+            return true
+        }
+        return walk(schema, arguments, reachable: false, root: true) ? headers : nil
+    }
+
+    static func headerValue(_ value: String) -> String {
+        let safe = value.utf8.allSatisfy { $0 == 9 || (32...126).contains($0) }
+        if safe && value == value.trimmingCharacters(in: .whitespacesAndNewlines)
+            && !(value.hasPrefix("=?base64?") && value.hasSuffix("?="))
+        {
+            return value
+        }
+        return "=?base64?" + Data(value.utf8).base64EncodedString() + "?="
+    }
+
     private static let pageLimit = 20
 
     private func listTools(context: inout RequestContext) async throws -> [MCPTool] {
@@ -398,7 +524,15 @@ public nonisolated struct MCPClient: Sendable {
         for _ in 0..<Self.pageLimit {
             let page: ToolsListResult = try await send(
                 .toolsList(cursor: cursor), id: id, context: &context)
-            tools += (page.tools ?? []).map { $0.tool() }
+            tools += (page.tools ?? []).compactMap { row in
+                let tool = row.tool()
+                if context.version == Self.preferredVersion,
+                    Self.parameterHeaders(schema: tool.inputSchema, arguments: .object([:])) == nil
+                {
+                    return nil
+                }
+                return tool
+            }
             guard let next = page.nextCursor, !next.isEmpty else { break }
             cursor = next
             id += 1
@@ -412,6 +546,21 @@ public nonisolated struct MCPClient: Sendable {
             let (data, raw) = try await session.data(for: request)
             guard let http = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
             guard (200..<300).contains(http.statusCode) else {
+                if ![401, 403].contains(http.statusCode),
+                    let envelope = try? JSONDecoder().decode(JSONRPC.Envelope<AgentJSONValue>.self, from: data),
+                    let error = envelope.error
+                {
+                    if error.code == -32022, let supported = error.data?["supported"]?.arrayValue {
+                        throw MCPError.unsupportedVersion(supported.compactMap(\.stringValue))
+                    }
+                    let modernError =
+                        [-32020, -32021, -32022].contains(error.code ?? 0)
+                        || (http.statusCode == 404 && error.code == -32601)
+                    if !modernError, [400, 404, 405].contains(http.statusCode) {
+                        throw MCPError.http(status: http.statusCode)
+                    }
+                    throw MCPError.rpc(method: "HTTP", code: error.code ?? 0, message: error.message ?? "")
+                }
                 throw MCPError.http(status: http.statusCode)
             }
             return (data, http)
@@ -431,6 +580,7 @@ public nonisolated struct MCPClient: Sendable {
         var sessionID: String?
         let server: MCPServer
         let bearerToken: String?
+        var parameterHeaders: [String: String] = [:]
 
         func apply(to request: inout URLRequest) {
             request.setValue(version, forHTTPHeaderField: "MCP-Protocol-Version")
@@ -451,6 +601,7 @@ public nonisolated struct MCPClient: Sendable {
 
 /// The three JSON-RPC messages discovery needs.
 nonisolated private enum Call {
+    case discover
     case initialize(version: String, clientInfo: MCPClient.ClientInfo)
     case initialized
     case toolsList(cursor: String?)
@@ -458,6 +609,7 @@ nonisolated private enum Call {
 
     var method: String {
         switch self {
+        case .discover: "server/discover"
         case .initialize: "initialize"
         case .initialized: "notifications/initialized"
         case .toolsList: "tools/list"
@@ -466,11 +618,13 @@ nonisolated private enum Call {
     }
 
     /// `id` is nil for notifications, which is what makes them notifications.
-    func body(id: Int?) throws -> Data {
+    func body(id: Int?, modern: MCPClient.ClientInfo? = nil) throws -> Data {
         var object: [String: Any] = ["jsonrpc": "2.0", "method": method]
         if let id { object["id"] = id }
 
         switch self {
+        case .discover:
+            object["params"] = [String: Any]()
         case .initialize(let version, let clientInfo):
             object["params"] = [
                 "protocolVersion": version,
@@ -491,11 +645,25 @@ nonisolated private enum Call {
             ]
         }
 
+        if let modern {
+            var params = object["params"] as? [String: Any] ?? [:]
+            params["_meta"] = [
+                "io.modelcontextprotocol/protocolVersion": MCPClient.preferredVersion,
+                "io.modelcontextprotocol/clientInfo": ["name": modern.name, "version": modern.version],
+                "io.modelcontextprotocol/clientCapabilities": [String: Any](),
+            ]
+            object["params"] = params
+        }
         return try JSONSerialization.data(withJSONObject: object)
     }
 }
 
 // MARK: - Wire shapes
+
+nonisolated private struct DiscoverResult: Decodable {
+    var supportedVersions: [String]
+    var _meta: [String: AgentJSONValue]?
+}
 
 nonisolated private struct InitializeResult: Decodable {
     var protocolVersion: String?
@@ -581,6 +749,7 @@ nonisolated private enum JSONRPC {
     nonisolated struct RPCError: Decodable {
         var code: Int?
         var message: String?
+        var data: [String: AgentJSONValue]?
     }
 
     /// Unwraps `{"result": …}`, or turns `{"error": …}` into a thrown error.
@@ -589,6 +758,9 @@ nonisolated private enum JSONRPC {
             throw MCPError.malformedResponse(method)
         }
         if let error = envelope.error {
+            if error.code == -32022, let supported = error.data?["supported"]?.arrayValue {
+                throw MCPError.unsupportedVersion(supported.compactMap(\.stringValue))
+            }
             throw MCPError.rpc(
                 method: method,
                 code: error.code ?? 0,
@@ -603,6 +775,7 @@ nonisolated private enum JSONRPC {
 // MARK: - Errors
 
 public nonisolated enum MCPError: Error, LocalizedError, Equatable, Sendable {
+    case unsupportedVersion([String])
     case badURL(String)
     case notHTTP
     case http(status: Int)
@@ -616,6 +789,10 @@ public nonisolated enum MCPError: Error, LocalizedError, Equatable, Sendable {
 
     public var errorDescription: String? {
         switch self {
+        case .unsupportedVersion:
+            String(
+                localized: "The server's answer to \("protocol version negotiation") was not valid MCP.",
+                bundle: .module)
         case .badURL(let value):
             String(localized: "\(value) is not an http or https URL.", bundle: .module)
         case .notHTTP:
