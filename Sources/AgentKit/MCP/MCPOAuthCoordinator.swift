@@ -132,6 +132,7 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
         }
         guard let challenge else { return nil }
         let resourceMetadata = try await http.resourceMetadata(server: server, challenge: challenge)
+        let authorizationResource = resourceMetadata.resource
         let issuer: String
         if !configuration.issuer.isEmpty {
             guard resourceMetadata.authorizationServers.contains(configuration.issuer) else {
@@ -144,7 +145,9 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
                 ?? resourceMetadata.authorizationServers[0]
         }
         let metadata = try await http.serverMetadata(issuer: issuer)
-        var credential = matches.first { $0.issuer == issuer }
+        var credential = matches.first {
+            $0.issuer == issuer && ($0.authorizationResource ?? $0.resource) == authorizationResource
+        }
         if challenge.status == 401, let existing = credential {
             if let token = existing.accessToken, token != rejectedToken,
                 existing.expiresAt.map({ $0.timeIntervalSince(now()) > 60 }) ?? true
@@ -171,6 +174,7 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
             credential = try await register(server: server, resource: resource, metadata: metadata)
         }
         var grant = credential!
+        grant.authorizationResource = authorizationResource
         grant.tokenEndpoint = metadata.tokenEndpoint
         grant.revocationEndpoint = metadata.revocationEndpoint
         var scopes = Set(challenge.scopes ?? resourceMetadata.scopesSupported ?? [])
@@ -184,7 +188,7 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
         let parameters: [String: String] = [
             "response_type": "code", "client_id": grant.clientID, "redirect_uri": redirectURI.absoluteString,
             "code_challenge": Self.challenge(verifier), "code_challenge_method": "S256", "state": state,
-            "resource": resource,
+            "resource": authorizationResource,
         ].merging(requestedScopes.isEmpty ? [:] : ["scope": requestedScopes.joined(separator: " ")]) { _, new in new }
         guard !(components.queryItems ?? []).contains(where: { parameters[$0.name] != nil }) else {
             throw MCPOAuthError.invalidMetadata
@@ -206,7 +210,7 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
             grant,
             values: [
                 "grant_type": "authorization_code", "code": code, "code_verifier": verifier,
-                "redirect_uri": redirectURI.absoluteString, "resource": resource,
+                "redirect_uri": redirectURI.absoluteString, "resource": authorizationResource,
             ])
         apply(response, to: &grant, scopes: requestedScopes)
         try await save(grant, server: server, generation: generation)
@@ -232,7 +236,8 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
             let response = try await exchange(
                 grant,
                 values: [
-                    "grant_type": "refresh_token", "refresh_token": refreshToken, "resource": grant.resource,
+                    "grant_type": "refresh_token", "refresh_token": refreshToken,
+                    "resource": grant.authorizationResource ?? grant.resource,
                 ])
             apply(response, to: &grant, scopes: grant.scopes)
             try await save(grant, server: server, generation: generation, isRefresh: true)

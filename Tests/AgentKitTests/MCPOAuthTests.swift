@@ -16,6 +16,7 @@ private actor OAuthTestStore: MCPOAuthCredentialStoring {
 private final class OAuthFixture: URLProtocol, @unchecked Sendable {
     struct State {
         var mode = "cimd"
+        var resource: String?
         var requests: [URLRequest] = []
         var bodies: [String] = []
     }
@@ -54,9 +55,12 @@ private final class OAuthFixture: URLProtocol, @unchecked Sendable {
             return
         }
         if path.contains("oauth-protected-resource") {
-            if mode == "root-discovery", path.hasSuffix("/mcp") { status = 404 }
+            if mode == "root-discovery" || mode.hasPrefix("origin-resource"), path.hasSuffix("/mcp") { status = 404 }
             object = [
-                "resource": mode == "bad-resource" ? "https://other.test/mcp" : "https://mcp.test/mcp",
+                "resource": OAuthFixture.state.withLock { $0.resource }
+                    ?? (mode.hasPrefix("origin-resource")
+                        ? "https://mcp.test/"
+                        : mode == "bad-resource" ? "https://other.test/mcp" : "https://mcp.test/mcp"),
                 "authorization_servers": ["https://auth.test/tenant"], "scopes_supported": ["read"],
             ]
         } else if path.contains(".well-known") {
@@ -66,9 +70,9 @@ private final class OAuthFixture: URLProtocol, @unchecked Sendable {
                 "code_challenge_methods_supported": mode == "no-pkce" ? ["plain"] : ["S256"],
                 "authorization_response_iss_parameter_supported": true,
                 "token_endpoint_auth_methods_supported": ["none", "client_secret_basic"],
-                "client_id_metadata_document_supported": mode != "dcr" && mode != "manual-required",
+                "client_id_metadata_document_supported": !mode.hasSuffix("dcr") && mode != "manual-required",
             ]
-            if mode == "dcr" { object["registration_endpoint"] = "https://auth.test/register" }
+            if mode.hasSuffix("dcr") { object["registration_endpoint"] = "https://auth.test/register" }
             if mode == "oidc", path.contains("oauth-authorization-server") { status = 404 }
             if mode == "redirect" {
                 status = 302
@@ -95,7 +99,8 @@ private final class OAuthFixture: URLProtocol, @unchecked Sendable {
             } else if request.value(forHTTPHeaderField: "Authorization") != "Bearer access" || mode == "always-401" {
                 status = 401
                 headers["WWW-Authenticate"] =
-                    "Bearer resource_metadata=\"https://mcp.test/.well-known/oauth-protected-resource/mcp\", scope=\"read\""
+                    "Bearer resource_metadata=\"https://mcp.test/.well-known/oauth-protected-resource"
+                    + (mode.hasPrefix("origin-resource") ? "" : "/mcp") + "\", scope=\"read\""
             } else {
                 let rpc = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any] ?? [:]
                 switch rpc["method"] as? String {
@@ -203,6 +208,114 @@ struct MCPOAuthTests {
         }
         let url = try #require(OAuthFixture.state.withLock { $0.requests.first?.url })
         #expect(url.absoluteString == "https://mcp.test/.well-known/oauth-protected-resource/a%2Fb/")
+    }
+
+    @Test(arguments: ["origin-resource", "origin-resource-dcr"])
+    func originResourceAuthorizesAndRefreshesWhileRemainingBoundToTheMCPEndpoint(_ mode: String) async throws {
+        let store = OAuthTestStore()
+        let session = session(mode)
+        let oauth = coordinator(store, session: session)
+        let interaction = MCPAuthorizationInteraction { request in
+            let parameters = URLComponents(url: request.url, resolvingAgainstBaseURL: false)?.queryItems
+            #expect(parameters?.first { $0.name == "resource" }?.value == "https://mcp.test/")
+            return Self.accepted(request)
+        }
+        let result = try await MCPClient(session: session, authorization: oauth)
+            .discover(server, bearerToken: nil, interaction: interaction)
+        #expect(result.protocolVersion == "2025-03-26")
+        var grant = try #require(await store.credentials(for: server.id).first)
+        #expect(grant.resource == server.url)
+        #expect(grant.authorizationResource == "https://mcp.test/")
+        #expect(grant.isDynamicRegistration == mode.hasSuffix("dcr"))
+        grant = try JSONDecoder().decode(MCPOAuthCredential.self, from: JSONEncoder().encode(grant))
+        grant.expiresAt = .distantPast
+        await store.save([grant], for: server.id)
+        #expect(try await oauth.token(for: server) == "access")
+        let requests = OAuthFixture.state.withLock { $0.requests }
+        let tokenBodies = OAuthFixture.state.withLock { state in
+            zip(state.requests, state.bodies).filter { $0.0.url?.path == "/token" }.map(\.1)
+        }
+        #expect(tokenBodies.count == 2)
+        #expect(
+            tokenBodies.allSatisfy {
+                URLComponents(string: "?" + $0)?.queryItems?.first { $0.name == "resource" }?.value
+                    == "https://mcp.test/"
+            })
+        #expect(tokenBodies.last?.contains("refresh_token=rotated-refresh") == true)
+        #expect(
+            requests.filter { $0.url?.host == "mcp.test" && $0.url?.path != "/mcp" }.allSatisfy {
+                $0.value(forHTTPHeaderField: "Authorization") == nil
+            })
+        var other = server
+        other.url = "https://mcp.test/another-mcp"
+        #expect(try await oauth.token(for: other) == nil)
+    }
+
+    @Test func rootWellKnownFallbackAcceptsTheOriginResource() async throws {
+        let http = MCPOAuthHTTP(session: session("origin-resource"))
+        let metadata = try await http.resourceMetadata(server: server, challenge: challenge)
+        #expect(metadata.resource == "https://mcp.test/")
+        #expect(
+            OAuthFixture.state.withLock { $0.requests.map { $0.url!.path } } == [
+                "/.well-known/oauth-protected-resource/mcp", "/.well-known/oauth-protected-resource",
+            ])
+    }
+
+    @Test(arguments: [
+        "https://other.test/", "https://mcp.test:8443/", "https://mcp.test/other", "https://mcp.test/mc",
+        "https://mcp.test/?tenant=other", "http://mcp.test/", "https://user@mcp.test/", "https://mcp.test/#fragment",
+    ])
+    func rootMetadataCannotBroadenTheResourceToAnotherOriginOrUnrelatedPath(_ resource: String) async throws {
+        let http = MCPOAuthHTTP(session: session("origin-resource"))
+        OAuthFixture.state.withLock { $0.resource = resource }
+        await #expect(throws: MCPOAuthError.self) {
+            try await http.resourceMetadata(server: server, challenge: challenge)
+        }
+    }
+
+    @Test(arguments: [
+        "https://other.test/.well-known/oauth-protected-resource",
+        "https://mcp.test:8443/.well-known/oauth-protected-resource",
+        "https://mcp.test/.well-known/oauth-protected-resource/unrelated",
+        "https://mcp.test/.well-known/oauth-protected-resource?tenant=other",
+    ])
+    func originResourceExceptionRequiresTheSameOriginRootMetadataDocument(_ address: String) async throws {
+        let http = MCPOAuthHTTP(session: session("origin-resource"))
+        let challenge = try MCPAuthorizationChallenge(status: 401, header: "Bearer resource_metadata=\"\(address)\"")
+        await #expect(throws: MCPOAuthError.resourceMismatch) {
+            try await http.resourceMetadata(server: server, challenge: challenge)
+        }
+    }
+
+    @Test func olderCredentialsStillDecodeAndRefreshWithTheirOriginalResource() async throws {
+        let store = OAuthTestStore()
+        let oauth = coordinator(store, session: session())
+        let data = try JSONEncoder().encode(expiredCredential())
+        #expect(!String(decoding: data, as: UTF8.self).contains("authorizationResource"))
+        let grant = try JSONDecoder().decode(MCPOAuthCredential.self, from: data)
+        #expect(grant.authorizationResource == nil)
+        await store.save([grant], for: server.id)
+        #expect(try await oauth.token(for: server) == "access")
+        #expect(
+            OAuthFixture.state.withLock { $0.bodies.contains { $0.contains("resource=https%3A%2F%2Fmcp.test%2Fmcp") } })
+    }
+
+    @Test(.enabled(if: ProcessInfo.processInfo.environment["AGENTKIT_LIVE_MCP_TESTS"] == "1"))
+    func officialExampleResourceAndIssuerDiscovery() async throws {
+        let server = MCPServer(name: "Official example", url: "https://example-server.modelcontextprotocol.io/mcp")
+        let http = MCPOAuthHTTP(session: nil)
+        var request = URLRequest(url: URL(string: server.url)!)
+        request.setValue("application/json, text/event-stream", forHTTPHeaderField: "Accept")
+        let (_, response) = try await http.request(request)
+        #expect(response.statusCode == 401)
+        let challenge = try MCPAuthorizationChallenge(
+            status: response.statusCode, header: response.value(forHTTPHeaderField: "WWW-Authenticate"))
+        let resource = try await http.resourceMetadata(server: server, challenge: challenge)
+        #expect(resource.resource == "https://example-server.modelcontextprotocol.io/")
+        let issuer = try #require(resource.authorizationServers.first)
+        let metadata = try await http.serverMetadata(issuer: issuer)
+        #expect(metadata.issuer == issuer)
+        #expect(metadata.codeChallengeMethodsSupported?.contains("S256") == true)
     }
 
     @Test func injectedSessionCannotLeakAmbientTransportCredentialsToAnIssuer() async throws {

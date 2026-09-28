@@ -111,9 +111,14 @@ nonisolated struct MCPOAuthHTTP: Sendable {
         }
         for url in candidates {
             guard let metadata = try await metadata(MCPOAuthResourceMetadata.self, at: url) else { continue }
-            guard let identifier = URL(string: metadata.resource), Self.canonical(identifier) == resource else {
+            guard let identifier = URL(string: metadata.resource) else {
                 throw MCPOAuthError.resourceMismatch
             }
+            try Self.secure(identifier)
+            guard
+                Self.canonical(identifier) == resource
+                    || Self.isOriginResource(identifier, for: endpoint, metadataURL: url)
+            else { throw MCPOAuthError.resourceMismatch }
             guard !metadata.authorizationServers.isEmpty else { throw MCPOAuthError.invalidMetadata }
             for issuer in metadata.authorizationServers {
                 guard let issuer = URL(string: issuer) else { throw MCPOAuthError.invalidMetadata }
@@ -122,6 +127,20 @@ nonisolated struct MCPOAuthHTTP: Sendable {
             return metadata
         }
         throw MCPOAuthError.invalidMetadata
+    }
+
+    /// Some servers advertise their origin as the OAuth audience for a path-based MCP endpoint.
+    /// Only accept that broader audience from the same origin's root well-known document.
+    private static func isOriginResource(_ identifier: URL, for endpoint: URL, metadataURL: URL) -> Bool {
+        guard identifier.query == nil, identifier.path.isEmpty || identifier.path == "/",
+            var origin = URLComponents(url: endpoint, resolvingAgainstBaseURL: false)
+        else { return false }
+        origin.path = ""
+        origin.query = nil
+        guard let originURL = origin.url, canonical(identifier) == canonical(originURL) else { return false }
+        origin.path = "/.well-known/oauth-protected-resource"
+        guard let expectedMetadataURL = origin.url else { return false }
+        return canonical(metadataURL) == canonical(expectedMetadataURL)
     }
 
     func serverMetadata(issuer: String) async throws -> MCPOAuthServerMetadata {

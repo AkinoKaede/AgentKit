@@ -50,7 +50,10 @@ extension AgentToolServiceKey where Service == MCPAuthorizationInteraction {
 
 /// One issuer-bound grant. Implementations must store the entire value securely and atomically.
 public nonisolated struct MCPOAuthCredential: Codable, Equatable, Sendable {
+    /// Canonical MCP endpoint used to bind this grant to the host's server configuration.
     public var resource: String
+    /// Validated OAuth resource indicator. Older grants use `resource` when this is absent.
+    public var authorizationResource: String?
     public var issuer: String
     public var configuration: MCPOAuthConfiguration
     public var clientID: String
@@ -68,9 +71,11 @@ public nonisolated struct MCPOAuthCredential: Codable, Equatable, Sendable {
         resource: String, issuer: String, configuration: MCPOAuthConfiguration, clientID: String,
         clientSecret: String? = nil, isDynamicRegistration: Bool = false, tokenEndpoint: URL,
         revocationEndpoint: URL? = nil, tokenAuthMethod: String = "none", accessToken: String? = nil,
-        refreshToken: String? = nil, expiresAt: Date? = nil, scopes: [String] = []
+        refreshToken: String? = nil, expiresAt: Date? = nil, scopes: [String] = [],
+        authorizationResource: String? = nil
     ) {
         self.resource = resource
+        self.authorizationResource = authorizationResource
         self.issuer = issuer
         self.configuration = configuration
         self.clientID = clientID
