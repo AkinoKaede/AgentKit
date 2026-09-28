@@ -60,6 +60,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
     public var credentialRef: String = ""
     /// Non-secret extras — a tenant id, an API version.
     public var headers: [MCPHeader] = []
+    public var oauth: MCPOAuthConfiguration?
     /// What the last successful connection reported. Emptied by a failure, so
     /// a stale list cannot be mistaken for a live one.
     public var tools: [MCPTool] = []
@@ -71,7 +72,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
         id: UUID = UUID(), name: String, namespaceID: String? = nil,
         transport: Transport = .streamableHTTP, url: String = "",
         isEnabled: Bool = true, credentialRef: String = "",
-        headers: [MCPHeader] = [], tools: [MCPTool] = [],
+        headers: [MCPHeader] = [], tools: [MCPTool] = [], oauth: MCPOAuthConfiguration? = nil,
         negotiatedVersion: String = "", lastConnectedAt: Date? = nil
     ) {
         self.id = id
@@ -82,6 +83,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
         self.isEnabled = isEnabled
         self.credentialRef = credentialRef
         self.headers = headers
+        self.oauth = oauth
         self.tools = tools
         self.negotiatedVersion = negotiatedVersion
         self.lastConnectedAt = lastConnectedAt

@@ -4,5 +4,33 @@
 <dict>
 	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
 	<string>GitHub returned HTTP %lld. Check that the skill is public and try again later.</string>
+	<key>OAuth authorization was declined.</key>
+	<string>OAuth authorization was declined.</string>
+	<key>OAuth requires secure HTTPS endpoints.</key>
+	<string>OAuth requires secure HTTPS endpoints.</string>
+	<key>Sign in to this MCP server to continue.</key>
+	<string>Sign in to this MCP server to continue.</string>
+	<key>The MCP authorization challenge is invalid.</key>
+	<string>The MCP authorization challenge is invalid.</string>
+	<key>The MCP request attempted an unsafe redirect.</key>
+	<string>The MCP request attempted an unsafe redirect.</string>
+	<key>The OAuth authorization server identity changed.</key>
+	<string>The OAuth authorization server identity changed.</string>
+	<key>The OAuth callback could not be verified.</key>
+	<string>The OAuth callback could not be verified.</string>
+	<key>The OAuth client authentication method is not supported.</key>
+	<string>The OAuth client authentication method is not supported.</string>
+	<key>The OAuth resource does not match this MCP server.</key>
+	<string>The OAuth resource does not match this MCP server.</string>
+	<key>The OAuth server does not support PKCE S256.</key>
+	<string>The OAuth server does not support PKCE S256.</string>
+	<key>The OAuth server metadata is invalid or unavailable.</key>
+	<string>The OAuth server metadata is invalid or unavailable.</string>
+	<key>The OAuth session expired. Sign in again to continue.</key>
+	<string>The OAuth session expired. Sign in again to continue.</string>
+	<key>The OAuth token request failed.</key>
+	<string>The OAuth token request failed.</string>
+	<key>This MCP server requires a registered OAuth client ID.</key>
+	<string>This MCP server requires a registered OAuth client ID.</string>
 </dict>
 </plist>

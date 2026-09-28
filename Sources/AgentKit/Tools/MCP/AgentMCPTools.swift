@@ -54,9 +54,16 @@ public nonisolated struct MCPAgentTool: AgentTool {
     public func execute(
         _ invocation: AgentToolInvocation, context: AgentToolExecutionContext
     ) async throws -> AgentToolResult {
+        let interaction = context.services[.mcpAuthorization].map { service in
+            MCPAuthorizationInteraction { request in
+                var request = request
+                request.invocationID = invocation.id
+                return try await service.authorize(request)
+            }
+        }
         let called = try await client.call(
             server, tool: tool.id, arguments: invocation.call.arguments,
-            bearerToken: bearerToken
+            bearerToken: bearerToken, interaction: interaction
         )
         return AgentToolResult(
             callID: invocation.call.id,

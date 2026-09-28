@@ -54,9 +54,11 @@ public nonisolated struct MCPClient: Sendable {
 
     public static let preferredVersion = "2026-07-28"
     public static let legacyVersion = "2024-11-05"
-    public static let supportedVersions = [preferredVersion, "2025-11-25", "2025-06-18", legacyVersion]
+    public static let supportedVersions = [preferredVersion, "2025-11-25", "2025-06-18", "2025-03-26", legacyVersion]
 
     private let session: URLSession
+    private let authorization: (any MCPAuthorizationProviding)?
+    private var interaction: MCPAuthorizationInteraction?
     /// How this client introduces itself in `initialize`.
     ///
     /// A parameter rather than the app's bundle identity, because a server
@@ -64,7 +66,11 @@ public nonisolated struct MCPClient: Sendable {
     /// which is the app, not the library it happens to use.
     private let clientInfo: ClientInfo
 
-    public init(clientInfo: ClientInfo = .init(), session: URLSession? = nil) {
+    public init(
+        clientInfo: ClientInfo = .init(), session: URLSession? = nil,
+        authorization: (any MCPAuthorizationProviding)? = nil
+    ) {
+        self.authorization = authorization
         self.clientInfo = clientInfo
         if let session {
             self.session = session
@@ -79,9 +85,19 @@ public nonisolated struct MCPClient: Sendable {
         }
     }
 
-    public func discover(_ server: MCPServer, bearerToken: String?) async throws -> MCPDiscovery {
+    public func discover(
+        _ server: MCPServer, bearerToken: String?, interaction: MCPAuthorizationInteraction? = nil
+    ) async throws -> MCPDiscovery {
+        var client = self
+        client.interaction = interaction
+        return try await client.discoverAuthorized(server, bearerToken: bearerToken)
+    }
+
+    private func discoverAuthorized(_ server: MCPServer, bearerToken: String?) async throws -> MCPDiscovery {
         let trimmed = server.url.trimmingCharacters(in: .whitespaces)
-        guard let url = URL(string: trimmed), url.scheme?.hasPrefix("http") == true else {
+        guard let url = URL(string: trimmed), ["http", "https"].contains(url.scheme?.lowercased() ?? ""),
+            url.host != nil
+        else {
             throw MCPError.badURL(trimmed)
         }
 
@@ -95,13 +111,23 @@ public nonisolated struct MCPClient: Sendable {
 
     public func call(
         _ server: MCPServer, tool name: String, arguments: AgentJSONValue,
-        bearerToken: String?
+        bearerToken: String?, interaction: MCPAuthorizationInteraction? = nil
+    ) async throws -> MCPCallResult {
+        var client = self
+        client.interaction = interaction
+        return try await client.callAuthorized(server, tool: name, arguments: arguments, bearerToken: bearerToken)
+    }
+
+    private func callAuthorized(
+        _ server: MCPServer, tool name: String, arguments: AgentJSONValue, bearerToken: String?
     ) async throws -> MCPCallResult {
         guard arguments.objectValue != nil else {
             throw MCPError.malformedResponse("tools/call arguments")
         }
         let trimmed = server.url.trimmingCharacters(in: .whitespaces)
-        guard let url = URL(string: trimmed), url.scheme?.hasPrefix("http") == true else {
+        guard let url = URL(string: trimmed), ["http", "https"].contains(url.scheme?.lowercased() ?? ""),
+            url.host != nil
+        else {
             throw MCPError.badURL(trimmed)
         }
         switch server.transport {
@@ -254,7 +280,7 @@ public nonisolated struct MCPClient: Sendable {
             request.setValue(nil, forHTTPHeaderField: "Mcp-Session-Id")
         }
 
-        let (data, response) = try await perform(request)
+        let (data, response) = try await perform(request, context: context)
 
         if context.version != Self.preferredVersion,
             let assigned = response.value(forHTTPHeaderField: "Mcp-Session-Id"), !assigned.isEmpty
@@ -265,12 +291,20 @@ public nonisolated struct MCPClient: Sendable {
         let contentType = response.value(forHTTPHeaderField: "Content-Type")?.lowercased() ?? ""
         let payload: Data
         if contentType.contains("text/event-stream") {
-            guard let found = JSONRPC.firstMessage(id: id, inSSE: data) else {
+            guard
+                let found = JSONRPC.firstMessage(
+                    id: id, inSSE: data, allowBatch: context.version == "2025-03-26" && call.method != "initialize")
+            else {
                 throw MCPError.noResponse(call.method)
             }
             payload = found
         } else {
-            payload = data
+            guard
+                let message = JSONRPC.message(
+                    id: id, in: data, allowBatch: context.version == "2025-03-26" && call.method != "initialize"
+                )
+            else { throw MCPError.malformedResponse(call.method) }
+            payload = message
         }
 
         guard JSONRPC.id(of: payload) == id else { throw MCPError.malformedResponse(call.method) }
@@ -291,7 +325,7 @@ public nonisolated struct MCPClient: Sendable {
         request.setValue("application/json, text/event-stream", forHTTPHeaderField: "Accept")
         context.apply(to: &request)
         request.httpBody = try call.body(id: nil)
-        _ = try await perform(request)
+        _ = try await perform(request, context: context)
     }
 
     /// Best-effort session teardown. A server may refuse with 405, which the
@@ -301,7 +335,7 @@ public nonisolated struct MCPClient: Sendable {
         var request = URLRequest(url: context.url)
         request.httpMethod = "DELETE"
         context.apply(to: &request)
-        _ = try? await session.data(for: request)
+        _ = try? await perform(request, context: context, allowInteraction: false)
     }
 
     // MARK: - Legacy HTTP+SSE
@@ -331,7 +365,9 @@ public nonisolated struct MCPClient: Sendable {
 
         let bytes: URLSession.AsyncBytes
         do {
-            let (stream, raw) = try await session.bytes(for: streamRequest)
+            let (stream, raw) = try await authorized(streamRequest, context: context) { request in
+                try await session.bytes(for: request, delegate: MCPRedirectGuard.shared)
+            }
             guard let http = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
             guard (200..<300).contains(http.statusCode) else {
                 throw MCPError.http(status: http.statusCode)
@@ -353,6 +389,7 @@ public nonisolated struct MCPClient: Sendable {
         guard let postURL = URL(string: endpoint, relativeTo: url) else {
             throw MCPError.noEndpointEvent
         }
+        guard Self.sameOrigin(url, postURL.absoluteURL) else { throw MCPOAuthError.unsafeRedirect }
         context.url = postURL.absoluteURL
 
         let initialize: InitializeResult = try await exchange(
@@ -403,7 +440,9 @@ public nonisolated struct MCPClient: Sendable {
         var streamRequest = URLRequest(url: url)
         streamRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
         context.apply(to: &streamRequest)
-        let (stream, raw) = try await session.bytes(for: streamRequest)
+        let (stream, raw) = try await authorized(streamRequest, context: context) { request in
+            try await session.bytes(for: request, delegate: MCPRedirectGuard.shared)
+        }
         guard let http = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
         guard (200..<300).contains(http.statusCode) else {
             throw MCPError.http(status: http.statusCode)
@@ -415,6 +454,7 @@ public nonisolated struct MCPClient: Sendable {
         guard let postURL = URL(string: endpoint, relativeTo: url) else {
             throw MCPError.noEndpointEvent
         }
+        guard Self.sameOrigin(url, postURL.absoluteURL) else { throw MCPOAuthError.unsafeRedirect }
         context.url = postURL.absoluteURL
         let initialize: InitializeResult = try await exchange(
             .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
@@ -444,7 +484,7 @@ public nonisolated struct MCPClient: Sendable {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         context.apply(to: &request)
         request.httpBody = try call.body(id: id)
-        _ = try await perform(request)
+        _ = try await perform(request, context: context)
 
         let payload = try await events.response(id: id)
         return try JSONRPC.result(Result.self, from: payload, method: call.method)
@@ -541,9 +581,14 @@ public nonisolated struct MCPClient: Sendable {
         return tools
     }
 
-    private func perform(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
+    private func perform(
+        _ request: URLRequest, context: RequestContext, allowInteraction: Bool = true
+    ) async throws -> (Data, HTTPURLResponse) {
         do {
-            let (data, raw) = try await session.data(for: request)
+            let (data, raw) = try await authorized(request, context: context, allowInteraction: allowInteraction) {
+                request in
+                try await session.data(for: request, delegate: MCPRedirectGuard.shared)
+            }
             guard let http = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
             guard (200..<300).contains(http.statusCode) else {
                 if ![401, 403].contains(http.statusCode),
@@ -567,6 +612,53 @@ public nonisolated struct MCPClient: Sendable {
         } catch let error as URLError {
             throw MCPError.transport(error.localizedDescription)
         }
+    }
+
+    private func authorized<Value>(
+        _ original: URLRequest, context: RequestContext, allowInteraction: Bool = true,
+        send: (URLRequest) async throws -> (Value, URLResponse)
+    ) async throws -> (Value, URLResponse) {
+        let manuallyAuthorized =
+            !(context.bearerToken ?? "").isEmpty || !context.server.credentialRef.isEmpty
+            || context.server.headers.contains {
+                $0.isComplete && $0.name.trimmingCharacters(in: .whitespaces).lowercased() == "authorization"
+            }
+        let provider = manuallyAuthorized ? nil : authorization
+        var request = original
+        var token: String?
+        if let provider, URL(string: context.server.url)?.scheme?.lowercased() == "https" {
+            token = try await provider.token(for: context.server, challenge: nil, rejectedToken: nil, interaction: nil)
+            request.setValue(token.map { "Bearer " + $0 }, forHTTPHeaderField: "Authorization")
+        }
+        for attempt in 0...1 {
+            try Task.checkCancellation()
+            let (value, raw) = try await send(request)
+            guard let response = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
+            if (300..<400).contains(response.statusCode) { throw MCPOAuthError.unsafeRedirect }
+            if response.statusCode == 401 || response.statusCode == 403 {
+                let challenge = try MCPAuthorizationChallenge(
+                    status: response.statusCode, header: response.value(forHTTPHeaderField: "WWW-Authenticate"))
+                guard let provider, attempt == 0, allowInteraction,
+                    challenge.status == 401 || challenge.error == "insufficient_scope"
+                else {
+                    throw MCPError.authorization(challenge)
+                }
+                token = try await provider.token(
+                    for: context.server, challenge: challenge, rejectedToken: token, interaction: interaction)
+                guard let token, !token.isEmpty else { throw MCPOAuthError.authorizationRequired }
+                request.setValue("Bearer " + token, forHTTPHeaderField: "Authorization")
+                continue
+            }
+            return (value, raw)
+        }
+        throw MCPOAuthError.authorizationRequired
+    }
+
+    private static func sameOrigin(_ first: URL, _ second: URL) -> Bool {
+        func port(_ url: URL) -> Int { url.port ?? (url.scheme?.lowercased() == "https" ? 443 : 80) }
+        return first.scheme?.lowercased() == second.scheme?.lowercased()
+            && first.host?.lowercased() == second.host?.lowercased() && port(first) == port(second)
+            && second.user == nil && second.password == nil && second.fragment == nil
     }
 
     /// Everything a request needs that is not its body.
@@ -733,10 +825,22 @@ nonisolated private enum JSONRPC {
     /// Framing is left to `SSEStream` rather than re-split here. Two SSE
     /// parsers in one codebase is one too many, and this is the copy that would
     /// have drifted.
-    static func firstMessage(id: Int, inSSE data: Data) -> Data? {
+    static func message(id: Int, in data: Data, allowBatch: Bool) -> Data? {
+        if Self.id(of: data) == id { return data }
+        guard allowBatch, let batch = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+            return nil
+        }
+        let matching = batch.filter { ($0["id"] as? Int) == id }
+        guard matching.count == 1 else { return nil }
+        return try? JSONSerialization.data(withJSONObject: matching[0])
+    }
+
+    static func firstMessage(id: Int, inSSE data: Data, allowBatch: Bool = false) -> Data? {
         for event in SSEStream.events(in: data) {
-            guard let bytes = event.data.data(using: .utf8), Self.id(of: bytes) == id else { continue }
-            return bytes
+            guard let bytes = event.data.data(using: .utf8),
+                let message = message(id: id, in: bytes, allowBatch: allowBatch)
+            else { continue }
+            return message
         }
         return nil
     }
@@ -779,6 +883,7 @@ public nonisolated enum MCPError: Error, LocalizedError, Equatable, Sendable {
     case badURL(String)
     case notHTTP
     case http(status: Int)
+    case authorization(MCPAuthorizationChallenge)
     case transport(String)
     case wrongTransport(status: Int)
     case noEndpointEvent
@@ -797,6 +902,8 @@ public nonisolated enum MCPError: Error, LocalizedError, Equatable, Sendable {
             String(localized: "\(value) is not an http or https URL.", bundle: .module)
         case .notHTTP:
             String(localized: "The server did not answer with HTTP.", bundle: .module)
+        case .authorization:
+            MCPOAuthError.authorizationRequired.errorDescription
         case .http(let status):
             String(localized: "The server answered \(status).", bundle: .module)
         case .transport(let message):

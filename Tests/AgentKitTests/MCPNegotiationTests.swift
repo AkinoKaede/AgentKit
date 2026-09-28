@@ -52,7 +52,7 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
             ]
         } else if mode == "auth" {
             status = 401
-        } else if method == "server/discover" && mode == "legacy" {
+        } else if method == "server/discover" && ["legacy", "march", "march-batch", "march-sse-batch"].contains(mode) {
             status = 400
         } else if method == "server/discover" && mode == "legacy-json" {
             status = 400
@@ -64,7 +64,8 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
             result["supportedVersions"] = ["2026-07-28"]
         } else if method == "initialize" {
             result["protocolVersion"] =
-                mode == "versions" ? "2025-06-18" : (mode == "sse" ? "2024-11-05" : "2025-11-25")
+                mode.hasPrefix("march")
+                ? "2025-03-26" : (mode == "versions" ? "2025-06-18" : (mode == "sse" ? "2024-11-05" : "2025-11-25"))
         } else if method == "tools/list" {
             result["tools"] = [["name": "hello", "inputSchema": ["type": "object"]]]
         } else if method == "tools/call" {
@@ -80,6 +81,22 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
                 let event = "event: message\ndata: " + String(decoding: bytes, as: UTF8.self) + "\n\n"
                 stream.client?.urlProtocol(stream, didLoad: Data(event.utf8))
             }
+        }
+        if mode.contains("batch"), method == "tools/list" || method == "tools/call" {
+            let batch: [[String: Any]] = [
+                ["jsonrpc": "2.0", "method": "notifications/message", "params": [:]], envelope,
+            ]
+            var data = try! JSONSerialization.data(withJSONObject: batch)
+            if mode == "march-sse-batch" {
+                data = Data(("data: " + String(decoding: data, as: UTF8.self) + "\n\n").utf8)
+            }
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
+                headerFields: ["Content-Type": mode == "march-sse-batch" ? "text/event-stream" : "application/json"])!
+            client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
+            client?.urlProtocol(self, didLoad: data)
+            client?.urlProtocolDidFinishLoading(self)
+            return
         }
         let response = HTTPURLResponse(
             url: request.url!, statusCode: status, httpVersion: "HTTP/1.1",
@@ -104,6 +121,16 @@ struct MCPNegotiationTests {
         return MCPClient(session: URLSession(configuration: config))
     }
     let server = MCPServer(name: "test", url: "https://mcp.test/mcp")
+
+    @Test(arguments: ["march", "march-batch", "march-sse-batch"])
+    func march2025DiscoversAndCallsWithSingleOrBatchedResponses(_ mode: String) async throws {
+        let client = client(mode)
+        let discovery = try await client.discover(server, bearerToken: nil)
+        #expect(discovery.protocolVersion == "2025-03-26")
+        #expect(discovery.tools.count == 1)
+        let result = try await client.call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+        #expect(!result.isError)
+    }
 
     @Test func unsupportedVersionSelectsAnAdvertisedIntersection() async throws {
         let discovered = try await client("versions").discover(server, bearerToken: nil)

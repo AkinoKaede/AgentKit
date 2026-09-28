@@ -262,6 +262,10 @@
 	<string>没有可用技能</string>
 	<key>None</key>
 	<string>无</string>
+	<key>OAuth authorization was declined.</key>
+	<string>OAuth授权被拒绝。</string>
+	<key>OAuth requires secure HTTPS endpoints.</key>
+	<string>OAuth要求安全的HTTPS端点。</string>
 	<key>Off</key>
 	<string>关闭</string>
 	<key>Offset</key>
@@ -346,6 +350,8 @@
 	<string>设置技能启用状态</string>
 	<key>Showing %lld of %lld matching lines</key>
 	<string>正在显示%1$lld/%2$lld个匹配行</string>
+	<key>Sign in to this MCP server to continue.</key>
+	<string>登录此MCP服务器以继续。</string>
 	<key>Signing failed: %@.</key>
 	<string>签名失败：%@。</string>
 	<key>Size</key>
@@ -388,6 +394,26 @@
 	<string>这不是有效的服务账户密钥，其中必须包含client_email和private_key。</string>
 	<key>The Chat model has no available credential.</key>
 	<string>对话模型没有可用凭据。</string>
+	<key>The MCP authorization challenge is invalid.</key>
+	<string>MCP授权质询无效。</string>
+	<key>The MCP request attempted an unsafe redirect.</key>
+	<string>MCP请求尝试了不安全的重定向。</string>
+	<key>The OAuth authorization server identity changed.</key>
+	<string>OAuth授权服务器的身份已更改。</string>
+	<key>The OAuth callback could not be verified.</key>
+	<string>无法验证OAuth回调。</string>
+	<key>The OAuth client authentication method is not supported.</key>
+	<string>不支持此OAuth客户端认证方式。</string>
+	<key>The OAuth resource does not match this MCP server.</key>
+	<string>OAuth资源与此MCP服务器不匹配。</string>
+	<key>The OAuth server does not support PKCE S256.</key>
+	<string>OAuth服务器不支持PKCE S256。</string>
+	<key>The OAuth server metadata is invalid or unavailable.</key>
+	<string>OAuth服务器元数据无效或不可用。</string>
+	<key>The OAuth session expired. Sign in again to continue.</key>
+	<string>OAuth会话已过期，请重新登录以继续。</string>
+	<key>The OAuth token request failed.</key>
+	<string>OAuth令牌请求失败。</string>
 	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
 	<string>应用在记录此工具调用结果前已停止。操作是否完成尚不确定；再次执行前请检查当前状态。</string>
 	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>
@@ -474,6 +500,8 @@
 	<string>该工具已被其审批策略拒绝。</string>
 	<key>There is not enough history to compact yet.</key>
 	<string>没有足够的历史可以压缩。</string>
+	<key>This MCP server requires a registered OAuth client ID.</key>
+	<string>此MCP服务器需要已注册的OAuth客户端ID。</string>
 	<key>This file has no --- frontmatter block, so it is not a skill.</key>
 	<string>此文件没有---frontmatter区块，因此不是技能。</string>
 	<key>This file is not readable text.</key>
