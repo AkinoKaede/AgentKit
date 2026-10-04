@@ -100,6 +100,8 @@
 	<string>對話狀態無法使用</string>
 	<key>Chat unavailable</key>
 	<string>對話無法使用</string>
+	<key>Classification</key>
+	<string>分類</string>
 	<key>Command</key>
 	<string>指令</string>
 	<key>Command Generator</key>

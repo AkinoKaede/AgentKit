@@ -580,6 +580,22 @@
         }
       }
     },
+    "Classification": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分类"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分類"
+          }
+        }
+      }
+    },
     "Chat": {
       "localizations": {
         "zh-Hans": {

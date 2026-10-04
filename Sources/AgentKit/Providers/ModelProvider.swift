@@ -363,7 +363,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
 
     /// What a model is for. Unrecognised endpoint types default to chat.
     public nonisolated enum Kind: String, Codable, Sendable, CaseIterable, Identifiable {
-        case chat, embedding, rerank
+        case chat, embedding, rerank, classifier
         case imageGeneration = "image_generation"
         case videoGeneration = "video_generation"
 
@@ -374,6 +374,7 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             case .chat: String(localized: "Chat", bundle: .module)
             case .embedding: String(localized: "Embedding", bundle: .module)
             case .rerank: String(localized: "Rerank", bundle: .module)
+            case .classifier: String(localized: "Classification", bundle: .module)
             case .imageGeneration: String(localized: "Image Generation", bundle: .module)
             case .videoGeneration: String(localized: "Video Generation", bundle: .module)
             }
