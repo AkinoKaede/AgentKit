@@ -6,7 +6,7 @@ import Testing
 /// Check resource delivery and locale selection, not the wording of translations.
 @Suite
 struct AgentLocalizationTests {
-    @Test(arguments: ["zh-Hans", "zh-Hant"])
+    @Test(arguments: ["ja", "zh-Hans", "zh-Hant"])
     func requestedLocaleResolvesItsPackagedTranslation(_ language: String) throws {
         let localization = try #require(
             Bundle.module.localizations.first { $0.caseInsensitiveCompare(language) == .orderedSame }
@@ -19,7 +19,7 @@ struct AgentLocalizationTests {
     }
 
     @Test
-    func everyCatalogEntryHasFinishedChineseTranslations() throws {
+    func everyCatalogEntryHasFinishedTranslations() throws {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
@@ -31,23 +31,41 @@ struct AgentLocalizationTests {
         )
         #expect(!strings.isEmpty)
 
-        for language in ["zh-Hans", "zh-Hant"] {
+        for language in ["ja", "zh-Hans", "zh-Hant"] {
             var untranslated: [String] = []
             for (key, entry) in strings {
                 guard
                     let localizations = entry["localizations"] as? [String: Any],
-                    let chinese = localizations[language] as? [String: Any]
+                    let localization = localizations[language] as? [String: Any]
                 else {
                     untranslated.append(key)
                     continue
                 }
                 // A plural key carries `variations` instead of one `stringUnit`.
-                if Self.isTranslated(chinese["stringUnit"]) { continue }
-                if chinese["variations"] != nil { continue }
+                if Self.isTranslated(localization["stringUnit"]) { continue }
+                if let variations = localization["variations"] as? [String: Any],
+                    let plural = variations["plural"] as? [String: [String: Any]],
+                    !plural.isEmpty,
+                    plural.values.allSatisfy({ Self.isTranslated($0["stringUnit"]) })
+                {
+                    continue
+                }
                 untranslated.append(key)
             }
             #expect(untranslated.isEmpty, "Untranslated \(language): \(untranslated.sorted().prefix(5))")
         }
+    }
+
+    @Test(arguments: ["ja", "ja-JP", "ja_JP"])
+    func japaneseRegionalLocalesResolvePackagedCountsAndErrors(_ identifier: String) {
+        let locale = Locale(identifier: identifier)
+        #expect(AgentLocalization.string("Scratch path", locale: locale) == "一時保存パス")
+        #expect(AgentLocalization.string("\(3) results", locale: locale) == "3件の結果")
+        let status = 403
+        let message = "Forbidden"
+        #expect(
+            AgentLocalization.string("The model endpoint returned \(status): \(message)", locale: locale)
+                == "モデルのエンドポイントが403を返しました：Forbidden")
     }
 
     private static func isTranslated(_ unit: Any?) -> Bool {

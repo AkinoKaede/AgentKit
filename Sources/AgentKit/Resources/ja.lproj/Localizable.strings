@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ context</key>
+	<string>コンテキスト%@</string>
+	<key>%@ failed (%lld): %@</key>
+	<string>%1$@に失敗しました（%2$lld）：%3$@</string>
+	<key>%@ is not a valid URL.</key>
+	<string>%@は有効なURLではありません。</string>
+	<key>%@ is not a valid token endpoint.</key>
+	<string>%@は有効なトークンエンドポイントではありません。</string>
+	<key>%@ is not an http or https URL.</key>
+	<string>%@はHTTPまたはHTTPSのURLではありません。</string>
+	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
+	<string>計画中は%@を利用できません。まだ合意された内容がないため、追跡する作業がありません。計画を完成させ、present_planを呼び出してください。</string>
+	<key>%lld edits applied</key>
+	<string>%lld件の編集を適用しました</string>
+	<key>%lld entries</key>
+	<string>%lld件</string>
+	<key>%lld files</key>
+	<string>%lld個のファイル</string>
+	<key>%lld matching lines in %lld files</key>
+	<string>%2$lld個のファイルで一致した%1$lld行</string>
+	<key>%lld messages read</key>
+	<string>%lld件のメッセージを読み取り済み</string>
+	<key>%lld models</key>
+	<string>%lld個のモデル</string>
+	<key>%lld replacements applied</key>
+	<string>%lldか所を置換しました</string>
+	<key>%lld tasks · %lld completed</key>
+	<string>%1$lld件のタスク · %2$lld件完了</string>
+	<key>A skill may be at most %lld KB.</key>
+	<string>スキルのサイズは%lld KB以下にしてください。</string>
+	<key>A skill name may be at most %lld characters.</key>
+	<string>スキル名は%lld文字以内にしてください。</string>
+	<key>A skill name may not begin or end with a hyphen.</key>
+	<string>スキル名の先頭または末尾にハイフンは使用できません。</string>
+	<key>A skill name may not contain two hyphens in a row.</key>
+	<string>スキル名にハイフンを2つ続けて使用することはできません。</string>
+	<key>A skill name may use only lowercase letters, digits, and hyphens.</key>
+	<string>スキル名には小文字の英字、数字、ハイフンのみ使用できます。</string>
+	<key>A skill needs a description saying what it does and when to use it.</key>
+	<string>スキルには、機能と使用場面を説明する記述が必要です。</string>
+	<key>A skill needs a name.</key>
+	<string>スキルには名前が必要です。</string>
+	<key>A truncated model response contained tool calls; none were executed.</key>
+	<string>途中で切れたモデルの応答にツール呼び出しが含まれていました。どの呼び出しも実行されませんでした。</string>
+	<key>Accepted</key>
+	<string>受付済み</string>
+	<key>Add memory</key>
+	<string>メモリを追加</string>
+	<key>Answer</key>
+	<string>回答</string>
+	<key>Answered in %lld ms</key>
+	<string>%lldミリ秒で応答</string>
+	<key>Approve for me</key>
+	<string>自動で承認</string>
+	<key>Ask for approval</key>
+	<string>承認を求める</string>
+	<key>Assistant</key>
+	<string>アシスタント</string>
+	<key>Attachments</key>
+	<string>添付ファイル</string>
+	<key>Audio</key>
+	<string>音声</string>
+	<key>Auto-reviewing exceeded its investigation limit.</key>
+	<string>自動レビューが調査回数の上限を超えました。</string>
+	<key>Auto-reviewing exceeded its reasoning turn limit.</key>
+	<string>自動レビューが推論ターン数の上限を超えました。</string>
+	<key>Auto-reviewing failed; the action was not executed. %@</key>
+	<string>自動レビューに失敗しました。操作は実行されていません。%@</string>
+	<key>Auto-reviewing is unavailable; the action was not executed.</key>
+	<string>自動レビューを利用できません。操作は実行されていません。</string>
+	<key>Auto-reviewing paused after repeated adverse results; the action was not executed.</key>
+	<string>不利な結果が繰り返されたため、自動レビューを一時停止しました。操作は実行されていません。</string>
+	<key>Auto-reviewing returned an invalid decision.</key>
+	<string>自動レビューが無効な判断を返しました。</string>
+	<key>Auto-reviewing timed out; the action was not executed.</key>
+	<string>自動レビューがタイムアウトしました。操作は実行されていません。</string>
+	<key>Auto-reviewing was cancelled; the action was not executed.</key>
+	<string>自動レビューがキャンセルされました。操作は実行されていません。</string>
+	<key>Automatic</key>
+	<string>自動</string>
+	<key>Available on the next run</key>
+	<string>次回の実行から利用可能</string>
+	<key>Binary resource. Export it from the skill editor to use its original bytes.</key>
+	<string>バイナリリソースです。元のバイト列を使用するには、スキルエディタから書き出してください。</string>
+	<key>Cancelled</key>
+	<string>キャンセル済み</string>
+	<key>Case sensitive</key>
+	<string>大文字と小文字を区別</string>
+	<key>Changes</key>
+	<string>変更</string>
+	<key>Chat</key>
+	<string>チャット</string>
+	<key>Chat list unavailable</key>
+	<string>チャット一覧を取得できません</string>
+	<key>Chat status unavailable</key>
+	<string>チャットの状態を取得できません</string>
+	<key>Chat unavailable</key>
+	<string>チャットを利用できません</string>
+	<key>Classification</key>
+	<string>分類</string>
+	<key>Command</key>
+	<string>コマンド</string>
+	<key>Command Generator</key>
+	<string>コマンドジェネレータ</string>
+	<key>Commit</key>
+	<string>コミット</string>
+	<key>Completed</key>
+	<string>完了</string>
+	<key>Completed without output</key>
+	<string>完了しました（出力なし）</string>
+	<key>Connecting</key>
+	<string>接続中</string>
+	<key>Consumer</key>
+	<string>利用ツール</string>
+	<key>Content</key>
+	<string>内容</string>
+	<key>Content type</key>
+	<string>コンテンツの種類</string>
+	<key>Conversation</key>
+	<string>会話</string>
+	<key>Conversation ID</key>
+	<string>会話ID</string>
+	<key>Copied</key>
+	<string>コピーしました</string>
+	<key>Create skill</key>
+	<string>スキルを作成</string>
+	<key>Created</key>
+	<string>作成済み</string>
+	<key>Critical</key>
+	<string>重大</string>
+	<key>Current memory</key>
+	<string>現在のメモリ</string>
+	<key>Delete skill</key>
+	<string>スキルを削除</string>
+	<key>Deleted</key>
+	<string>削除済み</string>
+	<key>Delivered</key>
+	<string>配信済み</string>
+	<key>Description</key>
+	<string>説明</string>
+	<key>Destination</key>
+	<string>宛先</string>
+	<key>Diff</key>
+	<string>差分</string>
+	<key>Directory</key>
+	<string>ディレクトリ</string>
+	<key>Disabled</key>
+	<string>無効</string>
+	<key>Embedding</key>
+	<string>埋め込み</string>
+	<key>Empty file</key>
+	<string>空のファイル</string>
+	<key>Enabled</key>
+	<string>有効</string>
+	<key>Exited</key>
+	<string>終了</string>
+	<key>Extra High</key>
+	<string>非常に高い</string>
+	<key>Failed</key>
+	<string>失敗</string>
+	<key>File</key>
+	<string>ファイル</string>
+	<key>Files</key>
+	<string>ファイル</string>
+	<key>Files are identical</key>
+	<string>ファイルは同一です</string>
+	<key>Format</key>
+	<string>形式</string>
+	<key>From</key>
+	<string>変更前</string>
+	<key>Full access</key>
+	<string>フルアクセス</string>
+	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
+	<string>GitHubがHTTP %lldを返しました。スキルが公開されていることを確認してから、しばらくして再試行してください。</string>
+	<key>Google answered the sign-in without a token.</key>
+	<string>Googleからのサインイン応答にトークンが含まれていませんでした。</string>
+	<key>Google refused the sign-in — %@</key>
+	<string>Googleがサインインを拒否しました — %@</string>
+	<key>Guardian</key>
+	<string>ガーディアン</string>
+	<key>HTTP %lld</key>
+	<string>HTTP %lld</string>
+	<key>High</key>
+	<string>高</string>
+	<key>Idle</key>
+	<string>アイドル</string>
+	<key>Image</key>
+	<string>画像</string>
+	<key>Image Generation</key>
+	<string>画像生成</string>
+	<key>Imported as “%@”.</key>
+	<string>「%@」として読み込みました。</string>
+	<key>Input</key>
+	<string>入力</string>
+	<key>Interrupted</key>
+	<string>中断</string>
+	<key>Kind</key>
+	<string>種類</string>
+	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
+	<string>GETストリームと個別のPOSTエンドポイントを使用する旧方式です。</string>
+	<key>Limit</key>
+	<string>件数の上限</string>
+	<key>Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.</key>
+	<string>%1$lld行目が1ページあたり%2$lldバイトの上限を超えています。必要なバイト範囲を指定して読み取るか、検索してください。</string>
+	<key>Line endings</key>
+	<string>改行コード</string>
+	<key>Lines</key>
+	<string>行数</string>
+	<key>Low</key>
+	<string>低</string>
+	<key>Markdown</key>
+	<string>Markdown</string>
+	<key>Matching text</key>
+	<string>一致するテキスト</string>
+	<key>Max</key>
+	<string>最大</string>
+	<key>Medium</key>
+	<string>中</string>
+	<key>Memory operations processed</key>
+	<string>メモリの操作を処理しました</string>
+	<key>Message</key>
+	<string>メッセージ</string>
+	<key>Messages followed by tool activity cannot be edited.</key>
+	<string>後にツールの実行があるメッセージは編集できません。</string>
+	<key>Minimal</key>
+	<string>最小</string>
+	<key>Model list unavailable</key>
+	<string>モデル一覧を取得できません</string>
+	<key>More results are available</key>
+	<string>さらに結果があります</string>
+	<key>Moved</key>
+	<string>移動済み</string>
+	<key>No</key>
+	<string>いいえ</string>
+	<key>No Chat model is configured.</key>
+	<string>チャット用モデルが設定されていません。</string>
+	<key>No chats</key>
+	<string>チャットはありません</string>
+	<key>No conversations found</key>
+	<string>会話が見つかりませんでした</string>
+	<key>No differences</key>
+	<string>差分はありません</string>
+	<key>No files</key>
+	<string>ファイルはありません</string>
+	<key>No lines returned</key>
+	<string>テキスト行は返されませんでした</string>
+	<key>No matches</key>
+	<string>一致する項目はありません</string>
+	<key>No messages found</key>
+	<string>メッセージが見つかりませんでした</string>
+	<key>No model is configured for conversation titles.</key>
+	<string>会話タイトル用のモデルが設定されていません。</string>
+	<key>No model list at this address. Check the base URL.</key>
+	<string>このアドレスにモデル一覧がありません。ベースURLを確認してください。</string>
+	<key>No readable page content</key>
+	<string>読み取り可能なページ内容がありません</string>
+	<key>No results</key>
+	<string>結果がありません</string>
+	<key>No skills available</key>
+	<string>利用可能なスキルはありません</string>
+	<key>None</key>
+	<string>なし</string>
+	<key>OAuth authorization was declined.</key>
+	<string>OAuth認可が拒否されました。</string>
+	<key>OAuth requires secure HTTPS endpoints.</key>
+	<string>OAuthには安全なHTTPSエンドポイントが必要です。</string>
+	<key>Off</key>
+	<string>オフ</string>
+	<key>Offset</key>
+	<string>開始位置</string>
+	<key>Original HTML</key>
+	<string>元のHTML</string>
+	<key>Overwrite</key>
+	<string>上書き</string>
+	<key>Overwritten</key>
+	<string>上書き済み</string>
+	<key>PDF</key>
+	<string>PDF</string>
+	<key>Patch skill</key>
+	<string>スキルを修正</string>
+	<key>Path</key>
+	<string>パス</string>
+	<key>Permissions</key>
+	<string>アクセス権</string>
+	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
+	<string>計画モードがオンのため、%@は実行されませんでした。この操作はアプリ外の内容を変更します。読み取りで調査し、一時ワークスペースに計画を作成してpresent_planを呼び出してください。その後、ユーザが実行するかどうかを判断します。</string>
+	<key>Plan presented from %@</key>
+	<string>%@から計画を提示しました</string>
+	<key>Preparing</key>
+	<string>準備中</string>
+	<key>Provider</key>
+	<string>プロバイダ</string>
+	<key>Purpose</key>
+	<string>目的</string>
+	<key>Query</key>
+	<string>検索内容</string>
+	<key>Question</key>
+	<string>質問</string>
+	<key>Question unavailable</key>
+	<string>質問を表示できません</string>
+	<key>Queued</key>
+	<string>待機中</string>
+	<key>Read-only</key>
+	<string>読み取り専用</string>
+	<key>Reasoning</key>
+	<string>推論</string>
+	<key>Recent conversations</key>
+	<string>最近の会話</string>
+	<key>Remote path</key>
+	<string>リモートパス</string>
+	<key>Remove memory</key>
+	<string>メモリを削除</string>
+	<key>Remove skill file</key>
+	<string>スキルのファイルを削除</string>
+	<key>Replace memory</key>
+	<string>メモリを置き換える</string>
+	<key>Replaced</key>
+	<string>置換済み</string>
+	<key>Replacement text</key>
+	<string>置換後のテキスト</string>
+	<key>Request</key>
+	<string>リクエスト</string>
+	<key>Rerank</key>
+	<string>再ランキング</string>
+	<key>Resolved source</key>
+	<string>解決後の取得元</string>
+	<key>Result</key>
+	<string>結果</string>
+	<key>Reviewing</key>
+	<string>レビュー中</string>
+	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
+	<string>自動承認の前にコマンドをレビューします。「自動」では、利用可能な最適なレビューモデルを選択します。</string>
+	<key>Running</key>
+	<string>実行中</string>
+	<key>SHA-256</key>
+	<string>SHA-256</string>
+	<key>SSE (legacy)</key>
+	<string>SSE（旧方式）</string>
+	<key>Same as Chat</key>
+	<string>チャットと同じ</string>
+	<key>Scratch path</key>
+	<string>一時保存パス</string>
+	<key>Secret handle</key>
+	<string>シークレットハンドル</string>
+	<key>Secret received securely</key>
+	<string>シークレットを安全に受信しました</string>
+	<key>Set skill availability</key>
+	<string>スキルの有効・無効を設定</string>
+	<key>Showing %lld of %lld matching lines</key>
+	<string>一致した%2$lld行中%1$lld行を表示</string>
+	<key>Sign in to this MCP server to continue.</key>
+	<string>続行するには、このMCPサーバにサインインしてください。</string>
+	<key>Signing failed: %@.</key>
+	<string>署名に失敗しました：%@。</string>
+	<key>Size</key>
+	<string>サイズ</string>
+	<key>Skill</key>
+	<string>スキル</string>
+	<key>Skill changes saved</key>
+	<string>スキルの変更を保存しました</string>
+	<key>Skill installed</key>
+	<string>スキルをインストールしました</string>
+	<key>Skills</key>
+	<string>スキル</string>
+	<key>Skipped</key>
+	<string>スキップ済み</string>
+	<key>Skipped %lld binary files</key>
+	<string>%lld個のバイナリファイルをスキップしました</string>
+	<key>Source</key>
+	<string>取得元</string>
+	<key>Source URL</key>
+	<string>取得元URL</string>
+	<key>Status</key>
+	<string>状態</string>
+	<key>Streamable HTTP</key>
+	<string>Streamable HTTP</string>
+	<key>Structured Output</key>
+	<string>構造化出力</string>
+	<key>Symlink</key>
+	<string>シンボリックリンク</string>
+	<key>System</key>
+	<string>システム</string>
+	<key>System prompt</key>
+	<string>システムプロンプト</string>
+	<key>Target</key>
+	<string>対象</string>
+	<key>Text</key>
+	<string>テキスト</string>
+	<key>Text is identical; line endings differ: %@ → %@</key>
+	<string>テキストは同じですが、改行コードが異なります：%1$@ → %2$@</string>
+	<key>That is not a service account key. It needs client_email and private_key.</key>
+	<string>サービスアカウントキーではありません。client_emailとprivate_keyが必要です。</string>
+	<key>The Chat model has no available credential.</key>
+	<string>チャット用モデルに利用可能な認証資格情報がありません。</string>
+	<key>The MCP authorization challenge is invalid.</key>
+	<string>MCP認可チャレンジが無効です。</string>
+	<key>The MCP request attempted an unsafe redirect.</key>
+	<string>MCPリクエストが安全でないリダイレクトを試みました。</string>
+	<key>The OAuth authorization server identity changed.</key>
+	<string>OAuth認可サーバの識別情報が変更されました。</string>
+	<key>The OAuth callback could not be verified.</key>
+	<string>OAuthコールバックを検証できませんでした。</string>
+	<key>The OAuth client authentication method is not supported.</key>
+	<string>このOAuthクライアント認証方式には対応していません。</string>
+	<key>The OAuth resource does not match this MCP server.</key>
+	<string>OAuthリソースがこのMCPサーバと一致しません。</string>
+	<key>The OAuth server does not support PKCE S256.</key>
+	<string>OAuthサーバがPKCE S256に対応していません。</string>
+	<key>The OAuth server metadata is invalid or unavailable.</key>
+	<string>OAuthサーバのメタデータが無効か、取得できません。</string>
+	<key>The OAuth session expired. Sign in again to continue.</key>
+	<string>OAuthセッションの有効期限が切れました。続行するには再度サインインしてください。</string>
+	<key>The OAuth token request failed.</key>
+	<string>OAuthトークンのリクエストに失敗しました。</string>
+	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>このツール呼び出しの結果が記録される前に、アプリが停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。</string>
+	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>このツールが完了する前に、アプリが待機を停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。</string>
+	<key>The conversation is too large to summarize.</key>
+	<string>会話が長すぎるため、要約できません。</string>
+	<key>The conversation no longer exists.</key>
+	<string>この会話はもう存在しません。</string>
+	<key>The conversation-title model has no available credential.</key>
+	<string>会話タイトル用のモデルに利用可能な認証資格情報がありません。</string>
+	<key>The current transport, using one endpoint for POST and GET.</key>
+	<string>POSTとGETに同じエンドポイントを使用する現行の方式です。</string>
+	<key>The description is longer than %lld characters.</key>
+	<string>説明が%lld文字を超えています。</string>
+	<key>The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead.</key>
+	<string>差分の範囲が%1$lld行あり、差分の上限の%2$lld行を超えています。それぞれのファイルを範囲を限定して読み取り、差分を絞り込んでください。</string>
+	<key>The endpoint answered %lld.</key>
+	<string>エンドポイントが%lldを返しました。</string>
+	<key>The endpoint answered, but not with a model list.</key>
+	<string>エンドポイントは応答しましたが、モデル一覧を返しませんでした。</string>
+	<key>The endpoint did not answer with HTTP.</key>
+	<string>エンドポイントがHTTPで応答しませんでした。</string>
+	<key>The endpoint rejected this key.</key>
+	<string>エンドポイントがこのAPIキーを拒否しました。</string>
+	<key>The event stream sent a line that exceeded the size limit.</key>
+	<string>イベントストリームがサイズ上限を超える行を送信しました。</string>
+	<key>The file declared no name; “%@” was used.</key>
+	<string>ファイルに名前の指定がなかったため、「%@」を使用しました。</string>
+	<key>The fork could not be created because its identifier already exists.</key>
+	<string>識別子がすでに存在するため、分岐を作成できませんでした。</string>
+	<key>The message is no longer available to edit.</key>
+	<string>このメッセージは編集できなくなりました。</string>
+	<key>The model connection closed before the response finished.</key>
+	<string>応答が完了する前に、モデルへの接続が閉じられました。</string>
+	<key>The model did not return a usable summary.</key>
+	<string>モデルが使用可能な要約を返しませんでした。</string>
+	<key>The model endpoint URL is invalid.</key>
+	<string>モデルのエンドポイントURLが無効です。</string>
+	<key>The model endpoint did not return HTTP.</key>
+	<string>モデルのエンドポイントがHTTP応答を返しませんでした。</string>
+	<key>The model endpoint returned %lld: %@</key>
+	<string>モデルのエンドポイントが%1$lldを返しました：%2$@</string>
+	<key>The model endpoint returned an unsupported response format.</key>
+	<string>モデルのエンドポイントが対応していない形式の応答を返しました。</string>
+	<key>The model provider failed to complete the response.</key>
+	<string>モデルプロバイダが応答を完了できませんでした。</string>
+	<key>The model response exceeded the size limit.</key>
+	<string>モデルの応答がサイズの上限を超えました。</string>
+	<key>The model returned an invalid conversation title.</key>
+	<string>モデルが無効な会話タイトルを返しました。</string>
+	<key>The model returned an invalid tool call.</key>
+	<string>モデルが無効なツール呼び出しを返しました。</string>
+	<key>The model returned malformed JSON arguments for %@.</key>
+	<string>モデルが%@に対して不正なJSON引数を返しました。</string>
+	<key>The private key could not be read: %@.</key>
+	<string>秘密鍵を読み取れませんでした：%@。</string>
+	<key>The run was cancelled before this tool ran.</key>
+	<string>このツールが実行される前に、今回の実行がキャンセルされました。</string>
+	<key>The secret is not valid for this host, tool, or purpose.</key>
+	<string>このシークレットは、このホスト、ツール、用途には使用できません。</string>
+	<key>The secret is unavailable or has already been used.</key>
+	<string>このシークレットは利用できないか、すでに使用されています。</string>
+	<key>The selected file window is not UTF-8 text.</key>
+	<string>選択したファイルの範囲はUTF-8テキストではありません。</string>
+	<key>The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.</key>
+	<string>Streamable HTTPリクエストに対し、サーバが%lldを返しました。旧方式のSSEトランスポートにのみ対応している可能性があります。トランスポートを切り替えてみてください。</string>
+	<key>The server answered %lld.</key>
+	<string>サーバが%lldを返しました。</string>
+	<key>The server closed the stream before answering.</key>
+	<string>応答する前にサーバがストリームを閉じました。</string>
+	<key>The server did not answer with HTTP.</key>
+	<string>サーバがHTTPで応答しませんでした。</string>
+	<key>The server never answered %@.</key>
+	<string>サーバが%@に応答しませんでした。</string>
+	<key>The server's answer to %@ was not valid MCP.</key>
+	<string>%@に対するサーバの応答は、有効なMCP形式ではありませんでした。</string>
+	<key>The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport.</key>
+	<string>ストリームは開きましたが、POSTエンドポイントが通知されませんでした。Streamable HTTPサーバの可能性があります。トランスポートを切り替えてみてください。</string>
+	<key>The token endpoint did not answer with HTTP.</key>
+	<string>トークンエンドポイントがHTTPで応答しませんでした。</string>
+	<key>The tool call did not produce a result.</key>
+	<string>ツール呼び出しから結果が返されませんでした。</string>
+	<key>The tool is denied by its approval policy.</key>
+	<string>承認ポリシーにより、このツールは拒否されています。</string>
+	<key>There is not enough history to compact yet.</key>
+	<string>圧縮するのに十分な履歴がまだありません。</string>
+	<key>This MCP server requires a registered OAuth client ID.</key>
+	<string>このMCPサーバには、登録済みのOAuthクライアントIDが必要です。</string>
+	<key>This file has no --- frontmatter block, so it is not a skill.</key>
+	<string>このファイルには---で区切られたフロントマターがないため、スキルではありません。</string>
+	<key>This file is not readable text.</key>
+	<string>このファイルは読み取り可能なテキストではありません。</string>
+	<key>This folder has no SKILL.md.</key>
+	<string>このフォルダにSKILL.mdがありません。</string>
+	<key>This skill is empty</key>
+	<string>このスキルは空です</string>
+	<key>This tool is not available in this run.</key>
+	<string>今回の実行では、このツールを利用できません。</string>
+	<key>This tool is unavailable for the current user message.</key>
+	<string>現在のユーザメッセージでは、このツールを利用できません。</string>
+	<key>Timeout</key>
+	<string>タイムアウト</string>
+	<key>Title</key>
+	<string>タイトル</string>
+	<key>To</key>
+	<string>変更後</string>
+	<key>Tool</key>
+	<string>ツール</string>
+	<key>Tool input was rejected: %@</key>
+	<string>ツールへの入力が拒否されました：%@</string>
+	<key>Tool results</key>
+	<string>ツールの結果</string>
+	<key>Tool schemas</key>
+	<string>ツールのスキーマ</string>
+	<key>Tools</key>
+	<string>ツール</string>
+	<key>Truncated</key>
+	<string>切り詰め済み</string>
+	<key>Turns the current terminal input into one command. Choose a fast model.</key>
+	<string>現在のターミナル入力を1つのコマンドに変換します。応答の速いモデルを選択してください。</string>
+	<key>URL</key>
+	<string>URL</string>
+	<key>Undelivered</key>
+	<string>未配信</string>
+	<key>Unknown tool: %@</key>
+	<string>不明なツール：%@</string>
+	<key>Unnamed entry</key>
+	<string>名称未設定の項目</string>
+	<key>Untitled conversation</key>
+	<string>名称未設定の会話</string>
+	<key>Untitled result</key>
+	<string>タイトルのない結果</string>
+	<key>Update skill</key>
+	<string>スキルを更新</string>
+	<key>Used for chat, tools, and the Assistant sidebar.</key>
+	<string>チャット、ツール、アシスタントのサイドバーに使用します。</string>
+	<key>User</key>
+	<string>ユーザ</string>
+	<key>User profile</key>
+	<string>ユーザプロファイル</string>
+	<key>Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.</key>
+	<string>Vertexが返すのは、このプロジェクトで呼び出せるモデルではなく、Model Gardenの項目です。使用するモデルを追加してください。</string>
+	<key>Video</key>
+	<string>動画</string>
+	<key>Video Generation</key>
+	<string>動画生成</string>
+	<key>Wait stopped by user input</key>
+	<string>ユーザの入力により待機を停止しました</string>
+	<key>Wait timed out</key>
+	<string>待機がタイムアウトしました</string>
+	<key>Waiting for approval</key>
+	<string>承認待ち</string>
+	<key>Waiting for user</key>
+	<string>ユーザの操作待ち</string>
+	<key>Web Search</key>
+	<string>Web検索</string>
+	<key>Web search run by the model provider.</key>
+	<string>モデルプロバイダが実行するWeb検索です。</string>
+	<key>Working directory</key>
+	<string>作業ディレクトリ</string>
+	<key>Workspace</key>
+	<string>ワークスペース</string>
+	<key>Workspace is empty</key>
+	<string>ワークスペースは空です</string>
+	<key>Workspace usage</key>
+	<string>ワークスペースの使用状況</string>
+	<key>Write skill file</key>
+	<string>スキルのファイルを書き込む</string>
+	<key>Yes</key>
+	<string>はい</string>
+	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
+	<string>allowed-toolsは参考情報としてのみ保持されます。スキルがツールを事前承認することはありません。</string>
+	<key>memory</key>
+	<string>メモリ</string>
+	<key>no reason given</key>
+	<string>理由の指定なし</string>
+	<key>not a PKCS#8 RSA private key</key>
+	<string>PKCS#8 RSA秘密鍵ではありません</string>
+	<key>not base64 PEM</key>
+	<string>Base64形式のPEMではありません</string>
+	<key>offset %lld is past the end of the file (%lld lines).</key>
+	<string>オフセット%1$lldがファイルの末尾（%2$lld行）を超えています。</string>
+	<key>offset, limit, and maximumBytes must be positive.</key>
+	<string>offset、limit、maximumBytesは正の値にしてください。</string>
+	<key>the key data ends early</key>
+	<string>鍵データが途中で切れています</string>
+	<key>unknown reason</key>
+	<string>不明な理由</string>
+</dict>
+</plist>

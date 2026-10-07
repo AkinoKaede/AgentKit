@@ -1,6 +1,6 @@
 # AgentKit
 
-**English** · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md)
+**English** · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md)
 
 Build AI agents in Swift with tool orchestration, explicit permissions, and persistent conversation state.
 
@@ -345,9 +345,10 @@ share a name, including separate schemas and implementations for Guardian's `.re
 ## Localization
 
 User-facing strings live in `Localizations/Localizable.xcstrings` (English, Simplified Chinese,
-and Traditional Chinese) and are compiled into `Sources/AgentKit/Resources/*.lproj` by
+Traditional Chinese, and Japanese) and are compiled into `Sources/AgentKit/Resources/*.lproj` by
 `Scripts/build-localizations.sh`. Re-run it after catalog edits and commit the generated resources:
-`swift build` copies them rather than compiling string catalogs.
+`swift build` copies them rather than compiling string catalogs. Run
+`python3 Scripts/check-cjk-localization.py` to validate Chinese and Japanese coverage, format arguments, and spacing.
 
 Tool cards resolve text at render time from the reader's locale, so a recorded card can be displayed
 in a different language.

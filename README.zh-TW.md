@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · **正體中文（臺灣）**
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · **正體中文（臺灣）** · [日本語](README.ja.md)
 
 以 Swift 打造 AI 代理，整合工具協調、明確的權限控管與持久保存的對話狀態。
 
@@ -323,9 +323,10 @@ Guardian 在隔離的 `.reviewing` 模式下執行，預設不註冊調查工具
 
 ## 在地化
 
-使用者介面的字串位於 `Localizations/Localizable.xcstrings`，包含英文、簡體中文與正體中文，
+使用者介面的字串位於 `Localizations/Localizable.xcstrings`，包含英文、簡體中文、正體中文與日文，
 由 `Scripts/build-localizations.sh` 編譯至 `Sources/AgentKit/Resources/*.lproj`。
 修改字串目錄後，需重新執行指令稿並提交產生的資源；`swift build` 只複製資源，不會編譯字串目錄。
+執行 `python3 Scripts/check-cjk-localization.py` 可檢查中日文翻譯的完整性、格式參數與間距。
 
 工具卡片會在呈現時依閱讀者的地區設定解析文字，因此已記錄的卡片也能以另一種語言顯示。
 

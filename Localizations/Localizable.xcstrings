@@ -1,91 +1,1974 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "OAuth authorization was declined.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"OAuth authorization was declined."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth授权被拒绝。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth授權遭拒。"}}}},
-    "OAuth requires secure HTTPS endpoints.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"OAuth requires secure HTTPS endpoints."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth要求安全的HTTPS端点。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth要求安全的HTTPS端點。"}}}},
-    "Sign in to this MCP server to continue.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"Sign in to this MCP server to continue."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"登录此MCP服务器以继续。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"登入此MCP伺服器以繼續。"}}}},
-    "The MCP authorization challenge is invalid.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The MCP authorization challenge is invalid."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"MCP授权质询无效。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"MCP授權查問無效。"}}}},
-    "The MCP request attempted an unsafe redirect.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The MCP request attempted an unsafe redirect."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"MCP请求尝试了不安全的重定向。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"MCP要求嘗試了不安全的重新導向。"}}}},
-    "The OAuth authorization server identity changed.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth authorization server identity changed."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth授权服务器的身份已更改。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth授權伺服器的身分已變更。"}}}},
-    "The OAuth callback could not be verified.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth callback could not be verified."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"无法验证OAuth回调。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"無法驗證OAuth回呼。"}}}},
-    "The OAuth client authentication method is not supported.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth client authentication method is not supported."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"不支持此OAuth客户端认证方式。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"不支援此OAuth用戶端驗證方式。"}}}},
-    "The OAuth resource does not match this MCP server.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth resource does not match this MCP server."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth资源与此MCP服务器不匹配。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth資源與此MCP伺服器不相符。"}}}},
-    "The OAuth server does not support PKCE S256.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth server does not support PKCE S256."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth服务器不支持PKCE S256。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth伺服器不支援PKCE S256。"}}}},
-    "The OAuth server metadata is invalid or unavailable.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth server metadata is invalid or unavailable."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth服务器元数据无效或不可用。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth伺服器中繼資料無效或無法使用。"}}}},
-    "The OAuth session expired. Sign in again to continue.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth session expired. Sign in again to continue."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth会话已过期，请重新登录以继续。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth工作階段已到期，請重新登入以繼續。"}}}},
-    "The OAuth token request failed.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"The OAuth token request failed."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"OAuth令牌请求失败。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"OAuth權杖要求失敗。"}}}},
-    "This MCP server requires a registered OAuth client ID.": {"extractionState":"manual","localizations":{"en":{"stringUnit":{"state":"translated","value":"This MCP server requires a registered OAuth client ID."}},"zh-Hans":{"stringUnit":{"state":"translated","value":"此MCP服务器需要已注册的OAuth客户端ID。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"此MCP伺服器需要已註冊的OAuth用戶端ID。"}}}},
-    "%@ context": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"上下文窗口%@"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"內容窗口%@"}}}},
-    "%lld messages read": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已读取%lld条消息"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已讀取%lld則訊息"}}}},
-    "%lld models": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"%lld个模型"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"%lld個模型"}}}},
-    "Accepted": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已接受"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已接受"}}}},
-    "Cancelled": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已取消"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已取消"}}}},
-    "Completed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已完成"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已完成"}}}},
-    "Delivered": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已送达"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已送達"}}}},
-    "Failed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已失败"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已失敗"}}}},
-    "Idle": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"空闲"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"閒置"}}}},
-    "Interrupted": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已中断"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已中斷"}}}},
-    "Preparing": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"正在准备"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"正在準備"}}}},
-    "Queued": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已排队"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已排入佇列"}}}},
-    "Reviewing": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"正在审核"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"正在審核"}}}},
-    "Undelivered": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未送达"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"未送達"}}}},
-    "Waiting for approval": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待批准"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待核准"}}}},
-    "Waiting for user": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待用户"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待使用者"}}}},
-    "Chat list unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话列表不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話列表無法使用"}}}},
-    "Chat status unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话状态不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話狀態無法使用"}}}},
-    "Chat unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"对话不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話無法使用"}}}},
-    "Model list unavailable": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"模型列表不可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"模型列表無法使用"}}}},
-    "No chats": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"没有对话"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"沒有對話"}}}},
-    "Provider": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"提供商"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"供應商"}}}},
-    "Wait stopped by user input": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待已因用户输入停止"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待已因使用者輸入停止"}}}},
-    "Wait timed out": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"等待超时"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"等待逾時"}}}},
-    "Source URL": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"来源URL"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"來源URL"}}}},
-    "Resolved source": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"解析后的来源"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"解析後的來源"}}}},
-    "Commit": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"提交版本"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"提交版本"}}}},
-    "Description": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"描述"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"描述"}}}},
-    "Query": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"搜索内容"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"搜尋內容"}}}},
-    "Conversation ID": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"会话标识"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"對話識別碼"}}}},
-    "Offset": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"起始位置"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"起始位置"}}}},
-    "Limit": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"数量上限"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"數量上限"}}}},
-    "Enabled": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已启用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已啟用"}}}},
-    "Matching text": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"匹配文本"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"比對文字"}}}},
-    "Replacement text": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"替换文本"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"取代文字"}}}},
-    "No files": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"没有文件"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"沒有檔案"}}}},
-    "More results are available": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"还有更多结果"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"還有更多結果"}}}},
-    "Available on the next run": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"下次运行可用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"下次執行可用"}}}},
-    "Add memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"新增记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"新增記憶"}}}},
-    "Replace memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"替换记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"取代記憶"}}}},
-    "Remove memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"移除记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"移除記憶"}}}},
-    "Create skill": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"创建技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"建立技能"}}}},
-    "Update skill": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"更新技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"更新技能"}}}},
-    "Patch skill": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"修订技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"修訂技能"}}}},
-    "Delete skill": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"删除技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"刪除技能"}}}},
-    "Set skill availability": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"设置技能启用状态"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"設定技能啟用狀態"}}}},
-    "Write skill file": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"写入技能文件"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"寫入技能檔案"}}}},
-    "Remove skill file": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"移除技能文件"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"移除技能檔案"}}}},
-    "Target": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"目标"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"目標"}}}},
-    "User profile": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"用户资料"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"使用者資料"}}}},
-    "memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"記憶"}}}},
-    "Binary resource. Export it from the skill editor to use its original bytes.": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"这是二进制资源。请从技能编辑器导出以使用原始文件。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"這是二進位資源。請從技能編輯器匯出以使用原始檔案。"}}}},
-    "No lines returned": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未返回文本行"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"未傳回文字行"}}}},
-    "Skills": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"技能"}}}},
-    "Disabled": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已停用"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已停用"}}}},
-    "Read-only": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"只读"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"唯讀"}}}},
-    "No skills available": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"没有可用技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"沒有可用技能"}}}},
-    "Skill changes saved": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已保存技能变更"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已儲存技能變更"}}}},
-    "Skill installed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已安装技能"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已安裝技能"}}}},
-    "Memory operations processed": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"已处理记忆操作"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"已處理記憶操作"}}}},
-    "Current memory": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"当前记忆"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"目前記憶"}}}},
-    "Recent conversations": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"最近会话"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"最近對話"}}}},
-    "Untitled conversation": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未命名会话"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"未命名對話"}}}},
-    "No conversations found": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未找到会话"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"找不到對話"}}}},
-    "No messages found": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"未找到消息"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"找不到訊息"}}}},
-    "User": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"用户"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"使用者"}}}},
-    "Assistant": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"助手"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"助理"}}}},
-    "Tool": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"工具"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"工具"}}}},
-    "System": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"系统"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"系統"}}}},
-    "Message": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"消息"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"訊息"}}}},
-    "Messages followed by tool activity cannot be edited.": {"localizations":{"zh-Hans":{"stringUnit":{"state":"translated","value":"后续有工具活动的消息无法编辑。"}},"zh-Hant":{"stringUnit":{"state":"translated","value":"後續有工具活動的訊息無法編輯。"}}}},
+    "OAuth authorization was declined.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth authorization was declined."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth授权被拒绝。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth授權遭拒。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth認可が拒否されました。"
+          }
+        }
+      }
+    },
+    "OAuth requires secure HTTPS endpoints.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth requires secure HTTPS endpoints."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth要求安全的HTTPS端点。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth要求安全的HTTPS端點。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthには安全なHTTPSエンドポイントが必要です。"
+          }
+        }
+      }
+    },
+    "Sign in to this MCP server to continue.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to this MCP server to continue."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登录此MCP服务器以继续。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登入此MCP伺服器以繼續。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "続行するには、このMCPサーバにサインインしてください。"
+          }
+        }
+      }
+    },
+    "The MCP authorization challenge is invalid.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The MCP authorization challenge is invalid."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP授权质询无效。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP授權查問無效。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP認可チャレンジが無効です。"
+          }
+        }
+      }
+    },
+    "The MCP request attempted an unsafe redirect.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The MCP request attempted an unsafe redirect."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP请求尝试了不安全的重定向。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP要求嘗試了不安全的重新導向。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCPリクエストが安全でないリダイレクトを試みました。"
+          }
+        }
+      }
+    },
+    "The OAuth authorization server identity changed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth authorization server identity changed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth授权服务器的身份已更改。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth授權伺服器的身分已變更。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth認可サーバの識別情報が変更されました。"
+          }
+        }
+      }
+    },
+    "The OAuth callback could not be verified.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth callback could not be verified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法验证OAuth回调。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法驗證OAuth回呼。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthコールバックを検証できませんでした。"
+          }
+        }
+      }
+    },
+    "The OAuth client authentication method is not supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth client authentication method is not supported."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支持此OAuth客户端认证方式。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支援此OAuth用戶端驗證方式。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このOAuthクライアント認証方式には対応していません。"
+          }
+        }
+      }
+    },
+    "The OAuth resource does not match this MCP server.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth resource does not match this MCP server."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth资源与此MCP服务器不匹配。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth資源與此MCP伺服器不相符。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthリソースがこのMCPサーバと一致しません。"
+          }
+        }
+      }
+    },
+    "The OAuth server does not support PKCE S256.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth server does not support PKCE S256."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth服务器不支持PKCE S256。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth伺服器不支援PKCE S256。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthサーバがPKCE S256に対応していません。"
+          }
+        }
+      }
+    },
+    "The OAuth server metadata is invalid or unavailable.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth server metadata is invalid or unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth服务器元数据无效或不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth伺服器中繼資料無效或無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthサーバのメタデータが無効か、取得できません。"
+          }
+        }
+      }
+    },
+    "The OAuth session expired. Sign in again to continue.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth session expired. Sign in again to continue."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth会话已过期，请重新登录以继续。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth工作階段已到期，請重新登入以繼續。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthセッションの有効期限が切れました。続行するには再度サインインしてください。"
+          }
+        }
+      }
+    },
+    "The OAuth token request failed.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The OAuth token request failed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth令牌请求失败。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth權杖要求失敗。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuthトークンのリクエストに失敗しました。"
+          }
+        }
+      }
+    },
+    "This MCP server requires a registered OAuth client ID.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This MCP server requires a registered OAuth client ID."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此MCP服务器需要已注册的OAuth客户端ID。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此MCP伺服器需要已註冊的OAuth用戶端ID。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このMCPサーバには、登録済みのOAuthクライアントIDが必要です。"
+          }
+        }
+      }
+    },
+    "%@ context": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上下文窗口%@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "內容窗口%@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コンテキスト%@"
+          }
+        }
+      }
+    },
+    "%lld messages read": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已读取%lld条消息"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已讀取%lld則訊息"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件のメッセージを読み取り済み"
+          }
+        }
+      }
+    },
+    "%lld models": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld个模型"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個模型"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個のモデル"
+          }
+        }
+      }
+    },
+    "Accepted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已接受"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已接受"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "受付済み"
+          }
+        }
+      }
+    },
+    "Cancelled": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已取消"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已取消"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "キャンセル済み"
+          }
+        }
+      }
+    },
+    "Completed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已完成"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已完成"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了"
+          }
+        }
+      }
+    },
+    "Delivered": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已送达"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已送達"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配信済み"
+          }
+        }
+      }
+    },
+    "Failed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已失败"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已失敗"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "失敗"
+          }
+        }
+      }
+    },
+    "Idle": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空闲"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閒置"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アイドル"
+          }
+        }
+      }
+    },
+    "Interrupted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已中断"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已中斷"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中断"
+          }
+        }
+      }
+    },
+    "Preparing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在准备"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在準備"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "準備中"
+          }
+        }
+      }
+    },
+    "Queued": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已排队"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已排入佇列"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "待機中"
+          }
+        }
+      }
+    },
+    "Reviewing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在审核"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在審核"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "レビュー中"
+          }
+        }
+      }
+    },
+    "Undelivered": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未送达"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未送達"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未配信"
+          }
+        }
+      }
+    },
+    "Waiting for approval": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待批准"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待核准"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "承認待ち"
+          }
+        }
+      }
+    },
+    "Waiting for user": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待用户"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待使用者"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザの操作待ち"
+          }
+        }
+      }
+    },
+    "Chat list unavailable": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话列表不可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話列表無法使用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャット一覧を取得できません"
+          }
+        }
+      }
+    },
+    "Chat status unavailable": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话状态不可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話狀態無法使用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャットの状態を取得できません"
+          }
+        }
+      }
+    },
+    "Chat unavailable": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对话不可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話無法使用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャットを利用できません"
+          }
+        }
+      }
+    },
+    "Model list unavailable": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型列表不可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模型列表無法使用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデル一覧を取得できません"
+          }
+        }
+      }
+    },
+    "No chats": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有对话"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有對話"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャットはありません"
+          }
+        }
+      }
+    },
+    "Provider": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "提供商"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "供應商"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "プロバイダ"
+          }
+        }
+      }
+    },
+    "Wait stopped by user input": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待已因用户输入停止"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待已因使用者輸入停止"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザの入力により待機を停止しました"
+          }
+        }
+      }
+    },
+    "Wait timed out": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待超时"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待逾時"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "待機がタイムアウトしました"
+          }
+        }
+      }
+    },
+    "Source URL": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来源URL"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "來源URL"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取得元URL"
+          }
+        }
+      }
+    },
+    "Resolved source": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "解析后的来源"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "解析後的來源"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "解決後の取得元"
+          }
+        }
+      }
+    },
+    "Commit": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "提交版本"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "提交版本"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コミット"
+          }
+        }
+      }
+    },
+    "Description": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描述"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描述"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "説明"
+          }
+        }
+      }
+    },
+    "Query": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索内容"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜尋內容"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検索内容"
+          }
+        }
+      }
+    },
+    "Conversation ID": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会话标识"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "對話識別碼"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話ID"
+          }
+        }
+      }
+    },
+    "Offset": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "起始位置"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "起始位置"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "開始位置"
+          }
+        }
+      }
+    },
+    "Limit": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "数量上限"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "數量上限"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "件数の上限"
+          }
+        }
+      }
+    },
+    "Enabled": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已启用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已啟用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有効"
+          }
+        }
+      }
+    },
+    "Matching text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "匹配文本"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "比對文字"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一致するテキスト"
+          }
+        }
+      }
+    },
+    "Replacement text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "替换文本"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取代文字"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "置換後のテキスト"
+          }
+        }
+      }
+    },
+    "No files": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有文件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルはありません"
+          }
+        }
+      }
+    },
+    "More results are available": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "还有更多结果"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "還有更多結果"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "さらに結果があります"
+          }
+        }
+      }
+    },
+    "Available on the next run": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下次运行可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下次執行可用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "次回の実行から利用可能"
+          }
+        }
+      }
+    },
+    "Add memory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新增记忆"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新增記憶"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリを追加"
+          }
+        }
+      }
+    },
+    "Replace memory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "替换记忆"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取代記憶"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリを置き換える"
+          }
+        }
+      }
+    },
+    "Remove memory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除记忆"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除記憶"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリを削除"
+          }
+        }
+      }
+    },
+    "Create skill": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "创建技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建立技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルを作成"
+          }
+        }
+      }
+    },
+    "Update skill": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルを更新"
+          }
+        }
+      }
+    },
+    "Patch skill": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修订技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修訂技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルを修正"
+          }
+        }
+      }
+    },
+    "Delete skill": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刪除技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルを削除"
+          }
+        }
+      }
+    },
+    "Set skill availability": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置技能启用状态"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定技能啟用狀態"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルの有効・無効を設定"
+          }
+        }
+      }
+    },
+    "Write skill file": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "写入技能文件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "寫入技能檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルのファイルを書き込む"
+          }
+        }
+      }
+    },
+    "Remove skill file": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除技能文件"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除技能檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルのファイルを削除"
+          }
+        }
+      }
+    },
+    "Target": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目标"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目標"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "対象"
+          }
+        }
+      }
+    },
+    "User profile": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用户资料"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用者資料"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザプロファイル"
+          }
+        }
+      }
+    },
+    "memory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "记忆"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記憶"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリ"
+          }
+        }
+      }
+    },
+    "Binary resource. Export it from the skill editor to use its original bytes.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "这是二进制资源。请从技能编辑器导出以使用原始文件。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "這是二進位資源。請從技能編輯器匯出以使用原始檔案。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バイナリリソースです。元のバイト列を使用するには、スキルエディタから書き出してください。"
+          }
+        }
+      }
+    },
+    "No lines returned": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未返回文本行"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未傳回文字行"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テキスト行は返されませんでした"
+          }
+        }
+      }
+    },
+    "Skills": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル"
+          }
+        }
+      }
+    },
+    "Disabled": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已停用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已停用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無効"
+          }
+        }
+      }
+    },
+    "Read-only": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只读"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "唯讀"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読み取り専用"
+          }
+        }
+      }
+    },
+    "No skills available": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有可用技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "沒有可用技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用可能なスキルはありません"
+          }
+        }
+      }
+    },
+    "Skill changes saved": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已保存技能变更"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已儲存技能變更"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルの変更を保存しました"
+          }
+        }
+      }
+    },
+    "Skill installed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安装技能"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安裝技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルをインストールしました"
+          }
+        }
+      }
+    },
+    "Memory operations processed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已处理记忆操作"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已處理記憶操作"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メモリの操作を処理しました"
+          }
+        }
+      }
+    },
+    "Current memory": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前记忆"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前記憶"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のメモリ"
+          }
+        }
+      }
+    },
+    "Recent conversations": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近会话"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近對話"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近の会話"
+          }
+        }
+      }
+    },
+    "Untitled conversation": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未命名会话"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未命名對話"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名称未設定の会話"
+          }
+        }
+      }
+    },
+    "No conversations found": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到会话"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "找不到對話"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話が見つかりませんでした"
+          }
+        }
+      }
+    },
+    "No messages found": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未找到消息"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "找不到訊息"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メッセージが見つかりませんでした"
+          }
+        }
+      }
+    },
+    "User": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用户"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用者"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ユーザ"
+          }
+        }
+      }
+    },
+    "Assistant": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "助手"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "助理"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アシスタント"
+          }
+        }
+      }
+    },
+    "Tool": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツール"
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系统"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "系統"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "システム"
+          }
+        }
+      }
+    },
+    "Message": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "消息"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "訊息"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "メッセージ"
+          }
+        }
+      }
+    },
+    "Messages followed by tool activity cannot be edited.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后续有工具活动的消息无法编辑。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "後續有工具活動的訊息無法編輯。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "後にツールの実行があるメッセージは編集できません。"
+          }
+        }
+      }
+    },
     "%@ failed (%lld): %@": {
       "localizations": {
         "zh-Hans": {
@@ -98,6 +1981,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@失敗（%2$lld）：%3$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@に失敗しました（%2$lld）：%3$@"
           }
         }
       }
@@ -115,6 +2004,12 @@
             "state": "translated",
             "value": "%@不是有效的URL。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@は有効なURLではありません。"
+          }
         }
       }
     },
@@ -130,6 +2025,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@不是有效的權杖端點。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@は有効なトークンエンドポイントではありません。"
           }
         }
       }
@@ -147,6 +2048,12 @@
             "state": "translated",
             "value": "%@不是HTTP或HTTPS URL。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@はHTTPまたはHTTPSのURLではありません。"
+          }
         }
       }
     },
@@ -162,6 +2069,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@在規劃時不可用：尚未達成任何約定，因此沒有需要追蹤的工作。請先完成計畫並呼叫present_plan。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計画中は%@を利用できません。まだ合意された内容がないため、追跡する作業がありません。計画を完成させ、present_planを呼び出してください。"
           }
         }
       }
@@ -179,6 +2092,12 @@
             "state": "translated",
             "value": "已套用%lld項編輯"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件の編集を適用しました"
+          }
         }
       }
     },
@@ -194,6 +2113,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld個項目"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld件"
           }
         }
       }
@@ -211,6 +2136,12 @@
             "state": "translated",
             "value": "%lld個檔案"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個のファイル"
+          }
         }
       }
     },
@@ -227,6 +2158,12 @@
             "state": "translated",
             "value": "在%2$lld個檔案中找到%1$lld個相符的行"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%2$lld個のファイルで一致した%1$lld行"
+          }
         }
       }
     },
@@ -242,6 +2179,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已套用%lld處取代"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lldか所を置換しました"
           }
         }
       }
@@ -289,6 +2232,18 @@
               }
             }
           }
+        },
+        "ja": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld件の結果"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -304,6 +2259,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld個任務·已完成%2$lld個"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld件のタスク · %2$lld件完了"
           }
         }
       }
@@ -321,6 +2282,12 @@
             "state": "translated",
             "value": "技能最大為%lld KB。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルのサイズは%lld KB以下にしてください。"
+          }
         }
       }
     },
@@ -336,6 +2303,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "技能名稱最多%lld個字元。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル名は%lld文字以内にしてください。"
           }
         }
       }
@@ -353,6 +2326,12 @@
             "state": "translated",
             "value": "技能名稱不能以連字元開頭或結尾。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル名の先頭または末尾にハイフンは使用できません。"
+          }
         }
       }
     },
@@ -368,6 +2347,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "技能名稱不能包含連續兩個連字元。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル名にハイフンを2つ続けて使用することはできません。"
           }
         }
       }
@@ -385,6 +2370,12 @@
             "state": "translated",
             "value": "技能名稱只能使用小寫字母、數字和連字元。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル名には小文字の英字、数字、ハイフンのみ使用できます。"
+          }
         }
       }
     },
@@ -400,6 +2391,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "技能需要一段描述，說明它做什麼以及何時使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルには、機能と使用場面を説明する記述が必要です。"
           }
         }
       }
@@ -417,6 +2414,12 @@
             "state": "translated",
             "value": "技能需要一個名稱。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルには名前が必要です。"
+          }
         }
       }
     },
@@ -433,6 +2436,12 @@
             "state": "translated",
             "value": "截斷的模型回應中包含工具呼叫，均未執行。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "途中で切れたモデルの応答にツール呼び出しが含まれていました。どの呼び出しも実行されませんでした。"
+          }
         }
       }
     },
@@ -445,6 +2454,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回答"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "回答"
@@ -465,6 +2480,12 @@
             "state": "translated",
             "value": "於%lld毫秒內回覆"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lldミリ秒で応答"
+          }
         }
       }
     },
@@ -480,6 +2501,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "替我核准"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動で承認"
           }
         }
       }
@@ -497,6 +2524,12 @@
             "state": "translated",
             "value": "要求核准"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "承認を求める"
+          }
         }
       }
     },
@@ -512,6 +2545,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "附件"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添付ファイル"
           }
         }
       }
@@ -529,6 +2568,12 @@
             "state": "translated",
             "value": "音訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "音声"
+          }
         }
       }
     },
@@ -541,6 +2586,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "自動"
@@ -561,6 +2612,12 @@
             "state": "translated",
             "value": "區分大小寫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "大文字と小文字を区別"
+          }
         }
       }
     },
@@ -577,6 +2634,12 @@
             "state": "translated",
             "value": "變動"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更"
+          }
         }
       }
     },
@@ -589,6 +2652,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分類"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "分類"
@@ -609,6 +2678,12 @@
             "state": "translated",
             "value": "對話"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャット"
+          }
         }
       }
     },
@@ -624,6 +2699,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "指令"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コマンド"
           }
         }
       }
@@ -641,6 +2722,12 @@
             "state": "translated",
             "value": "指令產生器"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コマンドジェネレータ"
+          }
         }
       }
     },
@@ -656,6 +2743,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已完成，無輸出"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了しました（出力なし）"
           }
         }
       }
@@ -673,6 +2766,12 @@
             "state": "translated",
             "value": "正在連線"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接続中"
+          }
         }
       }
     },
@@ -688,6 +2787,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "消費者"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用ツール"
           }
         }
       }
@@ -705,6 +2810,12 @@
             "state": "translated",
             "value": "內容"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内容"
+          }
         }
       }
     },
@@ -720,6 +2831,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "內容型別"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コンテンツの種類"
           }
         }
       }
@@ -737,6 +2854,12 @@
             "state": "translated",
             "value": "對話"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話"
+          }
         }
       }
     },
@@ -752,6 +2875,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已複製"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コピーしました"
           }
         }
       }
@@ -769,6 +2898,12 @@
             "state": "translated",
             "value": "已建立"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成済み"
+          }
         }
       }
     },
@@ -784,6 +2919,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "嚴重"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重大"
           }
         }
       }
@@ -801,6 +2942,12 @@
             "state": "translated",
             "value": "已刪除"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "削除済み"
+          }
         }
       }
     },
@@ -816,6 +2963,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "目標"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "宛先"
           }
         }
       }
@@ -833,6 +2986,12 @@
             "state": "translated",
             "value": "差異"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差分"
+          }
         }
       }
     },
@@ -848,6 +3007,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "目錄"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ディレクトリ"
           }
         }
       }
@@ -865,6 +3030,12 @@
             "state": "translated",
             "value": "嵌入"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "埋め込み"
+          }
         }
       }
     },
@@ -880,6 +3051,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "空檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空のファイル"
           }
         }
       }
@@ -897,6 +3074,12 @@
             "state": "translated",
             "value": "已結束"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "終了"
+          }
         }
       }
     },
@@ -912,6 +3095,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "極高"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "非常に高い"
           }
         }
       }
@@ -929,6 +3118,12 @@
             "state": "translated",
             "value": "檔案"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル"
+          }
         }
       }
     },
@@ -944,6 +3139,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル"
           }
         }
       }
@@ -961,6 +3162,12 @@
             "state": "translated",
             "value": "檔案內容相同"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルは同一です"
+          }
         }
       }
     },
@@ -976,6 +3183,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "格式"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "形式"
           }
         }
       }
@@ -993,6 +3206,12 @@
             "state": "translated",
             "value": "從"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更前"
+          }
         }
       }
     },
@@ -1008,6 +3227,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "完整存取權限"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "フルアクセス"
           }
         }
       }
@@ -1025,6 +3250,12 @@
             "state": "translated",
             "value": "Google已完成登入回應，但未傳回權杖。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Googleからのサインイン応答にトークンが含まれていませんでした。"
+          }
         }
       }
     },
@@ -1041,6 +3272,12 @@
             "state": "translated",
             "value": "Google拒絕登入：%@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Googleがサインインを拒否しました — %@"
+          }
         }
       }
     },
@@ -1053,6 +3290,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "HTTP %lld"
@@ -1073,6 +3316,12 @@
             "state": "translated",
             "value": "高"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高"
+          }
         }
       }
     },
@@ -1088,6 +3337,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "影像"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像"
           }
         }
       }
@@ -1105,6 +3360,12 @@
             "state": "translated",
             "value": "影像產生"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画像生成"
+          }
         }
       }
     },
@@ -1120,6 +3381,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已匯入為「%@」。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「%@」として読み込みました。"
           }
         }
       }
@@ -1137,6 +3404,12 @@
             "state": "translated",
             "value": "輸入"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力"
+          }
         }
       }
     },
@@ -1152,6 +3425,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "型別"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "種類"
           }
         }
       }
@@ -1169,6 +3448,12 @@
             "state": "translated",
             "value": "舊版傳輸方式，使用GET串流和個別的POST端點。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GETストリームと個別のPOSTエンドポイントを使用する旧方式です。"
+          }
         }
       }
     },
@@ -1184,6 +3469,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "第%1$lld行超出每頁%2$lld位元組的限制。請按位元組擷取所需片段或搜尋。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld行目が1ページあたり%2$lldバイトの上限を超えています。必要なバイト範囲を指定して読み取るか、検索してください。"
           }
         }
       }
@@ -1201,6 +3492,12 @@
             "state": "translated",
             "value": "行尾字元"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "改行コード"
+          }
         }
       }
     },
@@ -1217,6 +3514,12 @@
             "state": "translated",
             "value": "行數"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "行数"
+          }
         }
       }
     },
@@ -1229,6 +3532,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "低"
@@ -1249,6 +3558,12 @@
             "state": "translated",
             "value": "Markdown"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
+          }
         }
       }
     },
@@ -1265,6 +3580,12 @@
             "state": "translated",
             "value": "最高"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最大"
+          }
         }
       }
     },
@@ -1277,6 +3598,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "中"
@@ -1297,6 +3624,12 @@
             "state": "translated",
             "value": "最低"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最小"
+          }
         }
       }
     },
@@ -1312,6 +3645,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已移動"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移動済み"
           }
         }
       }
@@ -1329,6 +3668,12 @@
             "state": "translated",
             "value": "否"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いいえ"
+          }
         }
       }
     },
@@ -1344,6 +3689,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "尚未設定對話模型。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャット用モデルが設定されていません。"
           }
         }
       }
@@ -1361,6 +3712,12 @@
             "state": "translated",
             "value": "無差異"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差分はありません"
+          }
         }
       }
     },
@@ -1376,6 +3733,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "沒有相符項目"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一致する項目はありません"
           }
         }
       }
@@ -1393,6 +3756,12 @@
             "state": "translated",
             "value": "尚未為對話標題設定模型。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話タイトル用のモデルが設定されていません。"
+          }
         }
       }
     },
@@ -1408,6 +3777,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "此位址沒有模型清單，請檢查基底URL。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このアドレスにモデル一覧がありません。ベースURLを確認してください。"
           }
         }
       }
@@ -1425,6 +3800,12 @@
             "state": "translated",
             "value": "沒有可讀的網頁內容"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "読み取り可能なページ内容がありません"
+          }
         }
       }
     },
@@ -1440,6 +3821,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "無結果"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結果がありません"
           }
         }
       }
@@ -1457,6 +3844,12 @@
             "state": "translated",
             "value": "無"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "なし"
+          }
         }
       }
     },
@@ -1472,6 +3865,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "關閉"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オフ"
           }
         }
       }
@@ -1489,6 +3888,12 @@
             "state": "translated",
             "value": "原始HTML"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元のHTML"
+          }
         }
       }
     },
@@ -1504,6 +3909,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "覆寫"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上書き"
           }
         }
       }
@@ -1521,6 +3932,12 @@
             "state": "translated",
             "value": "已覆寫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上書き済み"
+          }
         }
       }
     },
@@ -1533,6 +3950,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "PDF"
@@ -1553,6 +3976,12 @@
             "state": "translated",
             "value": "路徑"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "パス"
+          }
         }
       }
     },
@@ -1568,6 +3997,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "權限"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "アクセス権"
           }
         }
       }
@@ -1585,6 +4020,12 @@
             "state": "translated",
             "value": "計畫模式已開啟，因此未執行%@——它會更改本應用外部的內容。請先讀取所需資訊，在草稿工作區擬定計畫並呼叫present_plan，由使用者決定是否執行。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計画モードがオンのため、%@は実行されませんでした。この操作はアプリ外の内容を変更します。読み取りで調査し、一時ワークスペースに計画を作成してpresent_planを呼び出してください。その後、ユーザが実行するかどうかを判断します。"
+          }
         }
       }
     },
@@ -1601,6 +4042,12 @@
             "state": "translated",
             "value": "已從%@提交計畫"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@から計画を提示しました"
+          }
         }
       }
     },
@@ -1613,6 +4060,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目的"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "目的"
@@ -1633,6 +4086,12 @@
             "state": "translated",
             "value": "問題"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "質問"
+          }
         }
       }
     },
@@ -1648,6 +4107,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "問題不可用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "質問を表示できません"
           }
         }
       }
@@ -1665,6 +4130,12 @@
             "state": "translated",
             "value": "推理"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "推論"
+          }
         }
       }
     },
@@ -1680,6 +4151,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "远程路径"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リモートパス"
           }
         }
       }
@@ -1697,6 +4174,12 @@
             "state": "translated",
             "value": "已取代"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "置換済み"
+          }
         }
       }
     },
@@ -1712,6 +4195,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "請求"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リクエスト"
           }
         }
       }
@@ -1729,6 +4218,12 @@
             "state": "translated",
             "value": "重新排序"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再ランキング"
+          }
         }
       }
     },
@@ -1741,6 +4236,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "結果"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "結果"
@@ -1761,6 +4262,12 @@
             "state": "translated",
             "value": "在自動核准前審查指令。自動模式會選擇最佳的可用審查模型。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動承認の前にコマンドをレビューします。「自動」では、利用可能な最適なレビューモデルを選択します。"
+          }
         }
       }
     },
@@ -1777,6 +4284,12 @@
             "state": "translated",
             "value": "執行中"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "実行中"
+          }
         }
       }
     },
@@ -1789,6 +4302,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "SHA-256"
@@ -1809,6 +4328,12 @@
             "state": "translated",
             "value": "SSE（舊版）"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE（旧方式）"
+          }
         }
       }
     },
@@ -1824,6 +4349,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "與對話模型相同"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャットと同じ"
           }
         }
       }
@@ -1841,6 +4372,12 @@
             "state": "translated",
             "value": "草稿路徑"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一時保存パス"
+          }
         }
       }
     },
@@ -1856,6 +4393,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "機密句柄"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シークレットハンドル"
           }
         }
       }
@@ -1873,6 +4416,12 @@
             "state": "translated",
             "value": "已安全接收機密資訊"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シークレットを安全に受信しました"
+          }
         }
       }
     },
@@ -1888,6 +4437,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "監護者"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ガーディアン"
           }
         }
       }
@@ -1905,6 +4460,12 @@
             "state": "translated",
             "value": "自動審查已取消，操作未執行。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューがキャンセルされました。操作は実行されていません。"
+          }
         }
       }
     },
@@ -1920,6 +4481,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動審查因連續出現不利結果而暫停，操作未執行。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不利な結果が繰り返されたため、自動レビューを一時停止しました。操作は実行されていません。"
           }
         }
       }
@@ -1937,6 +4504,12 @@
             "state": "translated",
             "value": "自動審查失敗，操作未執行。%@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューに失敗しました。操作は実行されていません。%@"
+          }
         }
       }
     },
@@ -1952,6 +4525,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動審查不可用，操作未執行。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューを利用できません。操作は実行されていません。"
           }
         }
       }
@@ -1969,6 +4548,12 @@
             "state": "translated",
             "value": "自動審查傳回了無效決定。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューが無効な判断を返しました。"
+          }
         }
       }
     },
@@ -1984,6 +4569,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動審查逾時，操作未執行。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューがタイムアウトしました。操作は実行されていません。"
           }
         }
       }
@@ -2001,6 +4592,12 @@
             "state": "translated",
             "value": "自動審查超出了調查次數限制。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューが調査回数の上限を超えました。"
+          }
         }
       }
     },
@@ -2016,6 +4613,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動審查超出了推理輪次限制。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自動レビューが推論ターン数の上限を超えました。"
           }
         }
       }
@@ -2033,6 +4636,12 @@
             "state": "translated",
             "value": "正在顯示%1$lld/%2$lld個匹配行"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一致した%2$lld行中%1$lld行を表示"
+          }
         }
       }
     },
@@ -2048,6 +4657,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "簽名失敗：%@。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "署名に失敗しました：%@。"
           }
         }
       }
@@ -2065,6 +4680,12 @@
             "state": "translated",
             "value": "大小"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サイズ"
+          }
         }
       }
     },
@@ -2080,6 +4701,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "技能"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキル"
           }
         }
       }
@@ -2097,6 +4724,12 @@
             "state": "translated",
             "value": "跳過"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキップ済み"
+          }
         }
       }
     },
@@ -2112,6 +4745,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已略過%lld個二進位檔案"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld個のバイナリファイルをスキップしました"
           }
         }
       }
@@ -2129,6 +4768,12 @@
             "state": "translated",
             "value": "來源"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取得元"
+          }
         }
       }
     },
@@ -2144,6 +4789,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "狀態"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状態"
           }
         }
       }
@@ -2161,6 +4812,12 @@
             "state": "translated",
             "value": "可流式HTTP"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamable HTTP"
+          }
         }
       }
     },
@@ -2176,6 +4833,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "符號連結"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "シンボリックリンク"
           }
         }
       }
@@ -2193,6 +4856,12 @@
             "state": "translated",
             "value": "系統提示"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "システムプロンプト"
+          }
         }
       }
     },
@@ -2208,6 +4877,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "文字"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テキスト"
           }
         }
       }
@@ -2225,6 +4900,12 @@
             "state": "translated",
             "value": "文字內容相同，但行尾字元不同：%1$@→%2$@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "テキストは同じですが、改行コードが異なります：%1$@ → %2$@"
+          }
         }
       }
     },
@@ -2240,6 +4921,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "這不是有效的服務帳戶金鑰，其中必須包含client_email和private_key。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サービスアカウントキーではありません。client_emailとprivate_keyが必要です。"
           }
         }
       }
@@ -2257,6 +4944,12 @@
             "state": "translated",
             "value": "對話模型沒有可用認證資訊。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャット用モデルに利用可能な認証資格情報がありません。"
+          }
         }
       }
     },
@@ -2272,6 +4965,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "應用在記錄此工具呼叫結果前已停止。操作是否完成尚不確定；再次執行前請檢查目前狀態。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このツール呼び出しの結果が記録される前に、アプリが停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。"
           }
         }
       }
@@ -2289,6 +4988,12 @@
             "state": "translated",
             "value": "應用在此工具完成前停止了等待。操作是否完成尚不確定；再次執行前請檢查目前狀態。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このツールが完了する前に、アプリが待機を停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。"
+          }
         }
       }
     },
@@ -2304,6 +5009,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "對話過長，無法產生摘要。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話が長すぎるため、要約できません。"
           }
         }
       }
@@ -2321,6 +5032,12 @@
             "state": "translated",
             "value": "此對話已不存在。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この会話はもう存在しません。"
+          }
         }
       }
     },
@@ -2336,6 +5053,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "對話標題模型沒有可用認證資訊。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会話タイトル用のモデルに利用可能な認証資格情報がありません。"
           }
         }
       }
@@ -2353,6 +5076,12 @@
             "state": "translated",
             "value": "目前傳輸方式，使用同一端點處理POST和GET。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POSTとGETに同じエンドポイントを使用する現行の方式です。"
+          }
         }
       }
     },
@@ -2368,6 +5097,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "描述超過%lld個字元。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "説明が%lld文字を超えています。"
           }
         }
       }
@@ -2385,6 +5120,12 @@
             "state": "translated",
             "value": "差異區域跨越%1$lld行，超過%2$lld行的差異限制。請分別讀取兩側的有限範圍以縮小差異。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "差分の範囲が%1$lld行あり、差分の上限の%2$lld行を超えています。それぞれのファイルを範囲を限定して読み取り、差分を絞り込んでください。"
+          }
         }
       }
     },
@@ -2400,6 +5141,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "端點傳回了%lld。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドポイントが%lldを返しました。"
           }
         }
       }
@@ -2417,6 +5164,12 @@
             "state": "translated",
             "value": "端點已回應，但未傳回模型清單。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドポイントは応答しましたが、モデル一覧を返しませんでした。"
+          }
         }
       }
     },
@@ -2432,6 +5185,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "端點未以HTTP回應。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドポイントがHTTPで応答しませんでした。"
           }
         }
       }
@@ -2449,6 +5208,12 @@
             "state": "translated",
             "value": "端點拒絕了此金鑰。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "エンドポイントがこのAPIキーを拒否しました。"
+          }
         }
       }
     },
@@ -2464,6 +5229,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "事件流中的一行超過了大小限制。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "イベントストリームがサイズ上限を超える行を送信しました。"
           }
         }
       }
@@ -2481,6 +5252,12 @@
             "state": "translated",
             "value": "檔案未宣告名稱，已使用「%@」。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルに名前の指定がなかったため、「%@」を使用しました。"
+          }
         }
       }
     },
@@ -2496,6 +5273,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "無法建立分支，因為其識別碼已存在。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "識別子がすでに存在するため、分岐を作成できませんでした。"
           }
         }
       }
@@ -2513,6 +5296,12 @@
             "state": "translated",
             "value": "該訊息已無法編輯。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このメッセージは編集できなくなりました。"
+          }
         }
       }
     },
@@ -2528,6 +5317,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型未傳回可用的摘要。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルが使用可能な要約を返しませんでした。"
           }
         }
       }
@@ -2545,6 +5340,12 @@
             "state": "translated",
             "value": "模型連線在回應完成前已關閉。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "応答が完了する前に、モデルへの接続が閉じられました。"
+          }
         }
       }
     },
@@ -2560,6 +5361,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型端點URL無效。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのエンドポイントURLが無効です。"
           }
         }
       }
@@ -2577,6 +5384,12 @@
             "state": "translated",
             "value": "模型端點未傳回HTTP回應。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのエンドポイントがHTTP応答を返しませんでした。"
+          }
         }
       }
     },
@@ -2592,6 +5405,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型端點傳回%1$lld：%2$@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのエンドポイントが%1$lldを返しました：%2$@"
           }
         }
       }
@@ -2609,6 +5428,12 @@
             "state": "translated",
             "value": "模型端點傳回了不支援的回應格式。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルのエンドポイントが対応していない形式の応答を返しました。"
+          }
         }
       }
     },
@@ -2624,6 +5449,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型供應商未能完成回應。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルプロバイダが応答を完了できませんでした。"
           }
         }
       }
@@ -2641,6 +5472,12 @@
             "state": "translated",
             "value": "模型回應超過了大小限制。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルの応答がサイズの上限を超えました。"
+          }
         }
       }
     },
@@ -2656,6 +5493,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型傳回了無效的對話標題。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルが無効な会話タイトルを返しました。"
           }
         }
       }
@@ -2673,6 +5516,12 @@
             "state": "translated",
             "value": "模型傳回了無效的工具呼叫。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルが無効なツール呼び出しを返しました。"
+          }
         }
       }
     },
@@ -2688,6 +5537,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "模型為%@傳回了格式錯誤的JSON參數。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルが%@に対して不正なJSON引数を返しました。"
           }
         }
       }
@@ -2705,6 +5560,12 @@
             "state": "translated",
             "value": "無法讀取私密金鑰：%@。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "秘密鍵を読み取れませんでした：%@。"
+          }
         }
       }
     },
@@ -2720,6 +5581,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "此工具執行前的執行已被取消。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このツールが実行される前に、今回の実行がキャンセルされました。"
           }
         }
       }
@@ -2737,6 +5604,12 @@
             "state": "translated",
             "value": "此機密資訊不適用於該主機、工具或用途。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このシークレットは、このホスト、ツール、用途には使用できません。"
+          }
         }
       }
     },
@@ -2752,6 +5625,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "此機密資訊不可用或已被使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このシークレットは利用できないか、すでに使用されています。"
           }
         }
       }
@@ -2769,6 +5648,12 @@
             "state": "translated",
             "value": "所選檔案片段不是UTF-8文字。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選択したファイルの範囲はUTF-8テキストではありません。"
+          }
         }
       }
     },
@@ -2784,6 +5669,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "伺服器對流式HTTP請求傳回了%lld。它可能僅支援舊版SSE傳輸，請嘗試切換傳輸方式。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamable HTTPリクエストに対し、サーバが%lldを返しました。旧方式のSSEトランスポートにのみ対応している可能性があります。トランスポートを切り替えてみてください。"
           }
         }
       }
@@ -2801,6 +5692,12 @@
             "state": "translated",
             "value": "伺服器傳回了%lld。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバが%lldを返しました。"
+          }
         }
       }
     },
@@ -2816,6 +5713,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "伺服器在回覆前關閉流。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "応答する前にサーバがストリームを閉じました。"
           }
         }
       }
@@ -2833,6 +5736,12 @@
             "state": "translated",
             "value": "伺服器未以HTTP回應。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバがHTTPで応答しませんでした。"
+          }
         }
       }
     },
@@ -2848,6 +5757,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "伺服器一律未回應%@。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "サーバが%@に応答しませんでした。"
           }
         }
       }
@@ -2865,6 +5780,12 @@
             "state": "translated",
             "value": "伺服器對%@的回應不是有效的MCP內容。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@に対するサーバの応答は、有効なMCP形式ではありませんでした。"
+          }
         }
       }
     },
@@ -2880,6 +5801,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "資料流已開啟，但未提供POST端點。這可能是流式HTTP伺服器，請嘗試切換傳輸方式。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ストリームは開きましたが、POSTエンドポイントが通知されませんでした。Streamable HTTPサーバの可能性があります。トランスポートを切り替えてみてください。"
           }
         }
       }
@@ -2897,6 +5824,12 @@
             "state": "translated",
             "value": "權杖端點未以HTTP回應。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンエンドポイントがHTTPで応答しませんでした。"
+          }
         }
       }
     },
@@ -2912,6 +5845,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "工具呼叫沒有產生結果。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツール呼び出しから結果が返されませんでした。"
           }
         }
       }
@@ -2929,6 +5868,12 @@
             "state": "translated",
             "value": "此工具已被其核准策略拒絕。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "承認ポリシーにより、このツールは拒否されています。"
+          }
         }
       }
     },
@@ -2944,6 +5889,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "沒有足夠的歷史可以壓縮。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圧縮するのに十分な履歴がまだありません。"
           }
         }
       }
@@ -2961,6 +5912,12 @@
             "state": "translated",
             "value": "此檔案沒有---frontmatter區塊，因此不是技能。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このファイルには---で区切られたフロントマターがないため、スキルではありません。"
+          }
         }
       }
     },
@@ -2976,6 +5933,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "此檔案不是可讀的文字。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このファイルは読み取り可能なテキストではありません。"
           }
         }
       }
@@ -2993,6 +5956,12 @@
             "state": "translated",
             "value": "此資料夾中沒有SKILL.md。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このフォルダにSKILL.mdがありません。"
+          }
         }
       }
     },
@@ -3008,6 +5977,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "此技能為空"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このスキルは空です"
           }
         }
       }
@@ -3025,6 +6000,12 @@
             "state": "translated",
             "value": "此工具在此執行中不可用。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今回の実行では、このツールを利用できません。"
+          }
         }
       }
     },
@@ -3040,6 +6021,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "目前的使用者訊息無法使用此工具。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のユーザメッセージでは、このツールを利用できません。"
           }
         }
       }
@@ -3057,6 +6044,12 @@
             "state": "translated",
             "value": "逾時"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイムアウト"
+          }
         }
       }
     },
@@ -3072,6 +6065,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "標題"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイトル"
           }
         }
       }
@@ -3089,6 +6088,12 @@
             "state": "translated",
             "value": "改為"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "変更後"
+          }
         }
       }
     },
@@ -3104,6 +6109,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "工具輸入被拒絕：%@"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールへの入力が拒否されました：%@"
           }
         }
       }
@@ -3121,6 +6132,12 @@
             "state": "translated",
             "value": "工具結果"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールの結果"
+          }
         }
       }
     },
@@ -3136,6 +6153,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "工具結構描述"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツールのスキーマ"
           }
         }
       }
@@ -3153,6 +6176,12 @@
             "state": "translated",
             "value": "工具"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ツール"
+          }
         }
       }
     },
@@ -3168,6 +6197,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已截斷"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切り詰め済み"
           }
         }
       }
@@ -3185,6 +6220,12 @@
             "state": "translated",
             "value": "將目前終端輸入整理為一條指令。請選擇速度較快的模型。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のターミナル入力を1つのコマンドに変換します。応答の速いモデルを選択してください。"
+          }
         }
       }
     },
@@ -3197,6 +6238,12 @@
           }
         },
         "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "ja": {
           "stringUnit": {
             "state": "translated",
             "value": "URL"
@@ -3217,6 +6264,12 @@
             "state": "translated",
             "value": "未知工具：%@"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不明なツール：%@"
+          }
         }
       }
     },
@@ -3232,6 +6285,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "未命名條目"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "名称未設定の項目"
           }
         }
       }
@@ -3249,6 +6308,12 @@
             "state": "translated",
             "value": "無標題結果"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイトルのない結果"
+          }
         }
       }
     },
@@ -3264,6 +6329,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "用於對話、工具和助手側邊欄。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チャット、ツール、アシスタントのサイドバーに使用します。"
           }
         }
       }
@@ -3281,6 +6352,12 @@
             "state": "translated",
             "value": "Vertex列出的是Model Garden條目，而非此專案可呼叫的模型。請新增你實際使用的模型。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertexが返すのは、このプロジェクトで呼び出せるモデルではなく、Model Gardenの項目です。使用するモデルを追加してください。"
+          }
         }
       }
     },
@@ -3296,6 +6373,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "影片"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画"
           }
         }
       }
@@ -3313,6 +6396,12 @@
             "state": "translated",
             "value": "影片產生"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "動画生成"
+          }
         }
       }
     },
@@ -3328,6 +6417,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "網頁搜尋"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Web検索"
           }
         }
       }
@@ -3345,6 +6440,12 @@
             "state": "translated",
             "value": "由模型供應商執行的網頁搜尋。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "モデルプロバイダが実行するWeb検索です。"
+          }
         }
       }
     },
@@ -3360,6 +6461,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "工作目錄"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作業ディレクトリ"
           }
         }
       }
@@ -3377,6 +6484,12 @@
             "state": "translated",
             "value": "工作區"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ワークスペース"
+          }
         }
       }
     },
@@ -3392,6 +6505,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "工作區為空"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ワークスペースは空です"
           }
         }
       }
@@ -3409,6 +6528,12 @@
             "state": "translated",
             "value": "工作區使用情況"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ワークスペースの使用状況"
+          }
         }
       }
     },
@@ -3424,6 +6549,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "是"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "はい"
           }
         }
       }
@@ -3441,6 +6572,12 @@
             "state": "translated",
             "value": "allowed-tools僅作參考保留，技能永遠不會預先核准任何工具。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-toolsは参考情報としてのみ保持されます。スキルがツールを事前承認することはありません。"
+          }
         }
       }
     },
@@ -3456,6 +6593,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "沒有給出理由"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "理由の指定なし"
           }
         }
       }
@@ -3473,6 +6616,12 @@
             "state": "translated",
             "value": "不是PKCS#8 RSA私密金鑰"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PKCS#8 RSA秘密鍵ではありません"
+          }
         }
       }
     },
@@ -3488,6 +6637,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "不是Base64編碼的PEM"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base64形式のPEMではありません"
           }
         }
       }
@@ -3505,6 +6660,12 @@
             "state": "translated",
             "value": "偏移量%1$lld超出檔案末尾（共%2$lld行）。"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "オフセット%1$lldがファイルの末尾（%2$lld行）を超えています。"
+          }
         }
       }
     },
@@ -3520,6 +6681,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "offset、limit和maximumBytes必須為正數。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset、limit、maximumBytesは正の値にしてください。"
           }
         }
       }
@@ -3537,6 +6704,12 @@
             "state": "translated",
             "value": "金鑰資料不完整"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "鍵データが途中で切れています"
+          }
         }
       }
     },
@@ -3552,6 +6725,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "結構化輸出"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "構造化出力"
           }
         }
       }
@@ -3569,6 +6748,12 @@
             "state": "translated",
             "value": "未知原因"
           }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不明な理由"
+          }
         }
       }
     },
@@ -3585,6 +6770,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "GitHub傳回HTTP %lld。請確認技能已公開，然後稍後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHubがHTTP %lldを返しました。スキルが公開されていることを確認してから、しばらくして再試行してください。"
           }
         }
       }
