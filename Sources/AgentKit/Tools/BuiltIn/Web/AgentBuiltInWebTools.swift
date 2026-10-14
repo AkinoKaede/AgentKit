@@ -191,7 +191,7 @@ nonisolated
                 )
             }
             return [
-                .message(String(localized: "\(rows.count) results", bundle: .module, locale: input.locale), .secondary),
+                .message(AgentLocalization.string("\(rows.count) results", locale: input.locale), .secondary),
                 .list(
                     .init(
                         title: nil, rows: rows,

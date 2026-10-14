@@ -1,6 +1,6 @@
 # AgentKit
 
-**English** · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md)
+**English** · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
 Build AI agents in Swift with tool orchestration, explicit permissions, and persistent conversation state.
 
@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.16.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
 ```
 
 Then add the core product to your target:
@@ -345,10 +345,11 @@ share a name, including separate schemas and implementations for Guardian's `.re
 ## Localization
 
 User-facing strings live in `Localizations/Localizable.xcstrings` (English, Simplified Chinese,
-Traditional Chinese, and Japanese) and are compiled into `Sources/AgentKit/Resources/*.lproj` by
+Traditional Chinese, Japanese, German, French, and Korean) and are compiled into `Sources/AgentKit/Resources/*.lproj` by
 `Scripts/build-localizations.sh`. Re-run it after catalog edits and commit the generated resources:
 `swift build` copies them rather than compiling string catalogs. Run
-`python3 Scripts/check-cjk-localization.py` to validate Chinese and Japanese coverage, format arguments, and spacing.
+`python3 Scripts/check-localization.py` to validate all six translation languages for coverage, format arguments,
+plurals, and language-specific spacing.
 
 Tool cards resolve text at render time from the reader's locale, so a recorded card can be displayed
 in a different language.

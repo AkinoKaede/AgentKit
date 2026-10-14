@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ context</key>
+	<string>컨텍스트 윈도우: %@</string>
+	<key>%@ failed (%lld): %@</key>
+	<string>%1$@ 실패 (%2$lld): %3$@</string>
+	<key>%@ is not a valid URL.</key>
+	<string>유효하지 않은 URL: %@.</string>
+	<key>%@ is not a valid token endpoint.</key>
+	<string>유효하지 않은 토큰 엔드포인트: %@.</string>
+	<key>%@ is not an http or https URL.</key>
+	<string>HTTP 또는 HTTPS URL이 아님: %@.</string>
+	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
+	<string>계획 중에는 %@ 도구를 사용할 수 없습니다. 아직 합의된 내용이 없어 추적할 작업이 없습니다. 계획을 완성한 다음 present_plan을 호출하세요.</string>
+	<key>%lld / %lld entries</key>
+	<string>항목 %1$lld / %2$lld개</string>
+	<key>%lld edits applied</key>
+	<string>수정 %lld개 적용됨</string>
+	<key>%lld entries</key>
+	<string>항목 %lld개</string>
+	<key>%lld matching lines in %lld files</key>
+	<string>파일 %2$lld개에서 일치하는 줄 %1$lld개 찾음</string>
+	<key>%lld messages read</key>
+	<string>메시지 %lld개 읽음</string>
+	<key>%lld models</key>
+	<string>모델 %lld개</string>
+	<key>%lld replacements applied</key>
+	<string>대체 %lld개 적용됨</string>
+	<key>%lld tasks · %lld completed</key>
+	<string>작업 %1$lld개 · %2$lld개 완료</string>
+	<key>A skill may be at most %lld KB.</key>
+	<string>스킬 크기는 최대 %lld KB여야 합니다.</string>
+	<key>A skill name may be at most %lld characters.</key>
+	<string>스킬 이름은 최대 %lld자여야 합니다.</string>
+	<key>A skill name may not begin or end with a hyphen.</key>
+	<string>스킬 이름은 하이픈으로 시작하거나 끝날 수 없습니다.</string>
+	<key>A skill name may not contain two hyphens in a row.</key>
+	<string>스킬 이름에는 하이픈 두 개를 연속으로 사용할 수 없습니다.</string>
+	<key>A skill name may use only lowercase letters, digits, and hyphens.</key>
+	<string>스킬 이름에는 영문 소문자, 숫자 및 하이픈만 사용할 수 있습니다.</string>
+	<key>A skill needs a description saying what it does and when to use it.</key>
+	<string>스킬에는 기능과 사용 시점을 설명하는 내용이 필요합니다.</string>
+	<key>A skill needs a name.</key>
+	<string>스킬에는 이름이 필요합니다.</string>
+	<key>A truncated model response contained tool calls; none were executed.</key>
+	<string>잘린 모델 응답에 도구 호출이 포함되어 있었습니다. 어떤 호출도 실행되지 않았습니다.</string>
+	<key>Accepted</key>
+	<string>접수됨</string>
+	<key>Add memory</key>
+	<string>기억 추가</string>
+	<key>Answer</key>
+	<string>답변</string>
+	<key>Answered in %lld ms</key>
+	<string>%lld ms 만에 응답</string>
+	<key>Approve for me</key>
+	<string>대신 승인</string>
+	<key>Ask for approval</key>
+	<string>승인 요청</string>
+	<key>Assistant</key>
+	<string>어시스턴트</string>
+	<key>Attachments</key>
+	<string>첨부 파일</string>
+	<key>Audio</key>
+	<string>오디오</string>
+	<key>Auto-reviewing exceeded its investigation limit.</key>
+	<string>자동 검토가 조사 한도를 초과했습니다.</string>
+	<key>Auto-reviewing exceeded its reasoning turn limit.</key>
+	<string>자동 검토가 추론 턴 수 한도를 초과했습니다.</string>
+	<key>Auto-reviewing failed; the action was not executed. %@</key>
+	<string>자동 검토에 실패했습니다. 작업은 실행되지 않았습니다. %@</string>
+	<key>Auto-reviewing is unavailable; the action was not executed.</key>
+	<string>자동 검토를 사용할 수 없습니다. 작업은 실행되지 않았습니다.</string>
+	<key>Auto-reviewing paused after repeated adverse results; the action was not executed.</key>
+	<string>부정적인 결과가 반복되어 자동 검토가 일시 정지되었습니다. 작업은 실행되지 않았습니다.</string>
+	<key>Auto-reviewing returned an invalid decision.</key>
+	<string>자동 검토가 유효하지 않은 결정을 반환했습니다.</string>
+	<key>Auto-reviewing timed out; the action was not executed.</key>
+	<string>자동 검토 시간이 초과되었습니다. 작업은 실행되지 않았습니다.</string>
+	<key>Auto-reviewing was cancelled; the action was not executed.</key>
+	<string>자동 검토가 취소되었습니다. 작업은 실행되지 않았습니다.</string>
+	<key>Automatic</key>
+	<string>자동</string>
+	<key>Available on the next run</key>
+	<string>다음 실행부터 사용 가능</string>
+	<key>Binary resource. Export it from the skill editor to use its original bytes.</key>
+	<string>바이너리 리소스입니다. 원본 바이트를 사용하려면 스킬 편집기에서 내보내세요.</string>
+	<key>Cancelled</key>
+	<string>취소됨</string>
+	<key>Case sensitive</key>
+	<string>대소문자 구분</string>
+	<key>Changes</key>
+	<string>변경 사항</string>
+	<key>Chat</key>
+	<string>채팅</string>
+	<key>Chat list unavailable</key>
+	<string>채팅 목록을 가져올 수 없음</string>
+	<key>Chat status unavailable</key>
+	<string>채팅 상태를 가져올 수 없음</string>
+	<key>Chat unavailable</key>
+	<string>채팅을 사용할 수 없음</string>
+	<key>Classification</key>
+	<string>분류</string>
+	<key>Command</key>
+	<string>명령</string>
+	<key>Command Generator</key>
+	<string>명령 생성기</string>
+	<key>Commit</key>
+	<string>커밋</string>
+	<key>Completed</key>
+	<string>완료됨</string>
+	<key>Completed without output</key>
+	<string>출력 없이 완료됨</string>
+	<key>Connecting</key>
+	<string>연결 중</string>
+	<key>Consumer</key>
+	<string>사용할 도구</string>
+	<key>Content</key>
+	<string>내용</string>
+	<key>Content type</key>
+	<string>콘텐츠 유형</string>
+	<key>Conversation</key>
+	<string>대화</string>
+	<key>Conversation ID</key>
+	<string>대화 ID</string>
+	<key>Copied</key>
+	<string>복사됨</string>
+	<key>Create skill</key>
+	<string>스킬 생성</string>
+	<key>Created</key>
+	<string>생성됨</string>
+	<key>Critical</key>
+	<string>심각</string>
+	<key>Current memory</key>
+	<string>현재 기억</string>
+	<key>Delete skill</key>
+	<string>스킬 삭제</string>
+	<key>Deleted</key>
+	<string>삭제됨</string>
+	<key>Delivered</key>
+	<string>전달됨</string>
+	<key>Description</key>
+	<string>설명</string>
+	<key>Destination</key>
+	<string>대상</string>
+	<key>Diff</key>
+	<string>차이</string>
+	<key>Directory</key>
+	<string>디렉터리</string>
+	<key>Disabled</key>
+	<string>비활성화됨</string>
+	<key>Embedding</key>
+	<string>임베딩</string>
+	<key>Empty file</key>
+	<string>빈 파일</string>
+	<key>Enabled</key>
+	<string>활성화됨</string>
+	<key>Exited</key>
+	<string>종료됨</string>
+	<key>Extra High</key>
+	<string>매우 높음</string>
+	<key>Failed</key>
+	<string>실패</string>
+	<key>File</key>
+	<string>파일</string>
+	<key>Files</key>
+	<string>파일</string>
+	<key>Files are identical</key>
+	<string>파일이 동일함</string>
+	<key>Format</key>
+	<string>형식</string>
+	<key>From</key>
+	<string>원본 파일</string>
+	<key>Full access</key>
+	<string>전체 접근</string>
+	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
+	<string>GitHub가 HTTP %lld 코드를 반환했습니다. 스킬이 공개되어 있는지 확인한 다음 나중에 다시 시도하세요.</string>
+	<key>Google answered the sign-in without a token.</key>
+	<string>Google 로그인 응답에 토큰이 포함되지 않았습니다.</string>
+	<key>Google refused the sign-in — %@</key>
+	<string>Google 로그인 거부됨 — %@</string>
+	<key>Guardian</key>
+	<string>가디언</string>
+	<key>HTTP %lld</key>
+	<string>HTTP %lld</string>
+	<key>High</key>
+	<string>높음</string>
+	<key>Idle</key>
+	<string>유휴</string>
+	<key>Image</key>
+	<string>이미지</string>
+	<key>Image Generation</key>
+	<string>이미지 생성</string>
+	<key>Imported as “%@”.</key>
+	<string>‘%@’ 이름으로 가져왔습니다.</string>
+	<key>Input</key>
+	<string>입력</string>
+	<key>Interrupted</key>
+	<string>중단됨</string>
+	<key>Kind</key>
+	<string>종류</string>
+	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
+	<string>GET 스트림과 별도의 POST 엔드포인트를 사용하는 이전 전송 방식입니다.</string>
+	<key>Limit</key>
+	<string>최대 개수</string>
+	<key>Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.</key>
+	<string>%1$lld번째 줄이 페이지당 %2$lld바이트 한도를 초과합니다. 필요한 바이트 범위를 지정하여 읽거나 검색하세요.</string>
+	<key>Line endings</key>
+	<string>줄바꿈 형식</string>
+	<key>Lines</key>
+	<string>줄 수</string>
+	<key>Low</key>
+	<string>낮음</string>
+	<key>Markdown</key>
+	<string>Markdown</string>
+	<key>Matching text</key>
+	<string>찾을 텍스트</string>
+	<key>Max</key>
+	<string>최대</string>
+	<key>Medium</key>
+	<string>보통</string>
+	<key>Memory operations processed</key>
+	<string>기억 작업 처리됨</string>
+	<key>Message</key>
+	<string>메시지</string>
+	<key>Messages followed by tool activity cannot be edited.</key>
+	<string>이후에 도구 활동이 있는 메시지는 편집할 수 없습니다.</string>
+	<key>Minimal</key>
+	<string>최소</string>
+	<key>Model list unavailable</key>
+	<string>모델 목록을 가져올 수 없음</string>
+	<key>More results are available</key>
+	<string>추가 결과 있음</string>
+	<key>Moved</key>
+	<string>이동됨</string>
+	<key>No</key>
+	<string>아니요</string>
+	<key>No Chat model is configured.</key>
+	<string>채팅 모델이 설정되지 않았습니다.</string>
+	<key>No chats</key>
+	<string>채팅 없음</string>
+	<key>No conversations found</key>
+	<string>대화를 찾을 수 없음</string>
+	<key>No differences</key>
+	<string>차이 없음</string>
+	<key>No files</key>
+	<string>파일 없음</string>
+	<key>No lines returned</key>
+	<string>반환된 텍스트 줄 없음</string>
+	<key>No matches</key>
+	<string>일치하는 항목 없음</string>
+	<key>No messages found</key>
+	<string>메시지를 찾을 수 없음</string>
+	<key>No model is configured for conversation titles.</key>
+	<string>대화 제목용 모델이 설정되지 않았습니다.</string>
+	<key>No model list at this address. Check the base URL.</key>
+	<string>이 주소에 모델 목록이 없습니다. 기본 URL을 확인하세요.</string>
+	<key>No readable page content</key>
+	<string>읽을 수 있는 페이지 내용 없음</string>
+	<key>No results</key>
+	<string>결과 없음</string>
+	<key>No skills available</key>
+	<string>사용 가능한 스킬 없음</string>
+	<key>None</key>
+	<string>없음</string>
+	<key>OAuth authorization was declined.</key>
+	<string>OAuth 인가가 거부되었습니다.</string>
+	<key>OAuth requires secure HTTPS endpoints.</key>
+	<string>OAuth에는 안전한 HTTPS 엔드포인트가 필요합니다.</string>
+	<key>Off</key>
+	<string>끔</string>
+	<key>Offset</key>
+	<string>시작 위치</string>
+	<key>Original HTML</key>
+	<string>원본 HTML</string>
+	<key>Overwrite</key>
+	<string>덮어쓰기</string>
+	<key>Overwritten</key>
+	<string>덮어씀</string>
+	<key>PDF</key>
+	<string>PDF</string>
+	<key>Patch skill</key>
+	<string>스킬 부분 수정</string>
+	<key>Path</key>
+	<string>경로</string>
+	<key>Permissions</key>
+	<string>접근 권한</string>
+	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
+	<string>계획 모드가 켜져 있어 %@ 도구는 실행되지 않았습니다. 이 작업은 앱 외부의 내용을 변경합니다. 읽기 작업으로 조사하고 임시 작업 공간에 계획을 작성한 다음 present_plan을 호출하세요. 이후 사용자가 실행 여부를 결정합니다.</string>
+	<key>Plan presented from %@</key>
+	<string>%@에서 계획 제시됨</string>
+	<key>Preparing</key>
+	<string>준비 중</string>
+	<key>Provider</key>
+	<string>제공업체</string>
+	<key>Purpose</key>
+	<string>용도</string>
+	<key>Query</key>
+	<string>검색어</string>
+	<key>Question</key>
+	<string>질문</string>
+	<key>Question unavailable</key>
+	<string>질문을 표시할 수 없음</string>
+	<key>Queued</key>
+	<string>대기열에 추가됨</string>
+	<key>Read-only</key>
+	<string>읽기 전용</string>
+	<key>Reasoning</key>
+	<string>추론</string>
+	<key>Recent conversations</key>
+	<string>최근 대화</string>
+	<key>Remote path</key>
+	<string>원격 경로</string>
+	<key>Remove memory</key>
+	<string>기억 제거</string>
+	<key>Remove skill file</key>
+	<string>스킬 파일 제거</string>
+	<key>Replace memory</key>
+	<string>기억 대체</string>
+	<key>Replaced</key>
+	<string>대체됨</string>
+	<key>Replacement text</key>
+	<string>대체 텍스트</string>
+	<key>Request</key>
+	<string>요청</string>
+	<key>Rerank</key>
+	<string>재순위화</string>
+	<key>Resolved source</key>
+	<string>확인된 출처</string>
+	<key>Result</key>
+	<string>결과</string>
+	<key>Reviewing</key>
+	<string>검토 중</string>
+	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
+	<string>자동 승인 전에 명령을 검토합니다. 자동 모드는 사용 가능한 최적의 검토 모델을 선택합니다.</string>
+	<key>Running</key>
+	<string>실행 중</string>
+	<key>SHA-256</key>
+	<string>SHA-256</string>
+	<key>SSE (legacy)</key>
+	<string>SSE (이전 방식)</string>
+	<key>Same as Chat</key>
+	<string>채팅과 동일</string>
+	<key>Scratch path</key>
+	<string>임시 저장 경로</string>
+	<key>Secret handle</key>
+	<string>비밀 정보 핸들</string>
+	<key>Secret received securely</key>
+	<string>비밀 정보가 안전하게 수신됨</string>
+	<key>Set skill availability</key>
+	<string>스킬 활성화 상태 설정</string>
+	<key>Showing %lld of %lld matching lines</key>
+	<string>일치하는 줄 %2$lld개 중 %1$lld개 표시 중</string>
+	<key>Sign in to this MCP server to continue.</key>
+	<string>계속하려면 이 MCP 서버에 로그인하세요.</string>
+	<key>Signing failed: %@.</key>
+	<string>서명 실패: %@.</string>
+	<key>Size</key>
+	<string>크기</string>
+	<key>Skill</key>
+	<string>스킬</string>
+	<key>Skill changes saved</key>
+	<string>스킬 변경 사항 저장됨</string>
+	<key>Skill installed</key>
+	<string>스킬 설치됨</string>
+	<key>Skills</key>
+	<string>스킬</string>
+	<key>Skipped</key>
+	<string>건너뜀</string>
+	<key>Skipped %lld binary files</key>
+	<string>바이너리 파일 %lld개 건너뜀</string>
+	<key>Source</key>
+	<string>출처</string>
+	<key>Source URL</key>
+	<string>출처 URL</string>
+	<key>Status</key>
+	<string>상태</string>
+	<key>Streamable HTTP</key>
+	<string>Streamable HTTP</string>
+	<key>Structured Output</key>
+	<string>구조화된 출력</string>
+	<key>Symlink</key>
+	<string>심볼릭 링크</string>
+	<key>System</key>
+	<string>시스템</string>
+	<key>System prompt</key>
+	<string>시스템 프롬프트</string>
+	<key>Target</key>
+	<string>대상</string>
+	<key>Text</key>
+	<string>텍스트</string>
+	<key>Text is identical; line endings differ: %@ → %@</key>
+	<string>텍스트는 같지만 줄바꿈 형식이 다름: %1$@ → %2$@</string>
+	<key>That is not a service account key. It needs client_email and private_key.</key>
+	<string>서비스 계정 키가 아닙니다. client_email과 private_key가 필요합니다.</string>
+	<key>The Chat model has no available credential.</key>
+	<string>채팅 모델에 사용 가능한 자격 증명이 없습니다.</string>
+	<key>The MCP authorization challenge is invalid.</key>
+	<string>MCP 인가 챌린지가 유효하지 않습니다.</string>
+	<key>The MCP request attempted an unsafe redirect.</key>
+	<string>MCP 요청이 안전하지 않은 리디렉션을 시도했습니다.</string>
+	<key>The OAuth authorization server identity changed.</key>
+	<string>OAuth 인가 서버의 신원 정보가 변경되었습니다.</string>
+	<key>The OAuth callback could not be verified.</key>
+	<string>OAuth 콜백을 검증할 수 없습니다.</string>
+	<key>The OAuth client authentication method is not supported.</key>
+	<string>이 OAuth 클라이언트 인증 방식은 지원되지 않습니다.</string>
+	<key>The OAuth resource does not match this MCP server.</key>
+	<string>OAuth 리소스가 이 MCP 서버와 일치하지 않습니다.</string>
+	<key>The OAuth server does not support PKCE S256.</key>
+	<string>OAuth 서버가 PKCE S256을 지원하지 않습니다.</string>
+	<key>The OAuth server metadata is invalid or unavailable.</key>
+	<string>OAuth 서버 메타데이터가 유효하지 않거나 사용할 수 없습니다.</string>
+	<key>The OAuth session expired. Sign in again to continue.</key>
+	<string>OAuth 세션이 만료되었습니다. 계속하려면 다시 로그인하세요.</string>
+	<key>The OAuth token request failed.</key>
+	<string>OAuth 토큰 요청에 실패했습니다.</string>
+	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>이 도구 호출의 결과가 기록되기 전에 앱이 중지되었습니다. 작업 완료 여부는 알 수 없습니다. 다시 실행하기 전에 현재 상태를 확인하세요.</string>
+	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>도구 실행이 끝나기 전에 앱이 대기를 중지했습니다. 작업 완료 여부는 알 수 없습니다. 다시 실행하기 전에 현재 상태를 확인하세요.</string>
+	<key>The conversation is too large to summarize.</key>
+	<string>대화가 너무 길어 요약할 수 없습니다.</string>
+	<key>The conversation no longer exists.</key>
+	<string>대화가 더 이상 존재하지 않습니다.</string>
+	<key>The conversation-title model has no available credential.</key>
+	<string>대화 제목용 모델에 사용 가능한 자격 증명이 없습니다.</string>
+	<key>The current transport, using one endpoint for POST and GET.</key>
+	<string>POST와 GET에 하나의 엔드포인트를 사용하는 현재 전송 방식입니다.</string>
+	<key>The description is longer than %lld characters.</key>
+	<string>설명이 %lld자를 초과합니다.</string>
+	<key>The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead.</key>
+	<string>차이가 있는 영역이 %1$lld줄에 걸쳐 있어 비교 한도인 %2$lld줄을 초과합니다. 대신 각 파일에서 범위를 제한하여 읽고 비교 범위를 좁히세요.</string>
+	<key>The endpoint answered %lld.</key>
+	<string>엔드포인트가 %lld 코드를 반환했습니다.</string>
+	<key>The endpoint answered, but not with a model list.</key>
+	<string>엔드포인트가 응답했지만 모델 목록을 반환하지 않았습니다.</string>
+	<key>The endpoint did not answer with HTTP.</key>
+	<string>엔드포인트가 HTTP 응답을 반환하지 않았습니다.</string>
+	<key>The endpoint rejected this key.</key>
+	<string>엔드포인트가 이 API 키를 거부했습니다.</string>
+	<key>The event stream sent a line that exceeded the size limit.</key>
+	<string>이벤트 스트림이 크기 한도를 초과하는 줄을 보냈습니다.</string>
+	<key>The file declared no name; “%@” was used.</key>
+	<string>파일에 이름이 지정되지 않아 ‘%@’ 이름을 사용했습니다.</string>
+	<key>The fork could not be created because its identifier already exists.</key>
+	<string>식별자가 이미 존재하여 대화 분기를 만들 수 없습니다.</string>
+	<key>The message is no longer available to edit.</key>
+	<string>이 메시지를 더 이상 편집할 수 없습니다.</string>
+	<key>The model connection closed before the response finished.</key>
+	<string>응답이 끝나기 전에 모델 연결이 닫혔습니다.</string>
+	<key>The model did not return a usable summary.</key>
+	<string>모델이 사용 가능한 요약을 반환하지 않았습니다.</string>
+	<key>The model endpoint URL is invalid.</key>
+	<string>모델 엔드포인트 URL이 유효하지 않습니다.</string>
+	<key>The model endpoint did not return HTTP.</key>
+	<string>모델 엔드포인트가 HTTP 응답을 반환하지 않았습니다.</string>
+	<key>The model endpoint returned %lld: %@</key>
+	<string>모델 엔드포인트 응답 %1$lld: %2$@</string>
+	<key>The model endpoint returned an unsupported response format.</key>
+	<string>모델 엔드포인트가 지원되지 않는 응답 형식을 반환했습니다.</string>
+	<key>The model provider failed to complete the response.</key>
+	<string>모델 제공업체가 응답을 완료하지 못했습니다.</string>
+	<key>The model response exceeded the size limit.</key>
+	<string>모델 응답이 크기 한도를 초과했습니다.</string>
+	<key>The model returned an invalid conversation title.</key>
+	<string>모델이 유효하지 않은 대화 제목을 반환했습니다.</string>
+	<key>The model returned an invalid tool call.</key>
+	<string>모델이 유효하지 않은 도구 호출을 반환했습니다.</string>
+	<key>The model returned malformed JSON arguments for %@.</key>
+	<string>모델이 %@ 도구에 형식이 잘못된 JSON 인수를 반환했습니다.</string>
+	<key>The private key could not be read: %@.</key>
+	<string>개인 키를 읽을 수 없음: %@.</string>
+	<key>The run was cancelled before this tool ran.</key>
+	<string>이 도구가 실행되기 전에 전체 실행이 취소되었습니다.</string>
+	<key>The secret is not valid for this host, tool, or purpose.</key>
+	<string>이 비밀 정보는 해당 호스트, 도구 또는 용도에 사용할 수 없습니다.</string>
+	<key>The secret is unavailable or has already been used.</key>
+	<string>비밀 정보를 사용할 수 없거나 이미 사용되었습니다.</string>
+	<key>The selected file window is not UTF-8 text.</key>
+	<string>선택한 파일 구간이 UTF-8 텍스트가 아닙니다.</string>
+	<key>The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.</key>
+	<string>서버가 Streamable HTTP 요청에 %lld 코드를 반환했습니다. 이전 SSE 전송 방식만 지원할 수 있습니다. 전송 방식을 바꿔 보세요.</string>
+	<key>The server answered %lld.</key>
+	<string>서버가 %lld 코드를 반환했습니다.</string>
+	<key>The server closed the stream before answering.</key>
+	<string>서버가 응답하기 전에 스트림을 닫았습니다.</string>
+	<key>The server did not answer with HTTP.</key>
+	<string>서버가 HTTP 응답을 반환하지 않았습니다.</string>
+	<key>The server never answered %@.</key>
+	<string>서버가 %@ 요청에 응답하지 않았습니다.</string>
+	<key>The server's answer to %@ was not valid MCP.</key>
+	<string>%@ 요청에 대한 서버 응답이 유효한 MCP 형식이 아닙니다.</string>
+	<key>The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport.</key>
+	<string>스트림이 열렸지만 POST 엔드포인트가 제공되지 않았습니다. Streamable HTTP 서버일 수 있습니다. 전송 방식을 바꿔 보세요.</string>
+	<key>The token endpoint did not answer with HTTP.</key>
+	<string>토큰 엔드포인트가 HTTP 응답을 반환하지 않았습니다.</string>
+	<key>The tool call did not produce a result.</key>
+	<string>도구 호출에서 결과가 반환되지 않았습니다.</string>
+	<key>The tool is denied by its approval policy.</key>
+	<string>승인 정책에 따라 이 도구가 거부되었습니다.</string>
+	<key>There is not enough history to compact yet.</key>
+	<string>아직 압축할 만큼의 기록이 없습니다.</string>
+	<key>This MCP server requires a registered OAuth client ID.</key>
+	<string>이 MCP 서버에는 등록된 OAuth 클라이언트 ID가 필요합니다.</string>
+	<key>This file has no --- frontmatter block, so it is not a skill.</key>
+	<string>이 파일에는 ---로 구분된 프런트매터 블록이 없어 스킬로 사용할 수 없습니다.</string>
+	<key>This file is not readable text.</key>
+	<string>이 파일은 읽을 수 있는 텍스트가 아닙니다.</string>
+	<key>This folder has no SKILL.md.</key>
+	<string>이 폴더에 SKILL.md가 없습니다.</string>
+	<key>This skill is empty</key>
+	<string>이 스킬은 비어 있습니다</string>
+	<key>This tool is not available in this run.</key>
+	<string>이번 실행에서는 이 도구를 사용할 수 없습니다.</string>
+	<key>This tool is unavailable for the current user message.</key>
+	<string>현재 사용자 메시지에서는 이 도구를 사용할 수 없습니다.</string>
+	<key>Timeout</key>
+	<string>시간 초과</string>
+	<key>Title</key>
+	<string>제목</string>
+	<key>To</key>
+	<string>비교 파일</string>
+	<key>Tool</key>
+	<string>도구</string>
+	<key>Tool input was rejected: %@</key>
+	<string>도구 입력 거부됨: %@</string>
+	<key>Tool results</key>
+	<string>도구 결과</string>
+	<key>Tool schemas</key>
+	<string>도구 스키마</string>
+	<key>Tools</key>
+	<string>도구</string>
+	<key>Truncated</key>
+	<string>잘림</string>
+	<key>Turns the current terminal input into one command. Choose a fast model.</key>
+	<string>현재 터미널 입력을 하나의 명령으로 변환합니다. 빠른 모델을 선택하세요.</string>
+	<key>URL</key>
+	<string>URL</string>
+	<key>Undelivered</key>
+	<string>전달되지 않음</string>
+	<key>Unknown tool: %@</key>
+	<string>알 수 없는 도구: %@</string>
+	<key>Unnamed entry</key>
+	<string>이름 없는 항목</string>
+	<key>Untitled conversation</key>
+	<string>제목 없는 대화</string>
+	<key>Untitled result</key>
+	<string>제목 없는 결과</string>
+	<key>Update skill</key>
+	<string>스킬 업데이트</string>
+	<key>Used for chat, tools, and the Assistant sidebar.</key>
+	<string>채팅, 도구 및 어시스턴트 사이드바에 사용합니다.</string>
+	<key>User</key>
+	<string>사용자</string>
+	<key>User profile</key>
+	<string>사용자 프로필</string>
+	<key>Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.</key>
+	<string>Vertex는 이 프로젝트에서 호출할 수 있는 모델이 아니라 Model Garden 항목을 나열합니다. 사용할 모델을 직접 추가하세요.</string>
+	<key>Video</key>
+	<string>비디오</string>
+	<key>Video Generation</key>
+	<string>비디오 생성</string>
+	<key>Wait stopped by user input</key>
+	<string>사용자 입력으로 대기 중지됨</string>
+	<key>Wait timed out</key>
+	<string>대기 시간 초과</string>
+	<key>Waiting for approval</key>
+	<string>승인 대기 중</string>
+	<key>Waiting for user</key>
+	<string>사용자 조치 대기 중</string>
+	<key>Web Search</key>
+	<string>웹 검색</string>
+	<key>Web search run by the model provider.</key>
+	<string>모델 제공업체가 실행하는 웹 검색입니다.</string>
+	<key>Working directory</key>
+	<string>작업 디렉터리</string>
+	<key>Workspace</key>
+	<string>작업 공간</string>
+	<key>Workspace is empty</key>
+	<string>작업 공간이 비어 있음</string>
+	<key>Workspace usage</key>
+	<string>작업 공간 사용 현황</string>
+	<key>Write skill file</key>
+	<string>스킬 파일 쓰기</string>
+	<key>Yes</key>
+	<string>예</string>
+	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
+	<string>allowed-tools는 참고용으로만 유지됩니다. 스킬은 도구를 사전 승인하지 않습니다.</string>
+	<key>memory</key>
+	<string>기억</string>
+	<key>no reason given</key>
+	<string>이유가 제공되지 않음</string>
+	<key>not a PKCS#8 RSA private key</key>
+	<string>PKCS#8 RSA 개인 키가 아님</string>
+	<key>not base64 PEM</key>
+	<string>Base64로 인코딩된 PEM이 아님</string>
+	<key>offset %lld is past the end of the file (%lld lines).</key>
+	<string>시작 위치가 파일 끝(총 %2$lld줄)을 벗어납니다: %1$lld.</string>
+	<key>offset, limit, and maximumBytes must be positive.</key>
+	<string>offset, limit 및 maximumBytes는 양수여야 합니다.</string>
+	<key>the key data ends early</key>
+	<string>키 데이터가 불완전함</string>
+	<key>unknown reason</key>
+	<string>알 수 없는 이유</string>
+</dict>
+</plist>

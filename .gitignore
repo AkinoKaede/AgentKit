@@ -9,3 +9,6 @@ DerivedData/
 
 # Resolved only matters for a root package; an adopter resolves its own.
 Package.resolved
+
+# Python validation scripts
+__pycache__/

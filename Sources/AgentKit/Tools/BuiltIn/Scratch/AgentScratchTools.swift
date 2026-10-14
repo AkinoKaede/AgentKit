@@ -386,7 +386,7 @@ nonisolated
                 items.append(
                     F.field(
                         "Files",
-                        String(localized: "\(files) files", bundle: .module, locale: input.locale),
+                        AgentLocalization.string("\(files) files", locale: input.locale),
                         locale: input.locale
                     ))
             }
@@ -552,8 +552,8 @@ nonisolated
             let totalBytes = object["total_bytes"]?.integerValue ?? 0
             let byteQuota = object["byte_quota"]?.integerValue
             var summary =
-                entryQuota.map { "\(entryCount) / \($0) entries" }
-                ?? String(localized: "\(entryCount) entries", bundle: .module, locale: input.locale)
+                entryQuota.map { AgentLocalization.string("\(entryCount) / \($0) entries", locale: input.locale) }
+                ?? AgentLocalization.string("\(entryCount) entries", locale: input.locale)
             if let byteQuota {
                 summary += " · \(F.byteCount(totalBytes)) / \(F.byteCount(byteQuota))"
             } else {
@@ -631,8 +631,8 @@ nonisolated
             let skipped = object["skipped_binary_files"]?.integerValue ?? 0
             var items: [AgentToolDetail.Item] = [
                 .message(
-                    String(
-                        localized: "\(matching) matching lines in \(searched) files",
+                    AgentLocalization.string(
+                        "\(matching) matching lines in \(searched) files",
                         locale: input.locale
                     ),
                     matching == 0 ? .secondary : .success
@@ -660,8 +660,8 @@ nonisolated
             if object["truncated"]?.boolValue == true {
                 items.append(
                     .message(
-                        String(
-                            localized: "Showing \(returned) of \(matching) matching lines",
+                        AgentLocalization.string(
+                            "Showing \(returned) of \(matching) matching lines",
                             locale: input.locale
                         ),
                         .warning
@@ -670,7 +670,7 @@ nonisolated
             if skipped > 0 {
                 items.append(
                     .message(
-                        String(localized: "Skipped \(skipped) binary files", bundle: .module, locale: input.locale),
+                        AgentLocalization.string("Skipped \(skipped) binary files", locale: input.locale),
                         .secondary
                     ))
             }
@@ -728,8 +728,8 @@ nonisolated
                 items.append(
                     F.field(
                         "Changes",
-                        String(
-                            localized: "\(count) replacements applied", bundle: .module,
+                        AgentLocalization.string(
+                            "\(count) replacements applied",
                             locale: input.locale
                         ),
                         locale: input.locale
@@ -737,7 +737,7 @@ nonisolated
             } else if let count = object["edits_applied"]?.integerValue {
                 items.append(
                     F.field(
-                        "Changes", String(localized: "\(count) edits applied", bundle: .module, locale: input.locale),
+                        "Changes", AgentLocalization.string("\(count) edits applied", locale: input.locale),
                         locale: input.locale
                     ))
             }
@@ -777,8 +777,8 @@ nonisolated
             } else if let a, let b, a != b {
                 items.append(
                     .message(
-                        String(
-                            localized: "Text is identical; line endings differ: \(a) → \(b)",
+                        AgentLocalization.string(
+                            "Text is identical; line endings differ: \(a) → \(b)",
                             locale: input.locale
                         ),
                         .warning
@@ -812,7 +812,7 @@ nonisolated
             let bytes = object["total_bytes"]?.integerValue
             if count != nil || bytes != nil {
                 let parts = [
-                    count.map { String(localized: "\($0) entries", bundle: .module, locale: input.locale) },
+                    count.map { AgentLocalization.string("\($0) entries", locale: input.locale) },
                     bytes.map(F.byteCount),
                 ].compactMap { $0 }
                 items.append(F.field("Workspace", parts.joined(separator: " · "), locale: input.locale))

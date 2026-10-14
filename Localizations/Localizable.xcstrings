@@ -27,6 +27,24 @@
             "state": "translated",
             "value": "OAuth認可が拒否されました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die OAuth-Autorisierung wurde abgelehnt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’autorisation OAuth a été refusée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 인가가 거부되었습니다."
+          }
         }
       }
     },
@@ -55,6 +73,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "OAuthには安全なHTTPSエンドポイントが必要です。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth erfordert sichere HTTPS-Endpunkte."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth nécessite des points de terminaison HTTPS sécurisés."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth에는 안전한 HTTPS 엔드포인트가 필요합니다."
           }
         }
       }
@@ -85,6 +121,24 @@
             "state": "translated",
             "value": "続行するには、このMCPサーバにサインインしてください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melden Sie sich bei diesem MCP-Server an, um fortzufahren."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connectez-vous à ce serveur MCP pour continuer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "계속하려면 이 MCP 서버에 로그인하세요."
+          }
         }
       }
     },
@@ -113,6 +167,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "MCP認可チャレンジが無効です。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die MCP-Autorisierungsaufforderung ist ungültig."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La demande d’autorisation MCP est invalide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP 인가 챌린지가 유효하지 않습니다."
           }
         }
       }
@@ -143,6 +215,24 @@
             "state": "translated",
             "value": "MCPリクエストが安全でないリダイレクトを試みました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die MCP-Anfrage hat eine unsichere Weiterleitung versucht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La requête MCP a tenté une redirection non sécurisée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "MCP 요청이 안전하지 않은 리디렉션을 시도했습니다."
+          }
         }
       }
     },
@@ -171,6 +261,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "OAuth認可サーバの識別情報が変更されました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Identität des OAuth-Autorisierungsservers hat sich geändert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’identité du serveur d’autorisation OAuth a changé."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 인가 서버의 신원 정보가 변경되었습니다."
           }
         }
       }
@@ -201,6 +309,24 @@
             "state": "translated",
             "value": "OAuthコールバックを検証できませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der OAuth-Callback konnte nicht verifiziert werden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le rappel OAuth n’a pas pu être vérifié."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 콜백을 검증할 수 없습니다."
+          }
         }
       }
     },
@@ -229,6 +355,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このOAuthクライアント認証方式には対応していません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die OAuth-Client-Authentifizierungsmethode wird nicht unterstützt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La méthode d’authentification du client OAuth n’est pas prise en charge."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 OAuth 클라이언트 인증 방식은 지원되지 않습니다."
           }
         }
       }
@@ -259,6 +403,24 @@
             "state": "translated",
             "value": "OAuthリソースがこのMCPサーバと一致しません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die OAuth-Ressource passt nicht zu diesem MCP-Server."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La ressource OAuth ne correspond pas à ce serveur MCP."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 리소스가 이 MCP 서버와 일치하지 않습니다."
+          }
         }
       }
     },
@@ -287,6 +449,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "OAuthサーバがPKCE S256に対応していません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der OAuth-Server unterstützt PKCE S256 nicht."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur OAuth ne prend pas en charge PKCE S256."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 서버가 PKCE S256을 지원하지 않습니다."
           }
         }
       }
@@ -317,6 +497,24 @@
             "state": "translated",
             "value": "OAuthサーバのメタデータが無効か、取得できません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Metadaten des OAuth-Servers sind ungültig oder nicht verfügbar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les métadonnées du serveur OAuth sont invalides ou indisponibles."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 서버 메타데이터가 유효하지 않거나 사용할 수 없습니다."
+          }
         }
       }
     },
@@ -345,6 +543,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "OAuthセッションの有効期限が切れました。続行するには再度サインインしてください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die OAuth-Sitzung ist abgelaufen. Melden Sie sich erneut an, um fortzufahren."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La session OAuth a expiré. Reconnectez-vous pour continuer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 세션이 만료되었습니다. 계속하려면 다시 로그인하세요."
           }
         }
       }
@@ -375,6 +591,24 @@
             "state": "translated",
             "value": "OAuthトークンのリクエストに失敗しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die OAuth-Token-Anfrage ist fehlgeschlagen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La demande de jeton OAuth a échoué."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OAuth 토큰 요청에 실패했습니다."
+          }
         }
       }
     },
@@ -404,6 +638,24 @@
             "state": "translated",
             "value": "このMCPサーバには、登録済みのOAuthクライアントIDが必要です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser MCP-Server erfordert eine registrierte OAuth-Client-ID."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce serveur MCP nécessite un identifiant client OAuth enregistré."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 MCP 서버에는 등록된 OAuth 클라이언트 ID가 필요합니다."
+          }
         }
       }
     },
@@ -425,6 +677,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "コンテキスト%@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontextfenster: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fenêtre de contexte : %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "컨텍스트 윈도우: %@"
           }
         }
       }
@@ -448,6 +718,48 @@
             "state": "translated",
             "value": "%lld件のメッセージを読み取り済み"
           }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Nachricht gelesen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Nachrichten gelesen"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld message lu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld messages lus"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메시지 %lld개 읽음"
+          }
         }
       }
     },
@@ -469,6 +781,48 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld個のモデル"
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Modell"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Modelle"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld modèle"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld modèles"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 %lld개"
           }
         }
       }
@@ -492,6 +846,24 @@
             "state": "translated",
             "value": "受付済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angenommen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accepté"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "접수됨"
+          }
         }
       }
     },
@@ -513,6 +885,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "キャンセル済み"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgebrochen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annulé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "취소됨"
           }
         }
       }
@@ -536,6 +926,24 @@
             "state": "translated",
             "value": "完了"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgeschlossen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "완료됨"
+          }
         }
       }
     },
@@ -557,6 +965,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "配信済み"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zugestellt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remis"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전달됨"
           }
         }
       }
@@ -580,6 +1006,24 @@
             "state": "translated",
             "value": "失敗"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fehlgeschlagen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실패"
+          }
         }
       }
     },
@@ -601,6 +1045,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "アイドル"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leerlauf"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inactif"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유휴"
           }
         }
       }
@@ -624,6 +1086,24 @@
             "state": "translated",
             "value": "中断"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unterbrochen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interrompu"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중단됨"
+          }
         }
       }
     },
@@ -645,6 +1125,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "準備中"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird vorbereitet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Préparation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "준비 중"
           }
         }
       }
@@ -668,6 +1166,24 @@
             "state": "translated",
             "value": "待機中"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingereiht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대기열에 추가됨"
+          }
         }
       }
     },
@@ -689,6 +1205,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "レビュー中"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird geprüft"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En cours de vérification"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검토 중"
           }
         }
       }
@@ -712,6 +1246,24 @@
             "state": "translated",
             "value": "未配信"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht zugestellt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non remis"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전달되지 않음"
+          }
         }
       }
     },
@@ -733,6 +1285,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "承認待ち"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wartet auf Genehmigung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente d’approbation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "승인 대기 중"
           }
         }
       }
@@ -756,6 +1326,24 @@
             "state": "translated",
             "value": "ユーザの操作待ち"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wartet auf Benutzereingabe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En attente de l’utilisateur"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용자 조치 대기 중"
+          }
         }
       }
     },
@@ -777,6 +1365,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャット一覧を取得できません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chatliste nicht verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liste des chats indisponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅 목록을 가져올 수 없음"
           }
         }
       }
@@ -800,6 +1406,24 @@
             "state": "translated",
             "value": "チャットの状態を取得できません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chatstatus nicht verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "État du chat indisponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅 상태를 가져올 수 없음"
+          }
         }
       }
     },
@@ -821,6 +1445,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャットを利用できません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat nicht verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat indisponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅을 사용할 수 없음"
           }
         }
       }
@@ -844,6 +1486,24 @@
             "state": "translated",
             "value": "モデル一覧を取得できません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modellliste nicht verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Liste des modèles indisponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 목록을 가져올 수 없음"
+          }
         }
       }
     },
@@ -865,6 +1525,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャットはありません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Chats"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun chat"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅 없음"
           }
         }
       }
@@ -888,6 +1566,24 @@
             "state": "translated",
             "value": "プロバイダ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anbieter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fournisseur"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제공업체"
+          }
         }
       }
     },
@@ -909,6 +1605,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ユーザの入力により待機を停止しました"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warten durch Benutzereingabe beendet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attente interrompue par une saisie de l’utilisateur"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용자 입력으로 대기 중지됨"
           }
         }
       }
@@ -932,6 +1646,24 @@
             "state": "translated",
             "value": "待機がタイムアウトしました"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitüberschreitung beim Warten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Délai d’attente dépassé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대기 시간 초과"
+          }
         }
       }
     },
@@ -953,6 +1685,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "取得元URL"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quell-URL"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL source"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "출처 URL"
           }
         }
       }
@@ -976,6 +1726,24 @@
             "state": "translated",
             "value": "解決後の取得元"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufgelöste Quelle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source résolue"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "확인된 출처"
+          }
         }
       }
     },
@@ -997,6 +1765,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "コミット"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commit"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "커밋"
           }
         }
       }
@@ -1020,6 +1806,24 @@
             "state": "translated",
             "value": "説明"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beschreibung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Description"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설명"
+          }
         }
       }
     },
@@ -1041,6 +1845,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "検索内容"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suchanfrage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "검색어"
           }
         }
       }
@@ -1064,6 +1886,24 @@
             "state": "translated",
             "value": "会話ID"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unterhaltungs-ID"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identifiant de conversation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화 ID"
+          }
         }
       }
     },
@@ -1085,6 +1925,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "開始位置"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startposition"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Position de départ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시작 위치"
           }
         }
       }
@@ -1108,6 +1966,24 @@
             "state": "translated",
             "value": "件数の上限"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Höchstanzahl"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre maximal"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대 개수"
+          }
         }
       }
     },
@@ -1129,6 +2005,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "有効"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktiviert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "활성화됨"
           }
         }
       }
@@ -1152,6 +2046,24 @@
             "state": "translated",
             "value": "一致するテキスト"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übereinstimmender Text"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte à rechercher"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "찾을 텍스트"
+          }
         }
       }
     },
@@ -1173,6 +2085,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "置換後のテキスト"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ersetzungstext"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte de remplacement"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대체 텍스트"
           }
         }
       }
@@ -1196,6 +2126,24 @@
             "state": "translated",
             "value": "ファイルはありません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Dateien"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun fichier"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일 없음"
+          }
         }
       }
     },
@@ -1217,6 +2165,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "さらに結果があります"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weitere Ergebnisse verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "D’autres résultats sont disponibles"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추가 결과 있음"
           }
         }
       }
@@ -1240,6 +2206,24 @@
             "state": "translated",
             "value": "次回の実行から利用可能"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ab dem nächsten Lauf verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disponible à la prochaine exécution"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "다음 실행부터 사용 가능"
+          }
         }
       }
     },
@@ -1261,6 +2245,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "メモリを追加"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerung hinzufügen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter un souvenir"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기억 추가"
           }
         }
       }
@@ -1284,6 +2286,24 @@
             "state": "translated",
             "value": "メモリを置き換える"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerung ersetzen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacer un souvenir"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기억 대체"
+          }
         }
       }
     },
@@ -1305,6 +2325,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "メモリを削除"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerung entfernen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer un souvenir"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기억 제거"
           }
         }
       }
@@ -1328,6 +2366,24 @@
             "state": "translated",
             "value": "スキルを作成"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill erstellen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer une compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 생성"
+          }
         }
       }
     },
@@ -1349,6 +2405,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキルを更新"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill aktualisieren"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mettre à jour une compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 업데이트"
           }
         }
       }
@@ -1372,6 +2446,24 @@
             "state": "translated",
             "value": "スキルを修正"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill gezielt bearbeiten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appliquer des modifications ciblées à une compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 부분 수정"
+          }
         }
       }
     },
@@ -1393,6 +2485,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキルを削除"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill löschen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer une compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 삭제"
           }
         }
       }
@@ -1416,6 +2526,24 @@
             "state": "translated",
             "value": "スキルの有効・無効を設定"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill-Verfügbarkeit festlegen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Définir la disponibilité d’une compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 활성화 상태 설정"
+          }
         }
       }
     },
@@ -1437,6 +2565,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキルのファイルを書き込む"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill-Datei schreiben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrire un fichier de compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 파일 쓰기"
           }
         }
       }
@@ -1460,6 +2606,24 @@
             "state": "translated",
             "value": "スキルのファイルを削除"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill-Datei entfernen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer un fichier de compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 파일 제거"
+          }
         }
       }
     },
@@ -1481,6 +2645,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "対象"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대상"
           }
         }
       }
@@ -1504,6 +2686,24 @@
             "state": "translated",
             "value": "ユーザプロファイル"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzerprofil"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profil utilisateur"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용자 프로필"
+          }
         }
       }
     },
@@ -1525,6 +2725,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "メモリ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "mémoire"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기억"
           }
         }
       }
@@ -1548,6 +2766,24 @@
             "state": "translated",
             "value": "バイナリリソースです。元のバイト列を使用するには、スキルエディタから書き出してください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Binärressource. Exportieren Sie sie aus dem Skill-Editor, um die ursprünglichen Bytes zu verwenden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ressource binaire. Exportez-la depuis l’éditeur de compétences pour utiliser ses octets d’origine."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "바이너리 리소스입니다. 원본 바이트를 사용하려면 스킬 편집기에서 내보내세요."
+          }
         }
       }
     },
@@ -1569,6 +2805,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "テキスト行は返されませんでした"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Zeilen zurückgegeben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune ligne renvoyée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "반환된 텍스트 줄 없음"
           }
         }
       }
@@ -1592,6 +2846,24 @@
             "state": "translated",
             "value": "スキル"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skills"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compétences"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬"
+          }
         }
       }
     },
@@ -1613,6 +2885,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "無効"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deaktiviert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désactivé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비활성화됨"
           }
         }
       }
@@ -1636,6 +2926,24 @@
             "state": "translated",
             "value": "読み取り専用"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur lesend"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lecture seule"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "읽기 전용"
+          }
         }
       }
     },
@@ -1657,6 +2965,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "利用可能なスキルはありません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Skills verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune compétence disponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용 가능한 스킬 없음"
           }
         }
       }
@@ -1680,6 +3006,24 @@
             "state": "translated",
             "value": "スキルの変更を保存しました"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill-Änderungen gespeichert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifications des compétences enregistrées"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 변경 사항 저장됨"
+          }
         }
       }
     },
@@ -1701,6 +3045,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキルをインストールしました"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill installiert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compétence installée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 설치됨"
           }
         }
       }
@@ -1724,6 +3086,24 @@
             "state": "translated",
             "value": "メモリの操作を処理しました"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erinnerungsoperationen verarbeitet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opérations sur la mémoire traitées"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기억 작업 처리됨"
+          }
         }
       }
     },
@@ -1745,6 +3125,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "現在のメモリ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aktuelle Erinnerungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mémoire actuelle"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 기억"
           }
         }
       }
@@ -1768,6 +3166,24 @@
             "state": "translated",
             "value": "最近の会話"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Letzte Unterhaltungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversations récentes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최근 대화"
+          }
         }
       }
     },
@@ -1789,6 +3205,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "名称未設定の会話"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unbenannte Unterhaltung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversation sans titre"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제목 없는 대화"
           }
         }
       }
@@ -1812,6 +3246,24 @@
             "state": "translated",
             "value": "会話が見つかりませんでした"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Unterhaltungen gefunden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune conversation trouvée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화를 찾을 수 없음"
+          }
         }
       }
     },
@@ -1833,6 +3285,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "メッセージが見つかりませんでした"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Nachrichten gefunden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun message trouvé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메시지를 찾을 수 없음"
           }
         }
       }
@@ -1856,6 +3326,24 @@
             "state": "translated",
             "value": "ユーザ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Benutzer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisateur"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용자"
+          }
         }
       }
     },
@@ -1877,6 +3365,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "アシスタント"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assistent"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Assistant"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "어시스턴트"
           }
         }
       }
@@ -1900,6 +3406,24 @@
             "state": "translated",
             "value": "ツール"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werkzeug"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outil"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구"
+          }
         }
       }
     },
@@ -1921,6 +3445,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "システム"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Système"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템"
           }
         }
       }
@@ -1944,6 +3486,24 @@
             "state": "translated",
             "value": "メッセージ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nachricht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "메시지"
+          }
         }
       }
     },
@@ -1965,6 +3525,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "後にツールの実行があるメッセージは編集できません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nachrichten, auf die Werkzeugaktivitäten folgen, können nicht bearbeitet werden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les messages suivis d’une activité d’outil ne peuvent pas être modifiés."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이후에 도구 활동이 있는 메시지는 편집할 수 없습니다."
           }
         }
       }
@@ -1988,6 +3566,24 @@
             "state": "translated",
             "value": "%1$@に失敗しました（%2$lld）：%3$@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ fehlgeschlagen (%2$lld): %3$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec de %1$@ (%2$lld) : %3$@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ 실패 (%2$lld): %3$@"
+          }
         }
       }
     },
@@ -2009,6 +3605,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@は有効なURLではありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ungültige URL: %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL invalide : %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유효하지 않은 URL: %@."
           }
         }
       }
@@ -2032,6 +3646,24 @@
             "state": "translated",
             "value": "%@は有効なトークンエンドポイントではありません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ungültiger Token-Endpunkt: %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Point de terminaison de jeton invalide : %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "유효하지 않은 토큰 엔드포인트: %@."
+          }
         }
       }
     },
@@ -2053,6 +3685,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@はHTTPまたはHTTPSのURLではありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine HTTP- oder HTTPS-URL: %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’URL n’utilise ni HTTP ni HTTPS : %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP 또는 HTTPS URL이 아님: %@."
           }
         }
       }
@@ -2076,6 +3726,24 @@
             "state": "translated",
             "value": "計画中は%@を利用できません。まだ合意された内容がないため、追跡する作業がありません。計画を完成させ、present_planを呼び出してください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist während der Planung nicht verfügbar: Es wurde noch nichts vereinbart, daher gibt es keine Arbeit zu verfolgen. Schließen Sie den Plan ab und rufen Sie present_plan auf."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ est indisponible pendant la planification : rien n’a encore été convenu, il n’y a donc aucun travail à suivre. Terminez le plan et appelez present_plan."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "계획 중에는 %@ 도구를 사용할 수 없습니다. 아직 합의된 내용이 없어 추적할 작업이 없습니다. 계획을 완성한 다음 present_plan을 호출하세요."
+          }
         }
       }
     },
@@ -2097,6 +3765,48 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld件の編集を適用しました"
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Änderung angewendet"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Änderungen angewendet"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld modification appliquée"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld modifications appliquées"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정 %lld개 적용됨"
           }
         }
       }
@@ -2120,6 +3830,48 @@
             "state": "translated",
             "value": "%lld件"
           }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Eintrag"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Einträge"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld entrée"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld entrées"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "항목 %lld개"
+          }
         }
       }
     },
@@ -2141,6 +3893,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld個のファイル"
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Datei"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Dateien"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "파일 %lld개"
+                }
+              }
+            }
           }
         }
       }
@@ -2164,6 +3964,24 @@
             "state": "translated",
             "value": "%2$lld個のファイルで一致した%1$lld行"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übereinstimmende Zeilen: %1$lld · Durchsuchte Dateien: %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lignes correspondantes : %1$lld · Fichiers parcourus : %2$lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일 %2$lld개에서 일치하는 줄 %1$lld개 찾음"
+          }
         }
       }
     },
@@ -2185,6 +4003,48 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lldか所を置換しました"
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Ersetzung angewendet"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Ersetzungen angewendet"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld remplacement appliqué"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld remplacements appliqués"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대체 %lld개 적용됨"
           }
         }
       }
@@ -2244,6 +4104,54 @@
               }
             }
           }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Ergebnis"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Ergebnisse"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld résultat"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld résultats"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "결과 %lld개"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -2265,6 +4173,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld件のタスク · %2$lld件完了"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufgaben: %1$lld · Abgeschlossen: %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tâches : %1$lld · Terminées : %2$lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 %1$lld개 · %2$lld개 완료"
           }
         }
       }
@@ -2288,6 +4214,24 @@
             "state": "translated",
             "value": "スキルのサイズは%lld KB以下にしてください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill darf höchstens %lld KB groß sein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La taille d’une compétence ne doit pas dépasser %lld Ko."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 크기는 최대 %lld KB여야 합니다."
+          }
         }
       }
     },
@@ -2309,6 +4253,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキル名は%lld文字以内にしてください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill-Name darf höchstens %lld Zeichen lang sein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le nom d’une compétence ne doit pas dépasser %lld caractères."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 이름은 최대 %lld자여야 합니다."
           }
         }
       }
@@ -2332,6 +4294,24 @@
             "state": "translated",
             "value": "スキル名の先頭または末尾にハイフンは使用できません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill-Name darf nicht mit einem Bindestrich beginnen oder enden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le nom d’une compétence ne doit ni commencer ni se terminer par un trait d’union."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 이름은 하이픈으로 시작하거나 끝날 수 없습니다."
+          }
         }
       }
     },
@@ -2353,6 +4333,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキル名にハイフンを2つ続けて使用することはできません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill-Name darf keine zwei aufeinanderfolgenden Bindestriche enthalten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le nom d’une compétence ne doit pas contenir deux traits d’union consécutifs."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 이름에는 하이픈 두 개를 연속으로 사용할 수 없습니다."
           }
         }
       }
@@ -2376,6 +4374,24 @@
             "state": "translated",
             "value": "スキル名には小文字の英字、数字、ハイフンのみ使用できます。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill-Name darf nur Kleinbuchstaben, Ziffern und Bindestriche enthalten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le nom d’une compétence ne peut contenir que des lettres minuscules, des chiffres et des traits d’union."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬 이름에는 영문 소문자, 숫자 및 하이픈만 사용할 수 있습니다."
+          }
         }
       }
     },
@@ -2397,6 +4413,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキルには、機能と使用場面を説明する記述が必要です。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill benötigt eine Beschreibung seiner Funktion und seines Einsatzbereichs."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une compétence doit avoir une description indiquant son rôle et quand l’utiliser."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬에는 기능과 사용 시점을 설명하는 내용이 필요합니다."
           }
         }
       }
@@ -2420,6 +4454,24 @@
             "state": "translated",
             "value": "スキルには名前が必要です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Skill benötigt einen Namen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une compétence doit avoir un nom."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬에는 이름이 필요합니다."
+          }
         }
       }
     },
@@ -2441,6 +4493,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "途中で切れたモデルの応答にツール呼び出しが含まれていました。どの呼び出しも実行されませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine abgeschnittene Modellantwort enthielt Werkzeugaufrufe; keiner davon wurde ausgeführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une réponse tronquée du modèle contenait des appels d’outils ; aucun n’a été exécuté."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘린 모델 응답에 도구 호출이 포함되어 있었습니다. 어떤 호출도 실행되지 않았습니다."
           }
         }
       }
@@ -2464,6 +4534,24 @@
             "state": "translated",
             "value": "回答"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antwort"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réponse"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "답변"
+          }
         }
       }
     },
@@ -2485,6 +4573,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lldミリ秒で応答"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antwort nach %lld ms"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réponse en %lld ms"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld ms 만에 응답"
           }
         }
       }
@@ -2508,6 +4614,24 @@
             "state": "translated",
             "value": "自動で承認"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für mich genehmigen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approuver pour moi"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대신 승인"
+          }
         }
       }
     },
@@ -2529,6 +4653,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "承認を求める"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genehmigung anfordern"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demander l’approbation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "승인 요청"
           }
         }
       }
@@ -2552,6 +4694,24 @@
             "state": "translated",
             "value": "添付ファイル"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anhänge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pièces jointes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "첨부 파일"
+          }
         }
       }
     },
@@ -2573,6 +4733,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "音声"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오디오"
           }
         }
       }
@@ -2596,6 +4774,24 @@
             "state": "translated",
             "value": "自動"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatisch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatique"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동"
+          }
         }
       }
     },
@@ -2617,6 +4813,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "大文字と小文字を区別"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Groß-/Kleinschreibung beachten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respecter la casse"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대소문자 구분"
           }
         }
       }
@@ -2640,6 +4854,24 @@
             "state": "translated",
             "value": "変更"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Änderungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modifications"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "변경 사항"
+          }
         }
       }
     },
@@ -2661,6 +4893,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "分類"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klassifizierung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Classification"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "분류"
           }
         }
       }
@@ -2684,6 +4934,24 @@
             "state": "translated",
             "value": "チャット"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅"
+          }
         }
       }
     },
@@ -2705,6 +4973,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "コマンド"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Befehl"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Commande"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "명령"
           }
         }
       }
@@ -2728,6 +5014,24 @@
             "state": "translated",
             "value": "コマンドジェネレータ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Befehlsgenerator"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Générateur de commandes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "명령 생성기"
+          }
         }
       }
     },
@@ -2749,6 +5053,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "完了しました（出力なし）"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Ausgabe abgeschlossen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé sans sortie"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "출력 없이 완료됨"
           }
         }
       }
@@ -2772,6 +5094,24 @@
             "state": "translated",
             "value": "接続中"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbindung wird hergestellt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connexion en cours"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "연결 중"
+          }
         }
       }
     },
@@ -2793,6 +5133,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "利用ツール"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwendendes Werkzeug"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outil destinataire"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사용할 도구"
           }
         }
       }
@@ -2816,6 +5174,24 @@
             "state": "translated",
             "value": "内容"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inhalt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contenu"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "내용"
+          }
         }
       }
     },
@@ -2837,6 +5213,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "コンテンツの種類"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inhaltstyp"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type de contenu"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "콘텐츠 유형"
           }
         }
       }
@@ -2860,6 +5254,24 @@
             "state": "translated",
             "value": "会話"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unterhaltung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conversation"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화"
+          }
         }
       }
     },
@@ -2881,6 +5293,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "コピーしました"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copié"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "복사됨"
           }
         }
       }
@@ -2904,6 +5334,24 @@
             "state": "translated",
             "value": "作成済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "생성됨"
+          }
         }
       }
     },
@@ -2925,6 +5373,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "重大"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kritisch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Critique"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "심각"
           }
         }
       }
@@ -2948,6 +5414,24 @@
             "state": "translated",
             "value": "削除済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gelöscht"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "삭제됨"
+          }
         }
       }
     },
@@ -2969,6 +5453,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "宛先"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ziel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Destination"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대상"
           }
         }
       }
@@ -2992,6 +5494,24 @@
             "state": "translated",
             "value": "差分"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unterschiede"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Différences"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "차이"
+          }
         }
       }
     },
@@ -3013,6 +5533,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ディレクトリ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verzeichnis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répertoire"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "디렉터리"
           }
         }
       }
@@ -3036,6 +5574,24 @@
             "state": "translated",
             "value": "埋め込み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einbettung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plongement vectoriel"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "임베딩"
+          }
         }
       }
     },
@@ -3057,6 +5613,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "空のファイル"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leere Datei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier vide"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "빈 파일"
           }
         }
       }
@@ -3080,6 +5654,24 @@
             "state": "translated",
             "value": "終了"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beendet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "종료됨"
+          }
         }
       }
     },
@@ -3101,6 +5693,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "非常に高い"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sehr hoch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Très élevé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "매우 높음"
           }
         }
       }
@@ -3124,6 +5734,24 @@
             "state": "translated",
             "value": "ファイル"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일"
+          }
         }
       }
     },
@@ -3145,6 +5773,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ファイル"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dateien"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichiers"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일"
           }
         }
       }
@@ -3168,6 +5814,24 @@
             "state": "translated",
             "value": "ファイルは同一です"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dateien sind identisch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les fichiers sont identiques"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일이 동일함"
+          }
         }
       }
     },
@@ -3189,6 +5853,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "形式"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Format"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "형식"
           }
         }
       }
@@ -3212,6 +5894,24 @@
             "state": "translated",
             "value": "変更前"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgangsdatei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier de départ"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 파일"
+          }
         }
       }
     },
@@ -3233,6 +5933,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "フルアクセス"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vollzugriff"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accès complet"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "전체 접근"
           }
         }
       }
@@ -3256,6 +5974,24 @@
             "state": "translated",
             "value": "Googleからのサインイン応答にトークンが含まれていませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google hat auf die Anmeldung geantwortet, aber kein Token zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google a répondu à la connexion sans renvoyer de jeton."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 로그인 응답에 토큰이 포함되지 않았습니다."
+          }
         }
       }
     },
@@ -3278,6 +6014,24 @@
             "state": "translated",
             "value": "Googleがサインインを拒否しました — %@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google hat die Anmeldung abgelehnt — %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google a refusé la connexion — %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Google 로그인 거부됨 — %@"
+          }
         }
       }
     },
@@ -3296,6 +6050,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTTP %lld"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "HTTP %lld"
@@ -3322,6 +6094,24 @@
             "state": "translated",
             "value": "高"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoch"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Élevé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "높음"
+          }
         }
       }
     },
@@ -3343,6 +6133,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "画像"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bild"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Image"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미지"
           }
         }
       }
@@ -3366,6 +6174,24 @@
             "state": "translated",
             "value": "画像生成"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bilderzeugung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Génération d’images"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이미지 생성"
+          }
         }
       }
     },
@@ -3387,6 +6213,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "「%@」として読み込みました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als „%@“ importiert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importé sous le nom « %@ »."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "‘%@’ 이름으로 가져왔습니다."
           }
         }
       }
@@ -3410,6 +6254,24 @@
             "state": "translated",
             "value": "入力"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingabe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "입력"
+          }
         }
       }
     },
@@ -3431,6 +6293,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "種類"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Art"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "종류"
           }
         }
       }
@@ -3454,6 +6334,24 @@
             "state": "translated",
             "value": "GETストリームと個別のPOSTエンドポイントを使用する旧方式です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Älteres Transportverfahren mit einem GET-Stream und einem separaten POST-Endpunkt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ancien transport utilisant un flux GET et un point de terminaison POST distinct."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GET 스트림과 별도의 POST 엔드포인트를 사용하는 이전 전송 방식입니다."
+          }
         }
       }
     },
@@ -3475,6 +6373,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$lld行目が1ページあたり%2$lldバイトの上限を超えています。必要なバイト範囲を指定して読み取るか、検索してください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeile %1$lld überschreitet die Seitengrenze von %2$lld Bytes. Lesen Sie einen gezielten Bytebereich oder verwenden Sie die Suche."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La ligne %1$lld dépasse la limite de %2$lld octets par page. Lisez une plage d’octets ciblée ou effectuez une recherche."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld번째 줄이 페이지당 %2$lld바이트 한도를 초과합니다. 필요한 바이트 범위를 지정하여 읽거나 검색하세요."
           }
         }
       }
@@ -3498,6 +6414,24 @@
             "state": "translated",
             "value": "改行コード"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeilenenden"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fins de ligne"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "줄바꿈 형식"
+          }
         }
       }
     },
@@ -3519,6 +6453,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "行数"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeilen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lignes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "줄 수"
           }
         }
       }
@@ -3542,6 +6494,24 @@
             "state": "translated",
             "value": "低"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niedrig"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "낮음"
+          }
         }
       }
     },
@@ -3560,6 +6530,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Markdown"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "Markdown"
@@ -3586,6 +6574,24 @@
             "state": "translated",
             "value": "最大"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximal"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최대"
+          }
         }
       }
     },
@@ -3607,6 +6613,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "中"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mittel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moyen"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "보통"
           }
         }
       }
@@ -3630,6 +6654,24 @@
             "state": "translated",
             "value": "最小"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimal"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Minimal"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "최소"
+          }
         }
       }
     },
@@ -3651,6 +6693,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "移動済み"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verschoben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Déplacé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이동됨"
           }
         }
       }
@@ -3674,6 +6734,24 @@
             "state": "translated",
             "value": "いいえ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nein"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아니요"
+          }
         }
       }
     },
@@ -3695,6 +6773,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャット用モデルが設定されていません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Chatmodell konfiguriert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun modèle de chat n’est configuré."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅 모델이 설정되지 않았습니다."
           }
         }
       }
@@ -3718,6 +6814,24 @@
             "state": "translated",
             "value": "差分はありません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Unterschiede"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune différence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "차이 없음"
+          }
         }
       }
     },
@@ -3739,6 +6853,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "一致する項目はありません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Treffer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune correspondance"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일치하는 항목 없음"
           }
         }
       }
@@ -3762,6 +6894,24 @@
             "state": "translated",
             "value": "会話タイトル用のモデルが設定されていません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Modell für Unterhaltungstitel konfiguriert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun modèle n’est configuré pour les titres des conversations."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화 제목용 모델이 설정되지 않았습니다."
+          }
         }
       }
     },
@@ -3783,6 +6933,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このアドレスにモデル一覧がありません。ベースURLを確認してください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Modellliste unter dieser Adresse. Prüfen Sie die Basis-URL."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune liste de modèles à cette adresse. Vérifiez l’URL de base."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 주소에 모델 목록이 없습니다. 기본 URL을 확인하세요."
           }
         }
       }
@@ -3806,6 +6974,24 @@
             "state": "translated",
             "value": "読み取り可能なページ内容がありません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein lesbarer Seiteninhalt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun contenu de page lisible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "읽을 수 있는 페이지 내용 없음"
+          }
         }
       }
     },
@@ -3827,6 +7013,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "結果がありません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Ergebnisse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun résultat"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "결과 없음"
           }
         }
       }
@@ -3850,6 +7054,24 @@
             "state": "translated",
             "value": "なし"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "없음"
+          }
         }
       }
     },
@@ -3871,6 +7093,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "オフ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désactivé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "끔"
           }
         }
       }
@@ -3894,6 +7134,24 @@
             "state": "translated",
             "value": "元のHTML"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ursprüngliches HTML"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "HTML d’origine"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원본 HTML"
+          }
         }
       }
     },
@@ -3915,6 +7173,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "上書き"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überschreiben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écraser"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "덮어쓰기"
           }
         }
       }
@@ -3938,6 +7214,24 @@
             "state": "translated",
             "value": "上書き済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überschrieben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écrasé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "덮어씀"
+          }
         }
       }
     },
@@ -3956,6 +7250,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PDF"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "PDF"
@@ -3982,6 +7294,24 @@
             "state": "translated",
             "value": "パス"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pfad"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chemin"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "경로"
+          }
         }
       }
     },
@@ -4003,6 +7333,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "アクセス権"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zugriffsrechte"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permissions"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "접근 권한"
           }
         }
       }
@@ -4026,6 +7374,24 @@
             "state": "translated",
             "value": "計画モードがオンのため、%@は実行されませんでした。この操作はアプリ外の内容を変更します。読み取りで調査し、一時ワークスペースに計画を作成してpresent_planを呼び出してください。その後、ユーザが実行するかどうかを判断します。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Planungsmodus ist aktiv. Daher wurde %@ nicht ausgeführt: Die Aktion verändert etwas außerhalb dieser App. Untersuchen Sie den Zustand mit Lesezugriffen, entwerfen Sie den Plan im temporären Arbeitsbereich und rufen Sie present_plan auf. Anschließend entscheidet der Benutzer, ob er ihn ausführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le mode Plan est activé, donc %@ n’a pas été exécuté : cette action modifie quelque chose en dehors de l’app. Examinez l’état en lecture seule, rédigez le plan dans l’espace de travail temporaire et appelez present_plan. L’utilisateur décidera ensuite de l’exécuter ou non."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "계획 모드가 켜져 있어 %@ 도구는 실행되지 않았습니다. 이 작업은 앱 외부의 내용을 변경합니다. 읽기 작업으로 조사하고 임시 작업 공간에 계획을 작성한 다음 present_plan을 호출하세요. 이후 사용자가 실행 여부를 결정합니다."
+          }
         }
       }
     },
@@ -4047,6 +7413,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@から計画を提示しました"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan aus %@ vorgestellt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plan présenté depuis %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@에서 계획 제시됨"
           }
         }
       }
@@ -4070,6 +7454,24 @@
             "state": "translated",
             "value": "目的"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zweck"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usage"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "용도"
+          }
         }
       }
     },
@@ -4091,6 +7493,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "質問"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Question"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "질문"
           }
         }
       }
@@ -4114,6 +7534,24 @@
             "state": "translated",
             "value": "質問を表示できません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frage nicht verfügbar"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Question indisponible"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "질문을 표시할 수 없음"
+          }
         }
       }
     },
@@ -4135,6 +7573,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "推論"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denken"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raisonnement"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "추론"
           }
         }
       }
@@ -4158,6 +7614,24 @@
             "state": "translated",
             "value": "リモートパス"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernter Pfad"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chemin distant"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "원격 경로"
+          }
         }
       }
     },
@@ -4179,6 +7653,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "置換済み"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ersetzt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remplacé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대체됨"
           }
         }
       }
@@ -4202,6 +7694,24 @@
             "state": "translated",
             "value": "リクエスト"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anfrage"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Demande"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "요청"
+          }
         }
       }
     },
@@ -4223,6 +7733,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "再ランキング"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neusortierung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reclassement"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "재순위화"
           }
         }
       }
@@ -4246,6 +7774,24 @@
             "state": "translated",
             "value": "結果"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résultat"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "결과"
+          }
         }
       }
     },
@@ -4267,6 +7813,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動承認の前にコマンドをレビューします。「自動」では、利用可能な最適なレビューモデルを選択します。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prüft Befehle vor der automatischen Genehmigung. „Automatisch“ wählt das beste verfügbare Prüfmodell."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifie les commandes avant leur approbation automatique. Le mode Automatique choisit le meilleur modèle de vérification disponible."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 승인 전에 명령을 검토합니다. 자동 모드는 사용 가능한 최적의 검토 모델을 선택합니다."
           }
         }
       }
@@ -4290,6 +7854,24 @@
             "state": "translated",
             "value": "実行中"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird ausgeführt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En cours d’exécution"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "실행 중"
+          }
         }
       }
     },
@@ -4308,6 +7890,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SHA-256"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "SHA-256"
@@ -4334,6 +7934,24 @@
             "state": "translated",
             "value": "SSE（旧方式）"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE (veraltet)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE (ancien)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SSE (이전 방식)"
+          }
         }
       }
     },
@@ -4355,6 +7973,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャットと同じ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wie beim Chat"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comme pour le chat"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅과 동일"
           }
         }
       }
@@ -4378,6 +8014,24 @@
             "state": "translated",
             "value": "一時保存パス"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temporärer Pfad"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chemin temporaire"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "임시 저장 경로"
+          }
         }
       }
     },
@@ -4399,6 +8053,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "シークレットハンドル"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geheimnis-Handle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Identifiant de référence du secret"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비밀 정보 핸들"
           }
         }
       }
@@ -4422,6 +8094,24 @@
             "state": "translated",
             "value": "シークレットを安全に受信しました"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geheimnis sicher empfangen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Secret reçu de façon sécurisée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비밀 정보가 안전하게 수신됨"
+          }
         }
       }
     },
@@ -4443,6 +8133,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ガーディアン"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wächter"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardien"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "가디언"
           }
         }
       }
@@ -4466,6 +8174,24 @@
             "state": "translated",
             "value": "自動レビューがキャンセルされました。操作は実行されていません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung wurde abgebrochen; die Aktion wurde nicht ausgeführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a été annulée ; l’action n’a pas été exécutée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토가 취소되었습니다. 작업은 실행되지 않았습니다."
+          }
         }
       }
     },
@@ -4487,6 +8213,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "不利な結果が繰り返されたため、自動レビューを一時停止しました。操作は実行されていません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung wurde nach wiederholt ungünstigen Ergebnissen angehalten; die Aktion wurde nicht ausgeführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a été suspendue après des résultats défavorables répétés ; l’action n’a pas été exécutée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "부정적인 결과가 반복되어 자동 검토가 일시 정지되었습니다. 작업은 실행되지 않았습니다."
           }
         }
       }
@@ -4510,6 +8254,24 @@
             "state": "translated",
             "value": "自動レビューに失敗しました。操作は実行されていません。%@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung ist fehlgeschlagen; die Aktion wurde nicht ausgeführt. %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a échoué ; l’action n’a pas été exécutée. %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토에 실패했습니다. 작업은 실행되지 않았습니다. %@"
+          }
         }
       }
     },
@@ -4531,6 +8293,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動レビューを利用できません。操作は実行されていません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung ist nicht verfügbar; die Aktion wurde nicht ausgeführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique est indisponible ; l’action n’a pas été exécutée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토를 사용할 수 없습니다. 작업은 실행되지 않았습니다."
           }
         }
       }
@@ -4554,6 +8334,24 @@
             "state": "translated",
             "value": "自動レビューが無効な判断を返しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung hat eine ungültige Entscheidung zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a renvoyé une décision invalide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토가 유효하지 않은 결정을 반환했습니다."
+          }
         }
       }
     },
@@ -4575,6 +8373,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動レビューがタイムアウトしました。操作は実行されていません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitüberschreitung bei der automatischen Prüfung; die Aktion wurde nicht ausgeführt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le délai de la vérification automatique a été dépassé ; l’action n’a pas été exécutée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토 시간이 초과되었습니다. 작업은 실행되지 않았습니다."
           }
         }
       }
@@ -4598,6 +8414,24 @@
             "state": "translated",
             "value": "自動レビューが調査回数の上限を超えました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung hat ihr Untersuchungslimit überschritten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a dépassé sa limite d’investigation."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토가 조사 한도를 초과했습니다."
+          }
         }
       }
     },
@@ -4619,6 +8453,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "自動レビューが推論ターン数の上限を超えました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die automatische Prüfung hat ihr Limit für Denkrunden überschritten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La vérification automatique a dépassé sa limite de tours de raisonnement."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "자동 검토가 추론 턴 수 한도를 초과했습니다."
           }
         }
       }
@@ -4642,6 +8494,24 @@
             "state": "translated",
             "value": "一致した%2$lld行中%1$lld行を表示"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angezeigte Trefferzeilen: %1$lld von %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lignes correspondantes affichées : %1$lld sur %2$lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "일치하는 줄 %2$lld개 중 %1$lld개 표시 중"
+          }
         }
       }
     },
@@ -4663,6 +8533,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "署名に失敗しました：%@。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Signieren fehlgeschlagen: %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échec de la signature : %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서명 실패: %@."
           }
         }
       }
@@ -4686,6 +8574,24 @@
             "state": "translated",
             "value": "サイズ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Größe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taille"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "크기"
+          }
         }
       }
     },
@@ -4707,6 +8613,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "スキル"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skill"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compétence"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스킬"
           }
         }
       }
@@ -4730,6 +8654,24 @@
             "state": "translated",
             "value": "スキップ済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Übersprungen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ignoré"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "건너뜀"
+          }
         }
       }
     },
@@ -4751,6 +8693,48 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld個のバイナリファイルをスキップしました"
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Binärdatei übersprungen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Binärdateien übersprungen"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichier binaire ignoré"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld fichiers binaires ignorés"
+                }
+              }
+            }
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "바이너리 파일 %lld개 건너뜀"
           }
         }
       }
@@ -4774,6 +8758,24 @@
             "state": "translated",
             "value": "取得元"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quelle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "출처"
+          }
         }
       }
     },
@@ -4796,6 +8798,24 @@
             "state": "translated",
             "value": "状態"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "État"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "상태"
+          }
         }
       }
     },
@@ -4814,6 +8834,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamable HTTP"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamable HTTP"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Streamable HTTP"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "Streamable HTTP"
@@ -4840,6 +8878,24 @@
             "state": "translated",
             "value": "シンボリックリンク"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Symbolischer Link"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lien symbolique"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "심볼릭 링크"
+          }
         }
       }
     },
@@ -4861,6 +8917,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "システムプロンプト"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System-Prompt"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prompt système"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시스템 프롬프트"
           }
         }
       }
@@ -4884,6 +8958,24 @@
             "state": "translated",
             "value": "テキスト"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Texte"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "텍스트"
+          }
         }
       }
     },
@@ -4905,6 +8997,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "テキストは同じですが、改行コードが異なります：%1$@ → %2$@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Text ist identisch; die Zeilenenden unterscheiden sich: %1$@ → %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le texte est identique ; les fins de ligne diffèrent : %1$@ → %2$@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "텍스트는 같지만 줄바꿈 형식이 다름: %1$@ → %2$@"
           }
         }
       }
@@ -4928,6 +9038,24 @@
             "state": "translated",
             "value": "サービスアカウントキーではありません。client_emailとprivate_keyが必要です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dies ist kein Dienstkontoschlüssel. Er muss client_email und private_key enthalten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce n’est pas une clé de compte de service. Elle doit contenir client_email et private_key."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서비스 계정 키가 아닙니다. client_email과 private_key가 필요합니다."
+          }
         }
       }
     },
@@ -4949,6 +9077,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャット用モデルに利用可能な認証資格情報がありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für das Chatmodell sind keine Anmeldedaten verfügbar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun identifiant n’est disponible pour le modèle de chat."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅 모델에 사용 가능한 자격 증명이 없습니다."
           }
         }
       }
@@ -4972,6 +9118,24 @@
             "state": "translated",
             "value": "このツール呼び出しの結果が記録される前に、アプリが停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die App wurde beendet, bevor das Ergebnis dieses Werkzeugaufrufs gespeichert wurde. Ob die Aktion abgeschlossen wurde, ist unbekannt. Prüfen Sie den aktuellen Zustand, bevor Sie sie erneut ausführen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app s’est arrêtée avant l’enregistrement du résultat de cet appel d’outil. On ignore si l’action s’est terminée ; vérifiez l’état actuel avant de la relancer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 도구 호출의 결과가 기록되기 전에 앱이 중지되었습니다. 작업 완료 여부는 알 수 없습니다. 다시 실행하기 전에 현재 상태를 확인하세요."
+          }
         }
       }
     },
@@ -4993,6 +9157,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このツールが完了する前に、アプリが待機を停止しました。操作が完了したかは不明です。再実行する前に現在の状態を確認してください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die App hat das Warten auf dieses Werkzeug vor dessen Abschluss beendet. Ob die Aktion abgeschlossen wurde, ist unbekannt. Prüfen Sie den aktuellen Zustand, bevor Sie sie erneut ausführen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’app a cessé d’attendre cet outil avant qu’il ne se termine. On ignore si l’action s’est terminée ; vérifiez l’état actuel avant de la relancer."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 실행이 끝나기 전에 앱이 대기를 중지했습니다. 작업 완료 여부는 알 수 없습니다. 다시 실행하기 전에 현재 상태를 확인하세요."
           }
         }
       }
@@ -5016,6 +9198,24 @@
             "state": "translated",
             "value": "会話が長すぎるため、要約できません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Unterhaltung ist zu lang für eine Zusammenfassung."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conversation est trop longue pour être résumée."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화가 너무 길어 요약할 수 없습니다."
+          }
         }
       }
     },
@@ -5037,6 +9237,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "この会話はもう存在しません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Unterhaltung existiert nicht mehr."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La conversation n’existe plus."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화가 더 이상 존재하지 않습니다."
           }
         }
       }
@@ -5060,6 +9278,24 @@
             "state": "translated",
             "value": "会話タイトル用のモデルに利用可能な認証資格情報がありません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Für das Modell für Unterhaltungstitel sind keine Anmeldedaten verfügbar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun identifiant n’est disponible pour le modèle de titres des conversations."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "대화 제목용 모델에 사용 가능한 자격 증명이 없습니다."
+          }
         }
       }
     },
@@ -5081,6 +9317,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "POSTとGETに同じエンドポイントを使用する現行の方式です。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das aktuelle Transportverfahren verwendet einen Endpunkt für POST und GET."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le transport actuel utilise un seul point de terminaison pour POST et GET."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "POST와 GET에 하나의 엔드포인트를 사용하는 현재 전송 방식입니다."
           }
         }
       }
@@ -5104,6 +9358,24 @@
             "state": "translated",
             "value": "説明が%lld文字を超えています。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Beschreibung überschreitet die Grenze von %lld Zeichen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La description dépasse la limite de %lld caractères."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "설명이 %lld자를 초과합니다."
+          }
         }
       }
     },
@@ -5125,6 +9397,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "差分の範囲が%1$lld行あり、差分の上限の%2$lld行を超えています。それぞれのファイルを範囲を限定して読み取り、差分を絞り込んでください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der abweichende Bereich umfasst %1$lld Zeilen und überschreitet die Diff-Grenze von %2$lld Zeilen. Lesen Sie stattdessen einen begrenzten Bereich jeder Datei, um den Unterschied einzugrenzen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La zone différente s’étend sur %1$lld lignes, au-delà de la limite de %2$lld lignes du diff. Réduisez la portée en lisant une plage limitée de chaque fichier."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "차이가 있는 영역이 %1$lld줄에 걸쳐 있어 비교 한도인 %2$lld줄을 초과합니다. 대신 각 파일에서 범위를 제한하여 읽고 비교 범위를 좁히세요."
           }
         }
       }
@@ -5148,6 +9438,24 @@
             "state": "translated",
             "value": "エンドポイントが%lldを返しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Endpunkt hat mit %lld geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison a répondu avec le code %lld."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "엔드포인트가 %lld 코드를 반환했습니다."
+          }
         }
       }
     },
@@ -5169,6 +9477,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "エンドポイントは応答しましたが、モデル一覧を返しませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Endpunkt hat geantwortet, aber keine Modellliste zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison a répondu, mais sans liste de modèles."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "엔드포인트가 응답했지만 모델 목록을 반환하지 않았습니다."
           }
         }
       }
@@ -5192,6 +9518,24 @@
             "state": "translated",
             "value": "エンドポイントがHTTPで応答しませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Endpunkt hat nicht mit HTTP geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison n’a pas renvoyé de réponse HTTP."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "엔드포인트가 HTTP 응답을 반환하지 않았습니다."
+          }
         }
       }
     },
@@ -5213,6 +9557,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "エンドポイントがこのAPIキーを拒否しました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Endpunkt hat diesen API-Schlüssel abgelehnt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison a rejeté cette clé API."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "엔드포인트가 이 API 키를 거부했습니다."
           }
         }
       }
@@ -5236,6 +9598,24 @@
             "state": "translated",
             "value": "イベントストリームがサイズ上限を超える行を送信しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Ereignisstream hat eine Zeile gesendet, die das Größenlimit überschreitet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le flux d’événements a envoyé une ligne dépassant la taille limite."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이벤트 스트림이 크기 한도를 초과하는 줄을 보냈습니다."
+          }
         }
       }
     },
@@ -5257,6 +9637,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ファイルに名前の指定がなかったため、「%@」を使用しました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Datei enthielt keinen Namen; „%@“ wurde verwendet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le fichier ne précisait aucun nom ; « %@ » a été utilisé."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일에 이름이 지정되지 않아 ‘%@’ 이름을 사용했습니다."
           }
         }
       }
@@ -5280,6 +9678,24 @@
             "state": "translated",
             "value": "識別子がすでに存在するため、分岐を作成できませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Verzweigung konnte nicht erstellt werden, da ihre Kennung bereits existiert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La branche de conversation n’a pas pu être créée, car son identifiant existe déjà."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "식별자가 이미 존재하여 대화 분기를 만들 수 없습니다."
+          }
         }
       }
     },
@@ -5301,6 +9717,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このメッセージは編集できなくなりました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Nachricht kann nicht mehr bearbeitet werden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce message ne peut plus être modifié."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 메시지를 더 이상 편집할 수 없습니다."
           }
         }
       }
@@ -5324,6 +9758,24 @@
             "state": "translated",
             "value": "モデルが使用可能な要約を返しませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Modell hat keine brauchbare Zusammenfassung zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le modèle n’a pas renvoyé de résumé utilisable."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델이 사용 가능한 요약을 반환하지 않았습니다."
+          }
         }
       }
     },
@@ -5345,6 +9797,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "応答が完了する前に、モデルへの接続が閉じられました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Verbindung zum Modell wurde vor Abschluss der Antwort geschlossen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La connexion au modèle a été fermée avant la fin de la réponse."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "응답이 끝나기 전에 모델 연결이 닫혔습니다."
           }
         }
       }
@@ -5368,6 +9838,24 @@
             "state": "translated",
             "value": "モデルのエンドポイントURLが無効です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die URL des Modellendpunkts ist ungültig."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’URL du point de terminaison du modèle est invalide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 엔드포인트 URL이 유효하지 않습니다."
+          }
         }
       }
     },
@@ -5389,6 +9877,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "モデルのエンドポイントがHTTP応答を返しませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Modellendpunkt hat keine HTTP-Antwort zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison du modèle n’a pas renvoyé de réponse HTTP."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 엔드포인트가 HTTP 응답을 반환하지 않았습니다."
           }
         }
       }
@@ -5412,6 +9918,24 @@
             "state": "translated",
             "value": "モデルのエンドポイントが%1$lldを返しました：%2$@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Modellendpunkt hat %1$lld zurückgegeben: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison du modèle a renvoyé %1$lld : %2$@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 엔드포인트 응답 %1$lld: %2$@"
+          }
         }
       }
     },
@@ -5433,6 +9957,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "モデルのエンドポイントが対応していない形式の応答を返しました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Modellendpunkt hat ein nicht unterstütztes Antwortformat zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison du modèle a renvoyé un format de réponse non pris en charge."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 엔드포인트가 지원되지 않는 응답 형식을 반환했습니다."
           }
         }
       }
@@ -5456,6 +9998,24 @@
             "state": "translated",
             "value": "モデルプロバイダが応答を完了できませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Modellanbieter konnte die Antwort nicht abschließen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le fournisseur de modèles n’a pas pu terminer la réponse."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 제공업체가 응답을 완료하지 못했습니다."
+          }
         }
       }
     },
@@ -5477,6 +10037,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "モデルの応答がサイズの上限を超えました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Modellantwort hat das Größenlimit überschritten."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La réponse du modèle a dépassé la taille limite."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 응답이 크기 한도를 초과했습니다."
           }
         }
       }
@@ -5500,6 +10078,24 @@
             "state": "translated",
             "value": "モデルが無効な会話タイトルを返しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Modell hat einen ungültigen Unterhaltungstitel zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le modèle a renvoyé un titre de conversation invalide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델이 유효하지 않은 대화 제목을 반환했습니다."
+          }
         }
       }
     },
@@ -5521,6 +10117,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "モデルが無効なツール呼び出しを返しました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Modell hat einen ungültigen Werkzeugaufruf zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le modèle a renvoyé un appel d’outil invalide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델이 유효하지 않은 도구 호출을 반환했습니다."
           }
         }
       }
@@ -5544,6 +10158,24 @@
             "state": "translated",
             "value": "モデルが%@に対して不正なJSON引数を返しました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Modell hat fehlerhafte JSON-Argumente für %@ zurückgegeben."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le modèle a renvoyé des arguments JSON mal formés pour %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델이 %@ 도구에 형식이 잘못된 JSON 인수를 반환했습니다."
+          }
         }
       }
     },
@@ -5565,6 +10197,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "秘密鍵を読み取れませんでした：%@。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der private Schlüssel konnte nicht gelesen werden: %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La clé privée n’a pas pu être lue : %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "개인 키를 읽을 수 없음: %@."
           }
         }
       }
@@ -5588,6 +10238,24 @@
             "state": "translated",
             "value": "このツールが実行される前に、今回の実行がキャンセルされました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Lauf wurde abgebrochen, bevor dieses Werkzeug ausgeführt wurde."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’exécution a été annulée avant le lancement de cet outil."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 도구가 실행되기 전에 전체 실행이 취소되었습니다."
+          }
         }
       }
     },
@@ -5609,6 +10277,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このシークレットは、このホスト、ツール、用途には使用できません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Geheimnis ist für diesen Host, dieses Werkzeug oder diesen Zweck nicht gültig."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le secret n’est pas valide pour cet hôte, cet outil ou cet usage."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 비밀 정보는 해당 호스트, 도구 또는 용도에 사용할 수 없습니다."
           }
         }
       }
@@ -5632,6 +10318,24 @@
             "state": "translated",
             "value": "このシークレットは利用できないか、すでに使用されています。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Geheimnis ist nicht verfügbar oder wurde bereits verwendet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le secret est indisponible ou a déjà été utilisé."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비밀 정보를 사용할 수 없거나 이미 사용되었습니다."
+          }
         }
       }
     },
@@ -5653,6 +10357,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "選択したファイルの範囲はUTF-8テキストではありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der ausgewählte Dateiausschnitt ist kein UTF-8-Text."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La plage sélectionnée du fichier n’est pas du texte UTF-8."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "선택한 파일 구간이 UTF-8 텍스트가 아닙니다."
           }
         }
       }
@@ -5676,6 +10398,24 @@
             "state": "translated",
             "value": "Streamable HTTPリクエストに対し、サーバが%lldを返しました。旧方式のSSEトランスポートにのみ対応している可能性があります。トランスポートを切り替えてみてください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat auf eine Streamable-HTTP-Anfrage mit %lld geantwortet. Möglicherweise unterstützt er nur das ältere SSE-Transportverfahren. Versuchen Sie, das Transportverfahren zu wechseln."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur a répondu avec le code %lld à une requête Streamable HTTP. Il ne prend peut-être en charge que l’ancien transport SSE ; essayez de changer de transport."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버가 Streamable HTTP 요청에 %lld 코드를 반환했습니다. 이전 SSE 전송 방식만 지원할 수 있습니다. 전송 방식을 바꿔 보세요."
+          }
         }
       }
     },
@@ -5697,6 +10437,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "サーバが%lldを返しました。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat mit %lld geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur a répondu avec le code %lld."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버가 %lld 코드를 반환했습니다."
           }
         }
       }
@@ -5720,6 +10478,24 @@
             "state": "translated",
             "value": "応答する前にサーバがストリームを閉じました。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat den Stream geschlossen, bevor er geantwortet hat."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur a fermé le flux avant de répondre."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버가 응답하기 전에 스트림을 닫았습니다."
+          }
         }
       }
     },
@@ -5741,6 +10517,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "サーバがHTTPで応答しませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat nicht mit HTTP geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur n’a pas renvoyé de réponse HTTP."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버가 HTTP 응답을 반환하지 않았습니다."
           }
         }
       }
@@ -5764,6 +10558,24 @@
             "state": "translated",
             "value": "サーバが%@に応答しませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Server hat nicht auf %@ geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le serveur n’a pas répondu à %@."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "서버가 %@ 요청에 응답하지 않았습니다."
+          }
         }
       }
     },
@@ -5785,6 +10597,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@に対するサーバの応答は、有効なMCP形式ではありませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Serverantwort auf %@ war kein gültiges MCP."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La réponse du serveur à %@ n’était pas au format MCP valide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 요청에 대한 서버 응답이 유효한 MCP 형식이 아닙니다."
           }
         }
       }
@@ -5808,6 +10638,24 @@
             "state": "translated",
             "value": "ストリームは開きましたが、POSTエンドポイントが通知されませんでした。Streamable HTTPサーバの可能性があります。トランスポートを切り替えてみてください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Stream wurde geöffnet, hat aber keinen POST-Endpunkt angegeben. Möglicherweise ist dies ein Streamable-HTTP-Server. Versuchen Sie, das Transportverfahren zu wechseln."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le flux a été ouvert sans indiquer de point de terminaison POST. Il s’agit peut-être d’un serveur Streamable HTTP ; essayez de changer de transport."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "스트림이 열렸지만 POST 엔드포인트가 제공되지 않았습니다. Streamable HTTP 서버일 수 있습니다. 전송 방식을 바꿔 보세요."
+          }
         }
       }
     },
@@ -5829,6 +10677,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "トークンエンドポイントがHTTPで応答しませんでした。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Token-Endpunkt hat nicht mit HTTP geantwortet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le point de terminaison de jeton n’a pas renvoyé de réponse HTTP."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "토큰 엔드포인트가 HTTP 응답을 반환하지 않았습니다."
           }
         }
       }
@@ -5852,6 +10718,24 @@
             "state": "translated",
             "value": "ツール呼び出しから結果が返されませんでした。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Werkzeugaufruf hat kein Ergebnis geliefert."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’appel d’outil n’a produit aucun résultat."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 호출에서 결과가 반환되지 않았습니다."
+          }
         }
       }
     },
@@ -5873,6 +10757,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "承認ポリシーにより、このツールは拒否されています。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Werkzeug wird durch seine Genehmigungsrichtlinie abgelehnt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’outil est refusé par sa politique d’approbation."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "승인 정책에 따라 이 도구가 거부되었습니다."
           }
         }
       }
@@ -5896,6 +10798,24 @@
             "state": "translated",
             "value": "圧縮するのに十分な履歴がまだありません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es gibt noch nicht genügend Verlauf zum Komprimieren."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il n’y a pas encore assez d’historique à compacter."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아직 압축할 만큼의 기록이 없습니다."
+          }
         }
       }
     },
@@ -5917,6 +10837,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このファイルには---で区切られたフロントマターがないため、スキルではありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei enthält keinen mit --- begrenzten Frontmatter-Block und ist daher kein Skill."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce fichier n’a pas de bloc de métadonnées frontmatter délimité par --- ; ce n’est donc pas une compétence."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 파일에는 ---로 구분된 프런트매터 블록이 없어 스킬로 사용할 수 없습니다."
           }
         }
       }
@@ -5940,6 +10878,24 @@
             "state": "translated",
             "value": "このファイルは読み取り可能なテキストではありません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diese Datei ist kein lesbarer Text."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce fichier n’est pas du texte lisible."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 파일은 읽을 수 있는 텍스트가 아닙니다."
+          }
         }
       }
     },
@@ -5961,6 +10917,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "このフォルダにSKILL.mdがありません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Ordner enthält keine SKILL.md."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce dossier ne contient pas de fichier SKILL.md."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 폴더에 SKILL.md가 없습니다."
           }
         }
       }
@@ -5984,6 +10958,24 @@
             "state": "translated",
             "value": "このスキルは空です"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Skill ist leer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette compétence est vide"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이 스킬은 비어 있습니다"
+          }
         }
       }
     },
@@ -6005,6 +10997,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "今回の実行では、このツールを利用できません。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Werkzeug ist in diesem Lauf nicht verfügbar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet outil n’est pas disponible pour cette exécution."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이번 실행에서는 이 도구를 사용할 수 없습니다."
           }
         }
       }
@@ -6028,6 +11038,24 @@
             "state": "translated",
             "value": "現在のユーザメッセージでは、このツールを利用できません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Werkzeug ist für die aktuelle Benutzernachricht nicht verfügbar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet outil est indisponible pour le message actuel de l’utilisateur."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 사용자 메시지에서는 이 도구를 사용할 수 없습니다."
+          }
         }
       }
     },
@@ -6049,6 +11077,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "タイムアウト"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitüberschreitung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Délai dépassé"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시간 초과"
           }
         }
       }
@@ -6072,6 +11118,24 @@
             "state": "translated",
             "value": "タイトル"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Titre"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제목"
+          }
         }
       }
     },
@@ -6093,6 +11157,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "変更後"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vergleichsdatei"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fichier de comparaison"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비교 파일"
           }
         }
       }
@@ -6116,6 +11198,24 @@
             "state": "translated",
             "value": "ツールへの入力が拒否されました：%@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Werkzeugeingabe wurde abgelehnt: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’entrée de l’outil a été rejetée : %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 입력 거부됨: %@"
+          }
         }
       }
     },
@@ -6137,6 +11237,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ツールの結果"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werkzeugergebnisse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résultats des outils"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 결과"
           }
         }
       }
@@ -6160,6 +11278,24 @@
             "state": "translated",
             "value": "ツールのスキーマ"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werkzeugschemas"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schémas des outils"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구 스키마"
+          }
         }
       }
     },
@@ -6181,6 +11317,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ツール"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werkzeuge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outils"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "도구"
           }
         }
       }
@@ -6204,6 +11358,24 @@
             "state": "translated",
             "value": "切り詰め済み"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abgeschnitten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tronqué"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "잘림"
+          }
         }
       }
     },
@@ -6226,6 +11398,24 @@
             "state": "translated",
             "value": "現在のターミナル入力を1つのコマンドに変換します。応答の速いモデルを選択してください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wandelt die aktuelle Terminaleingabe in einen Befehl um. Wählen Sie ein schnelles Modell."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transforme la saisie actuelle du terminal en une commande. Choisissez un modèle rapide."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 터미널 입력을 하나의 명령으로 변환합니다. 빠른 모델을 선택하세요."
+          }
         }
       }
     },
@@ -6244,6 +11434,24 @@
           }
         },
         "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL"
+          }
+        },
+        "ko": {
           "stringUnit": {
             "state": "translated",
             "value": "URL"
@@ -6270,6 +11478,24 @@
             "state": "translated",
             "value": "不明なツール：%@"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unbekanntes Werkzeug: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outil inconnu : %@"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알 수 없는 도구: %@"
+          }
         }
       }
     },
@@ -6291,6 +11517,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "名称未設定の項目"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unbenannter Eintrag"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrée sans nom"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이름 없는 항목"
           }
         }
       }
@@ -6314,6 +11558,24 @@
             "state": "translated",
             "value": "タイトルのない結果"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ergebnis ohne Titel"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Résultat sans titre"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "제목 없는 결과"
+          }
         }
       }
     },
@@ -6335,6 +11597,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "チャット、ツール、アシスタントのサイドバーに使用します。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird für Chats, Werkzeuge und die Assistenten-Seitenleiste verwendet."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisé pour le chat, les outils et la barre latérale de l’Assistant."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "채팅, 도구 및 어시스턴트 사이드바에 사용합니다."
           }
         }
       }
@@ -6358,6 +11638,24 @@
             "state": "translated",
             "value": "Vertexが返すのは、このプロジェクトで呼び出せるモデルではなく、Model Gardenの項目です。使用するモデルを追加してください。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertex listet Model-Garden-Einträge auf, nicht die Modelle, die dieses Projekt aufrufen kann. Fügen Sie die Modelle hinzu, die Sie verwenden."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertex répertorie les entrées de Model Garden plutôt que les modèles que ce projet peut appeler. Ajoutez ceux que vous utilisez."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vertex는 이 프로젝트에서 호출할 수 있는 모델이 아니라 Model Garden 항목을 나열합니다. 사용할 모델을 직접 추가하세요."
+          }
         }
       }
     },
@@ -6379,6 +11677,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "動画"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vidéo"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비디오"
           }
         }
       }
@@ -6402,6 +11718,24 @@
             "state": "translated",
             "value": "動画生成"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videoerzeugung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Génération de vidéos"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "비디오 생성"
+          }
         }
       }
     },
@@ -6423,6 +11757,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Web検索"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Websuche"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche web"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "웹 검색"
           }
         }
       }
@@ -6446,6 +11798,24 @@
             "state": "translated",
             "value": "モデルプロバイダが実行するWeb検索です。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vom Modellanbieter ausgeführte Websuche."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recherche web effectuée par le fournisseur de modèles."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "모델 제공업체가 실행하는 웹 검색입니다."
+          }
         }
       }
     },
@@ -6467,6 +11837,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "作業ディレクトリ"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arbeitsverzeichnis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Répertoire de travail"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 디렉터리"
           }
         }
       }
@@ -6490,6 +11878,24 @@
             "state": "translated",
             "value": "ワークスペース"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arbeitsbereich"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Espace de travail"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 공간"
+          }
         }
       }
     },
@@ -6511,6 +11917,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "ワークスペースは空です"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arbeitsbereich ist leer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’espace de travail est vide"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 공간이 비어 있음"
           }
         }
       }
@@ -6534,6 +11958,24 @@
             "state": "translated",
             "value": "ワークスペースの使用状況"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arbeitsbereichsnutzung"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utilisation des espaces de travail"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 공간 사용 현황"
+          }
         }
       }
     },
@@ -6555,6 +11997,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "はい"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ja"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oui"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "예"
           }
         }
       }
@@ -6578,6 +12038,24 @@
             "state": "translated",
             "value": "allowed-toolsは参考情報としてのみ保持されます。スキルがツールを事前承認することはありません。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-tools wurde nur als Referenz beibehalten. Skills genehmigen niemals ein Werkzeug vorab."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-tools a été conservé uniquement à titre de référence. Les compétences ne préapprouvent jamais un outil."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "allowed-tools는 참고용으로만 유지됩니다. 스킬은 도구를 사전 승인하지 않습니다."
+          }
         }
       }
     },
@@ -6599,6 +12077,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "理由の指定なし"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kein Grund angegeben"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "aucune raison fournie"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "이유가 제공되지 않음"
           }
         }
       }
@@ -6622,6 +12118,24 @@
             "state": "translated",
             "value": "PKCS#8 RSA秘密鍵ではありません"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kein privater RSA-Schlüssel im PKCS#8-Format"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ce n’est pas une clé privée RSA PKCS#8"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PKCS#8 RSA 개인 키가 아님"
+          }
         }
       }
     },
@@ -6643,6 +12157,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "Base64形式のPEMではありません"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "kein Base64-kodiertes PEM"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ce n’est pas du PEM encodé en Base64"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Base64로 인코딩된 PEM이 아님"
           }
         }
       }
@@ -6666,6 +12198,24 @@
             "state": "translated",
             "value": "オフセット%1$lldがファイルの末尾（%2$lld行）を超えています。"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset %1$lld liegt hinter dem Dateiende (%2$lld Zeilen)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La position %1$lld dépasse la fin du fichier (%2$lld lignes)."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시작 위치가 파일 끝(총 %2$lld줄)을 벗어납니다: %1$lld."
+          }
         }
       }
     },
@@ -6687,6 +12237,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "offset、limit、maximumBytesは正の値にしてください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset, limit und maximumBytes müssen positiv sein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset, limit et maximumBytes doivent être positifs."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "offset, limit 및 maximumBytes는 양수여야 합니다."
           }
         }
       }
@@ -6710,6 +12278,24 @@
             "state": "translated",
             "value": "鍵データが途中で切れています"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "unvollständige Schlüsseldaten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "les données de la clé sont incomplètes"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "키 데이터가 불완전함"
+          }
         }
       }
     },
@@ -6731,6 +12317,24 @@
           "stringUnit": {
             "state": "translated",
             "value": "構造化出力"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strukturierte Ausgabe"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortie structurée"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "구조화된 출력"
           }
         }
       }
@@ -6754,6 +12358,24 @@
             "state": "translated",
             "value": "不明な理由"
           }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "unbekannter Grund"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "raison inconnue"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "알 수 없는 이유"
+          }
         }
       }
     },
@@ -6776,6 +12398,71 @@
           "stringUnit": {
             "state": "translated",
             "value": "GitHubがHTTP %lldを返しました。スキルが公開されていることを確認してから、しばらくして再試行してください。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub hat HTTP %lld zurückgegeben. Prüfen Sie, ob der Skill öffentlich ist, und versuchen Sie es später erneut."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub a renvoyé HTTP %lld. Vérifiez que la compétence est publique et réessayez plus tard."
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GitHub가 HTTP %lld 코드를 반환했습니다. 스킬이 공개되어 있는지 확인한 다음 나중에 다시 시도하세요."
+          }
+        }
+      }
+    },
+    "%lld / %lld entries": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld / %2$lld entries"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "条目：%1$lld/%2$lld"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "項目：%1$lld/%2$lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "項目：%1$lld/%2$lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einträge: %1$lld / %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entrées : %1$lld / %2$lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "항목 %1$lld / %2$lld개"
           }
         }
       }

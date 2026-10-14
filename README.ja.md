@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · **日本語**
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · **日本語** · [Deutsch](README.de.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
 ツールの実行管理、明示的な権限制御、永続的な会話状態を備えたAIエージェントをSwiftで構築できます。
 
@@ -17,7 +17,7 @@ AgentKitがモデルとツールの実行ループ、承認、会話状態を管
 パッケージの依存関係を追加します。
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.16.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
 ```
 
 次に、ターゲットにコアのプロダクトを追加します。
@@ -346,11 +346,11 @@ Guardianは分離された`.reviewing`モードで動作し、デフォルトで
 
 ## ローカライズ
 
-ユーザ向けの文字列は`Localizations/Localizable.xcstrings`にあり、英語、簡体字中国語、繁体字中国語、日本語に対応しています。
+ユーザ向けの文字列は`Localizations/Localizable.xcstrings`にあり、英語、簡体字中国語、繁体字中国語、日本語、ドイツ語、フランス語、韓国語に対応しています。
 `Scripts/build-localizations.sh`で`Sources/AgentKit/Resources/*.lproj`にコンパイルします。
 カタログを編集した後は、このスクリプトを再実行し、生成されたリソースもコミットしてください。
 `swift build`はリソースをコピーするだけで、文字列カタログのコンパイルは行いません。
-`python3 Scripts/check-cjk-localization.py`で、中国語と日本語の翻訳の網羅性、書式引数、間隔を検証できます。
+`python3 Scripts/check-localization.py`で、6言語の翻訳の網羅性、書式引数、複数形、各言語の空白規則を検証できます。
 
 ツールカードのテキストは、描画時に閲覧者のロケールで解決されます。そのため、記録済みのカードを別の言語で表示できます。
 

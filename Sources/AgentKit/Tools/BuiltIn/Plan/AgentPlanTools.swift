@@ -122,7 +122,7 @@ nonisolated
         }
         return [
             .message(
-                String(localized: "Plan presented from \(path)", bundle: .module, locale: input.locale), .success
+                AgentLocalization.string("Plan presented from \(path)", locale: input.locale), .success
             )
         ]
     }
@@ -140,7 +140,7 @@ nonisolated
         }
         return [
             .message(
-                String(localized: "\(total) tasks · \(completed) completed", bundle: .module, locale: input.locale),
+                AgentLocalization.string("\(total) tasks · \(completed) completed", locale: input.locale),
                 .secondary
             )
         ]

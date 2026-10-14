@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>%lld / %lld entries</key>
+	<string>%1$lld / %2$lld entries</string>
 	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
 	<string>GitHub returned HTTP %lld. Check that the skill is public and try again later.</string>
 	<key>OAuth authorization was declined.</key>

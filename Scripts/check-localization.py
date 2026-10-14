@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check Chinese and Japanese catalog coverage, format arguments, and spacing."""
+"""Check all package translations, with language-specific plural and spacing rules."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SUPPORTED_LANGUAGES = ("zh-Hans", "zh-Hant", "ja", "ko", "de", "fr")
 
 
 def unique_object(pairs):
@@ -53,11 +54,13 @@ def arguments(value: str) -> Counter:
     return result
 
 
-def problems(catalog: dict, languages=("zh-Hans", "zh-Hant", "ja")) -> list[str]:
+def problems(catalog: dict, languages=SUPPORTED_LANGUAGES) -> list[str]:
     return [problem for language in languages for problem in language_problems(catalog, language)]
 
 
 def language_problems(catalog: dict, language: str) -> list[str]:
+    if language not in SUPPORTED_LANGUAGES:
+        raise ValueError(f"unsupported localization: {language}")
     failures = []
     for key, entry in catalog["strings"].items():
         if entry.get("shouldTranslate") is False:
@@ -73,9 +76,16 @@ def language_problems(catalog: dict, language: str) -> list[str]:
             "other", {}
         ).get("stringUnit", {"value": key})
         expected = arguments(source_unit["value"])
-        if "plural" in english.get("variations", {}):
-            if set(localization.get("variations", {}).get("plural", {})) != {"other"}:
-                failures.append(f"{key!r}: {language} plural rules must contain only 'other'")
+        plural = localization.get("variations", {}).get("plural", {})
+        if "plural" in english.get("variations", {}) or plural:
+            categories = set(plural)
+            required = {"one", "other"} if language in ("de", "fr") else {"other"}
+            allowed = required | {"many"} if language == "fr" else required
+            if not required <= categories or not categories <= allowed:
+                failures.append(
+                    f"{key!r}: {language} plural rules require {sorted(required)}"
+                    + (" (optional 'many')" if language == "fr" else " only")
+                )
         for unit in translated:
             value = unit.get("value")
             if unit.get("state") != "translated" or not isinstance(value, str) or (key and not value):
@@ -85,9 +95,10 @@ def language_problems(catalog: dict, language: str) -> list[str]:
                 failures.append(f"{key!r}: {language} format arguments differ: {value!r}")
             # Chinese and Japanese use different punctuation conventions.
             spacing_value = value
+            invalid_spacing = None
             if language == "ja":
                 invalid_spacing = MIXED_SPACING.search(spacing_value)
-            else:
+            elif language in ("zh-Hans", "zh-Hant"):
                 if key == "Type %@":
                     spacing_value = re.sub(r"^(类型|類型) (?=%@)", r"\1", value)
                 han = r"\u3400-\u4DBF\u4E00-\u9FFF"
@@ -118,7 +129,7 @@ def main() -> int:
             print(f"{path}: {failure}", file=sys.stderr)
         failed |= bool(failures)
     if not failed:
-        print("zh-Hans, zh-Hant, and ja coverage, format arguments, and spacing checks passed.")
+        print(f"{', '.join(SUPPORTED_LANGUAGES)} coverage, format arguments, plurals, and spacing checks passed.")
     return int(failed)
 
 

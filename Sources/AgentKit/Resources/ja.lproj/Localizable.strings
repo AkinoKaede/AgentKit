@@ -14,6 +14,8 @@
 	<string>%@はHTTPまたはHTTPSのURLではありません。</string>
 	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
 	<string>計画中は%@を利用できません。まだ合意された内容がないため、追跡する作業がありません。計画を完成させ、present_planを呼び出してください。</string>
+	<key>%lld / %lld entries</key>
+	<string>項目：%1$lld/%2$lld</string>
 	<key>%lld edits applied</key>
 	<string>%lld件の編集を適用しました</string>
 	<key>%lld entries</key>

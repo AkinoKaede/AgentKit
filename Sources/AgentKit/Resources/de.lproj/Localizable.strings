@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%@ context</key>
+	<string>Kontextfenster: %@</string>
+	<key>%@ failed (%lld): %@</key>
+	<string>%1$@ fehlgeschlagen (%2$lld): %3$@</string>
+	<key>%@ is not a valid URL.</key>
+	<string>Ungültige URL: %@.</string>
+	<key>%@ is not a valid token endpoint.</key>
+	<string>Ungültiger Token-Endpunkt: %@.</string>
+	<key>%@ is not an http or https URL.</key>
+	<string>Keine HTTP- oder HTTPS-URL: %@.</string>
+	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
+	<string>%@ ist während der Planung nicht verfügbar: Es wurde noch nichts vereinbart, daher gibt es keine Arbeit zu verfolgen. Schließen Sie den Plan ab und rufen Sie present_plan auf.</string>
+	<key>%lld / %lld entries</key>
+	<string>Einträge: %1$lld / %2$lld</string>
+	<key>%lld matching lines in %lld files</key>
+	<string>Übereinstimmende Zeilen: %1$lld · Durchsuchte Dateien: %2$lld</string>
+	<key>%lld tasks · %lld completed</key>
+	<string>Aufgaben: %1$lld · Abgeschlossen: %2$lld</string>
+	<key>A skill may be at most %lld KB.</key>
+	<string>Ein Skill darf höchstens %lld KB groß sein.</string>
+	<key>A skill name may be at most %lld characters.</key>
+	<string>Ein Skill-Name darf höchstens %lld Zeichen lang sein.</string>
+	<key>A skill name may not begin or end with a hyphen.</key>
+	<string>Ein Skill-Name darf nicht mit einem Bindestrich beginnen oder enden.</string>
+	<key>A skill name may not contain two hyphens in a row.</key>
+	<string>Ein Skill-Name darf keine zwei aufeinanderfolgenden Bindestriche enthalten.</string>
+	<key>A skill name may use only lowercase letters, digits, and hyphens.</key>
+	<string>Ein Skill-Name darf nur Kleinbuchstaben, Ziffern und Bindestriche enthalten.</string>
+	<key>A skill needs a description saying what it does and when to use it.</key>
+	<string>Ein Skill benötigt eine Beschreibung seiner Funktion und seines Einsatzbereichs.</string>
+	<key>A skill needs a name.</key>
+	<string>Ein Skill benötigt einen Namen.</string>
+	<key>A truncated model response contained tool calls; none were executed.</key>
+	<string>Eine abgeschnittene Modellantwort enthielt Werkzeugaufrufe; keiner davon wurde ausgeführt.</string>
+	<key>Accepted</key>
+	<string>Angenommen</string>
+	<key>Add memory</key>
+	<string>Erinnerung hinzufügen</string>
+	<key>Answer</key>
+	<string>Antwort</string>
+	<key>Answered in %lld ms</key>
+	<string>Antwort nach %lld ms</string>
+	<key>Approve for me</key>
+	<string>Für mich genehmigen</string>
+	<key>Ask for approval</key>
+	<string>Genehmigung anfordern</string>
+	<key>Assistant</key>
+	<string>Assistent</string>
+	<key>Attachments</key>
+	<string>Anhänge</string>
+	<key>Audio</key>
+	<string>Audio</string>
+	<key>Auto-reviewing exceeded its investigation limit.</key>
+	<string>Die automatische Prüfung hat ihr Untersuchungslimit überschritten.</string>
+	<key>Auto-reviewing exceeded its reasoning turn limit.</key>
+	<string>Die automatische Prüfung hat ihr Limit für Denkrunden überschritten.</string>
+	<key>Auto-reviewing failed; the action was not executed. %@</key>
+	<string>Die automatische Prüfung ist fehlgeschlagen; die Aktion wurde nicht ausgeführt. %@</string>
+	<key>Auto-reviewing is unavailable; the action was not executed.</key>
+	<string>Die automatische Prüfung ist nicht verfügbar; die Aktion wurde nicht ausgeführt.</string>
+	<key>Auto-reviewing paused after repeated adverse results; the action was not executed.</key>
+	<string>Die automatische Prüfung wurde nach wiederholt ungünstigen Ergebnissen angehalten; die Aktion wurde nicht ausgeführt.</string>
+	<key>Auto-reviewing returned an invalid decision.</key>
+	<string>Die automatische Prüfung hat eine ungültige Entscheidung zurückgegeben.</string>
+	<key>Auto-reviewing timed out; the action was not executed.</key>
+	<string>Zeitüberschreitung bei der automatischen Prüfung; die Aktion wurde nicht ausgeführt.</string>
+	<key>Auto-reviewing was cancelled; the action was not executed.</key>
+	<string>Die automatische Prüfung wurde abgebrochen; die Aktion wurde nicht ausgeführt.</string>
+	<key>Automatic</key>
+	<string>Automatisch</string>
+	<key>Available on the next run</key>
+	<string>Ab dem nächsten Lauf verfügbar</string>
+	<key>Binary resource. Export it from the skill editor to use its original bytes.</key>
+	<string>Binärressource. Exportieren Sie sie aus dem Skill-Editor, um die ursprünglichen Bytes zu verwenden.</string>
+	<key>Cancelled</key>
+	<string>Abgebrochen</string>
+	<key>Case sensitive</key>
+	<string>Groß-/Kleinschreibung beachten</string>
+	<key>Changes</key>
+	<string>Änderungen</string>
+	<key>Chat</key>
+	<string>Chat</string>
+	<key>Chat list unavailable</key>
+	<string>Chatliste nicht verfügbar</string>
+	<key>Chat status unavailable</key>
+	<string>Chatstatus nicht verfügbar</string>
+	<key>Chat unavailable</key>
+	<string>Chat nicht verfügbar</string>
+	<key>Classification</key>
+	<string>Klassifizierung</string>
+	<key>Command</key>
+	<string>Befehl</string>
+	<key>Command Generator</key>
+	<string>Befehlsgenerator</string>
+	<key>Commit</key>
+	<string>Commit</string>
+	<key>Completed</key>
+	<string>Abgeschlossen</string>
+	<key>Completed without output</key>
+	<string>Ohne Ausgabe abgeschlossen</string>
+	<key>Connecting</key>
+	<string>Verbindung wird hergestellt</string>
+	<key>Consumer</key>
+	<string>Verwendendes Werkzeug</string>
+	<key>Content</key>
+	<string>Inhalt</string>
+	<key>Content type</key>
+	<string>Inhaltstyp</string>
+	<key>Conversation</key>
+	<string>Unterhaltung</string>
+	<key>Conversation ID</key>
+	<string>Unterhaltungs-ID</string>
+	<key>Copied</key>
+	<string>Kopiert</string>
+	<key>Create skill</key>
+	<string>Skill erstellen</string>
+	<key>Created</key>
+	<string>Erstellt</string>
+	<key>Critical</key>
+	<string>Kritisch</string>
+	<key>Current memory</key>
+	<string>Aktuelle Erinnerungen</string>
+	<key>Delete skill</key>
+	<string>Skill löschen</string>
+	<key>Deleted</key>
+	<string>Gelöscht</string>
+	<key>Delivered</key>
+	<string>Zugestellt</string>
+	<key>Description</key>
+	<string>Beschreibung</string>
+	<key>Destination</key>
+	<string>Ziel</string>
+	<key>Diff</key>
+	<string>Unterschiede</string>
+	<key>Directory</key>
+	<string>Verzeichnis</string>
+	<key>Disabled</key>
+	<string>Deaktiviert</string>
+	<key>Embedding</key>
+	<string>Einbettung</string>
+	<key>Empty file</key>
+	<string>Leere Datei</string>
+	<key>Enabled</key>
+	<string>Aktiviert</string>
+	<key>Exited</key>
+	<string>Beendet</string>
+	<key>Extra High</key>
+	<string>Sehr hoch</string>
+	<key>Failed</key>
+	<string>Fehlgeschlagen</string>
+	<key>File</key>
+	<string>Datei</string>
+	<key>Files</key>
+	<string>Dateien</string>
+	<key>Files are identical</key>
+	<string>Dateien sind identisch</string>
+	<key>Format</key>
+	<string>Format</string>
+	<key>From</key>
+	<string>Ausgangsdatei</string>
+	<key>Full access</key>
+	<string>Vollzugriff</string>
+	<key>GitHub returned HTTP %lld. Check that the skill is public and try again later.</key>
+	<string>GitHub hat HTTP %lld zurückgegeben. Prüfen Sie, ob der Skill öffentlich ist, und versuchen Sie es später erneut.</string>
+	<key>Google answered the sign-in without a token.</key>
+	<string>Google hat auf die Anmeldung geantwortet, aber kein Token zurückgegeben.</string>
+	<key>Google refused the sign-in — %@</key>
+	<string>Google hat die Anmeldung abgelehnt — %@</string>
+	<key>Guardian</key>
+	<string>Wächter</string>
+	<key>HTTP %lld</key>
+	<string>HTTP %lld</string>
+	<key>High</key>
+	<string>Hoch</string>
+	<key>Idle</key>
+	<string>Leerlauf</string>
+	<key>Image</key>
+	<string>Bild</string>
+	<key>Image Generation</key>
+	<string>Bilderzeugung</string>
+	<key>Imported as “%@”.</key>
+	<string>Als „%@“ importiert.</string>
+	<key>Input</key>
+	<string>Eingabe</string>
+	<key>Interrupted</key>
+	<string>Unterbrochen</string>
+	<key>Kind</key>
+	<string>Art</string>
+	<key>Legacy transport using a GET stream and a separate POST endpoint.</key>
+	<string>Älteres Transportverfahren mit einem GET-Stream und einem separaten POST-Endpunkt.</string>
+	<key>Limit</key>
+	<string>Höchstanzahl</string>
+	<key>Line %lld exceeds the %lld-byte page limit. Use a targeted byte slice or search.</key>
+	<string>Zeile %1$lld überschreitet die Seitengrenze von %2$lld Bytes. Lesen Sie einen gezielten Bytebereich oder verwenden Sie die Suche.</string>
+	<key>Line endings</key>
+	<string>Zeilenenden</string>
+	<key>Lines</key>
+	<string>Zeilen</string>
+	<key>Low</key>
+	<string>Niedrig</string>
+	<key>Markdown</key>
+	<string>Markdown</string>
+	<key>Matching text</key>
+	<string>Übereinstimmender Text</string>
+	<key>Max</key>
+	<string>Maximal</string>
+	<key>Medium</key>
+	<string>Mittel</string>
+	<key>Memory operations processed</key>
+	<string>Erinnerungsoperationen verarbeitet</string>
+	<key>Message</key>
+	<string>Nachricht</string>
+	<key>Messages followed by tool activity cannot be edited.</key>
+	<string>Nachrichten, auf die Werkzeugaktivitäten folgen, können nicht bearbeitet werden.</string>
+	<key>Minimal</key>
+	<string>Minimal</string>
+	<key>Model list unavailable</key>
+	<string>Modellliste nicht verfügbar</string>
+	<key>More results are available</key>
+	<string>Weitere Ergebnisse verfügbar</string>
+	<key>Moved</key>
+	<string>Verschoben</string>
+	<key>No</key>
+	<string>Nein</string>
+	<key>No Chat model is configured.</key>
+	<string>Kein Chatmodell konfiguriert.</string>
+	<key>No chats</key>
+	<string>Keine Chats</string>
+	<key>No conversations found</key>
+	<string>Keine Unterhaltungen gefunden</string>
+	<key>No differences</key>
+	<string>Keine Unterschiede</string>
+	<key>No files</key>
+	<string>Keine Dateien</string>
+	<key>No lines returned</key>
+	<string>Keine Zeilen zurückgegeben</string>
+	<key>No matches</key>
+	<string>Keine Treffer</string>
+	<key>No messages found</key>
+	<string>Keine Nachrichten gefunden</string>
+	<key>No model is configured for conversation titles.</key>
+	<string>Kein Modell für Unterhaltungstitel konfiguriert.</string>
+	<key>No model list at this address. Check the base URL.</key>
+	<string>Keine Modellliste unter dieser Adresse. Prüfen Sie die Basis-URL.</string>
+	<key>No readable page content</key>
+	<string>Kein lesbarer Seiteninhalt</string>
+	<key>No results</key>
+	<string>Keine Ergebnisse</string>
+	<key>No skills available</key>
+	<string>Keine Skills verfügbar</string>
+	<key>None</key>
+	<string>Keine</string>
+	<key>OAuth authorization was declined.</key>
+	<string>Die OAuth-Autorisierung wurde abgelehnt.</string>
+	<key>OAuth requires secure HTTPS endpoints.</key>
+	<string>OAuth erfordert sichere HTTPS-Endpunkte.</string>
+	<key>Off</key>
+	<string>Aus</string>
+	<key>Offset</key>
+	<string>Startposition</string>
+	<key>Original HTML</key>
+	<string>Ursprüngliches HTML</string>
+	<key>Overwrite</key>
+	<string>Überschreiben</string>
+	<key>Overwritten</key>
+	<string>Überschrieben</string>
+	<key>PDF</key>
+	<string>PDF</string>
+	<key>Patch skill</key>
+	<string>Skill gezielt bearbeiten</string>
+	<key>Path</key>
+	<string>Pfad</string>
+	<key>Permissions</key>
+	<string>Zugriffsrechte</string>
+	<key>Plan mode is on, so %@ was not run — it changes something outside this app. Investigate with reads, draft the plan in the scratch workspace, and call present_plan. The user runs it, or not, from there.</key>
+	<string>Der Planungsmodus ist aktiv. Daher wurde %@ nicht ausgeführt: Die Aktion verändert etwas außerhalb dieser App. Untersuchen Sie den Zustand mit Lesezugriffen, entwerfen Sie den Plan im temporären Arbeitsbereich und rufen Sie present_plan auf. Anschließend entscheidet der Benutzer, ob er ihn ausführt.</string>
+	<key>Plan presented from %@</key>
+	<string>Plan aus %@ vorgestellt</string>
+	<key>Preparing</key>
+	<string>Wird vorbereitet</string>
+	<key>Provider</key>
+	<string>Anbieter</string>
+	<key>Purpose</key>
+	<string>Zweck</string>
+	<key>Query</key>
+	<string>Suchanfrage</string>
+	<key>Question</key>
+	<string>Frage</string>
+	<key>Question unavailable</key>
+	<string>Frage nicht verfügbar</string>
+	<key>Queued</key>
+	<string>Eingereiht</string>
+	<key>Read-only</key>
+	<string>Nur lesend</string>
+	<key>Reasoning</key>
+	<string>Denken</string>
+	<key>Recent conversations</key>
+	<string>Letzte Unterhaltungen</string>
+	<key>Remote path</key>
+	<string>Entfernter Pfad</string>
+	<key>Remove memory</key>
+	<string>Erinnerung entfernen</string>
+	<key>Remove skill file</key>
+	<string>Skill-Datei entfernen</string>
+	<key>Replace memory</key>
+	<string>Erinnerung ersetzen</string>
+	<key>Replaced</key>
+	<string>Ersetzt</string>
+	<key>Replacement text</key>
+	<string>Ersetzungstext</string>
+	<key>Request</key>
+	<string>Anfrage</string>
+	<key>Rerank</key>
+	<string>Neusortierung</string>
+	<key>Resolved source</key>
+	<string>Aufgelöste Quelle</string>
+	<key>Result</key>
+	<string>Ergebnis</string>
+	<key>Reviewing</key>
+	<string>Wird geprüft</string>
+	<key>Reviews commands before automatic approval. Automatic selects the best available review model.</key>
+	<string>Prüft Befehle vor der automatischen Genehmigung. „Automatisch“ wählt das beste verfügbare Prüfmodell.</string>
+	<key>Running</key>
+	<string>Wird ausgeführt</string>
+	<key>SHA-256</key>
+	<string>SHA-256</string>
+	<key>SSE (legacy)</key>
+	<string>SSE (veraltet)</string>
+	<key>Same as Chat</key>
+	<string>Wie beim Chat</string>
+	<key>Scratch path</key>
+	<string>Temporärer Pfad</string>
+	<key>Secret handle</key>
+	<string>Geheimnis-Handle</string>
+	<key>Secret received securely</key>
+	<string>Geheimnis sicher empfangen</string>
+	<key>Set skill availability</key>
+	<string>Skill-Verfügbarkeit festlegen</string>
+	<key>Showing %lld of %lld matching lines</key>
+	<string>Angezeigte Trefferzeilen: %1$lld von %2$lld</string>
+	<key>Sign in to this MCP server to continue.</key>
+	<string>Melden Sie sich bei diesem MCP-Server an, um fortzufahren.</string>
+	<key>Signing failed: %@.</key>
+	<string>Signieren fehlgeschlagen: %@.</string>
+	<key>Size</key>
+	<string>Größe</string>
+	<key>Skill</key>
+	<string>Skill</string>
+	<key>Skill changes saved</key>
+	<string>Skill-Änderungen gespeichert</string>
+	<key>Skill installed</key>
+	<string>Skill installiert</string>
+	<key>Skills</key>
+	<string>Skills</string>
+	<key>Skipped</key>
+	<string>Übersprungen</string>
+	<key>Source</key>
+	<string>Quelle</string>
+	<key>Source URL</key>
+	<string>Quell-URL</string>
+	<key>Status</key>
+	<string>Status</string>
+	<key>Streamable HTTP</key>
+	<string>Streamable HTTP</string>
+	<key>Structured Output</key>
+	<string>Strukturierte Ausgabe</string>
+	<key>Symlink</key>
+	<string>Symbolischer Link</string>
+	<key>System</key>
+	<string>System</string>
+	<key>System prompt</key>
+	<string>System-Prompt</string>
+	<key>Target</key>
+	<string>Ziel</string>
+	<key>Text</key>
+	<string>Text</string>
+	<key>Text is identical; line endings differ: %@ → %@</key>
+	<string>Der Text ist identisch; die Zeilenenden unterscheiden sich: %1$@ → %2$@</string>
+	<key>That is not a service account key. It needs client_email and private_key.</key>
+	<string>Dies ist kein Dienstkontoschlüssel. Er muss client_email und private_key enthalten.</string>
+	<key>The Chat model has no available credential.</key>
+	<string>Für das Chatmodell sind keine Anmeldedaten verfügbar.</string>
+	<key>The MCP authorization challenge is invalid.</key>
+	<string>Die MCP-Autorisierungsaufforderung ist ungültig.</string>
+	<key>The MCP request attempted an unsafe redirect.</key>
+	<string>Die MCP-Anfrage hat eine unsichere Weiterleitung versucht.</string>
+	<key>The OAuth authorization server identity changed.</key>
+	<string>Die Identität des OAuth-Autorisierungsservers hat sich geändert.</string>
+	<key>The OAuth callback could not be verified.</key>
+	<string>Der OAuth-Callback konnte nicht verifiziert werden.</string>
+	<key>The OAuth client authentication method is not supported.</key>
+	<string>Die OAuth-Client-Authentifizierungsmethode wird nicht unterstützt.</string>
+	<key>The OAuth resource does not match this MCP server.</key>
+	<string>Die OAuth-Ressource passt nicht zu diesem MCP-Server.</string>
+	<key>The OAuth server does not support PKCE S256.</key>
+	<string>Der OAuth-Server unterstützt PKCE S256 nicht.</string>
+	<key>The OAuth server metadata is invalid or unavailable.</key>
+	<string>Die Metadaten des OAuth-Servers sind ungültig oder nicht verfügbar.</string>
+	<key>The OAuth session expired. Sign in again to continue.</key>
+	<string>Die OAuth-Sitzung ist abgelaufen. Melden Sie sich erneut an, um fortzufahren.</string>
+	<key>The OAuth token request failed.</key>
+	<string>Die OAuth-Token-Anfrage ist fehlgeschlagen.</string>
+	<key>The app stopped before this tool call's result was recorded. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>Die App wurde beendet, bevor das Ergebnis dieses Werkzeugaufrufs gespeichert wurde. Ob die Aktion abgeschlossen wurde, ist unbekannt. Prüfen Sie den aktuellen Zustand, bevor Sie sie erneut ausführen.</string>
+	<key>The app stopped waiting for this tool before it finished. Whether the action completed is unknown; check the current state before doing it again.</key>
+	<string>Die App hat das Warten auf dieses Werkzeug vor dessen Abschluss beendet. Ob die Aktion abgeschlossen wurde, ist unbekannt. Prüfen Sie den aktuellen Zustand, bevor Sie sie erneut ausführen.</string>
+	<key>The conversation is too large to summarize.</key>
+	<string>Die Unterhaltung ist zu lang für eine Zusammenfassung.</string>
+	<key>The conversation no longer exists.</key>
+	<string>Die Unterhaltung existiert nicht mehr.</string>
+	<key>The conversation-title model has no available credential.</key>
+	<string>Für das Modell für Unterhaltungstitel sind keine Anmeldedaten verfügbar.</string>
+	<key>The current transport, using one endpoint for POST and GET.</key>
+	<string>Das aktuelle Transportverfahren verwendet einen Endpunkt für POST und GET.</string>
+	<key>The description is longer than %lld characters.</key>
+	<string>Die Beschreibung überschreitet die Grenze von %lld Zeichen.</string>
+	<key>The differing region spans %lld lines, past the %lld-line diff limit. Narrow it with a bounded read of each side instead.</key>
+	<string>Der abweichende Bereich umfasst %1$lld Zeilen und überschreitet die Diff-Grenze von %2$lld Zeilen. Lesen Sie stattdessen einen begrenzten Bereich jeder Datei, um den Unterschied einzugrenzen.</string>
+	<key>The endpoint answered %lld.</key>
+	<string>Der Endpunkt hat mit %lld geantwortet.</string>
+	<key>The endpoint answered, but not with a model list.</key>
+	<string>Der Endpunkt hat geantwortet, aber keine Modellliste zurückgegeben.</string>
+	<key>The endpoint did not answer with HTTP.</key>
+	<string>Der Endpunkt hat nicht mit HTTP geantwortet.</string>
+	<key>The endpoint rejected this key.</key>
+	<string>Der Endpunkt hat diesen API-Schlüssel abgelehnt.</string>
+	<key>The event stream sent a line that exceeded the size limit.</key>
+	<string>Der Ereignisstream hat eine Zeile gesendet, die das Größenlimit überschreitet.</string>
+	<key>The file declared no name; “%@” was used.</key>
+	<string>Die Datei enthielt keinen Namen; „%@“ wurde verwendet.</string>
+	<key>The fork could not be created because its identifier already exists.</key>
+	<string>Die Verzweigung konnte nicht erstellt werden, da ihre Kennung bereits existiert.</string>
+	<key>The message is no longer available to edit.</key>
+	<string>Die Nachricht kann nicht mehr bearbeitet werden.</string>
+	<key>The model connection closed before the response finished.</key>
+	<string>Die Verbindung zum Modell wurde vor Abschluss der Antwort geschlossen.</string>
+	<key>The model did not return a usable summary.</key>
+	<string>Das Modell hat keine brauchbare Zusammenfassung zurückgegeben.</string>
+	<key>The model endpoint URL is invalid.</key>
+	<string>Die URL des Modellendpunkts ist ungültig.</string>
+	<key>The model endpoint did not return HTTP.</key>
+	<string>Der Modellendpunkt hat keine HTTP-Antwort zurückgegeben.</string>
+	<key>The model endpoint returned %lld: %@</key>
+	<string>Der Modellendpunkt hat %1$lld zurückgegeben: %2$@</string>
+	<key>The model endpoint returned an unsupported response format.</key>
+	<string>Der Modellendpunkt hat ein nicht unterstütztes Antwortformat zurückgegeben.</string>
+	<key>The model provider failed to complete the response.</key>
+	<string>Der Modellanbieter konnte die Antwort nicht abschließen.</string>
+	<key>The model response exceeded the size limit.</key>
+	<string>Die Modellantwort hat das Größenlimit überschritten.</string>
+	<key>The model returned an invalid conversation title.</key>
+	<string>Das Modell hat einen ungültigen Unterhaltungstitel zurückgegeben.</string>
+	<key>The model returned an invalid tool call.</key>
+	<string>Das Modell hat einen ungültigen Werkzeugaufruf zurückgegeben.</string>
+	<key>The model returned malformed JSON arguments for %@.</key>
+	<string>Das Modell hat fehlerhafte JSON-Argumente für %@ zurückgegeben.</string>
+	<key>The private key could not be read: %@.</key>
+	<string>Der private Schlüssel konnte nicht gelesen werden: %@.</string>
+	<key>The run was cancelled before this tool ran.</key>
+	<string>Der Lauf wurde abgebrochen, bevor dieses Werkzeug ausgeführt wurde.</string>
+	<key>The secret is not valid for this host, tool, or purpose.</key>
+	<string>Das Geheimnis ist für diesen Host, dieses Werkzeug oder diesen Zweck nicht gültig.</string>
+	<key>The secret is unavailable or has already been used.</key>
+	<string>Das Geheimnis ist nicht verfügbar oder wurde bereits verwendet.</string>
+	<key>The selected file window is not UTF-8 text.</key>
+	<string>Der ausgewählte Dateiausschnitt ist kein UTF-8-Text.</string>
+	<key>The server answered %lld to a Streamable HTTP request. It may only speak the legacy SSE transport — try switching Transport.</key>
+	<string>Der Server hat auf eine Streamable-HTTP-Anfrage mit %lld geantwortet. Möglicherweise unterstützt er nur das ältere SSE-Transportverfahren. Versuchen Sie, das Transportverfahren zu wechseln.</string>
+	<key>The server answered %lld.</key>
+	<string>Der Server hat mit %lld geantwortet.</string>
+	<key>The server closed the stream before answering.</key>
+	<string>Der Server hat den Stream geschlossen, bevor er geantwortet hat.</string>
+	<key>The server did not answer with HTTP.</key>
+	<string>Der Server hat nicht mit HTTP geantwortet.</string>
+	<key>The server never answered %@.</key>
+	<string>Der Server hat nicht auf %@ geantwortet.</string>
+	<key>The server's answer to %@ was not valid MCP.</key>
+	<string>Die Serverantwort auf %@ war kein gültiges MCP.</string>
+	<key>The stream opened but never named a POST endpoint. This may be a Streamable HTTP server — try switching Transport.</key>
+	<string>Der Stream wurde geöffnet, hat aber keinen POST-Endpunkt angegeben. Möglicherweise ist dies ein Streamable-HTTP-Server. Versuchen Sie, das Transportverfahren zu wechseln.</string>
+	<key>The token endpoint did not answer with HTTP.</key>
+	<string>Der Token-Endpunkt hat nicht mit HTTP geantwortet.</string>
+	<key>The tool call did not produce a result.</key>
+	<string>Der Werkzeugaufruf hat kein Ergebnis geliefert.</string>
+	<key>The tool is denied by its approval policy.</key>
+	<string>Das Werkzeug wird durch seine Genehmigungsrichtlinie abgelehnt.</string>
+	<key>There is not enough history to compact yet.</key>
+	<string>Es gibt noch nicht genügend Verlauf zum Komprimieren.</string>
+	<key>This MCP server requires a registered OAuth client ID.</key>
+	<string>Dieser MCP-Server erfordert eine registrierte OAuth-Client-ID.</string>
+	<key>This file has no --- frontmatter block, so it is not a skill.</key>
+	<string>Diese Datei enthält keinen mit --- begrenzten Frontmatter-Block und ist daher kein Skill.</string>
+	<key>This file is not readable text.</key>
+	<string>Diese Datei ist kein lesbarer Text.</string>
+	<key>This folder has no SKILL.md.</key>
+	<string>Dieser Ordner enthält keine SKILL.md.</string>
+	<key>This skill is empty</key>
+	<string>Dieser Skill ist leer</string>
+	<key>This tool is not available in this run.</key>
+	<string>Dieses Werkzeug ist in diesem Lauf nicht verfügbar.</string>
+	<key>This tool is unavailable for the current user message.</key>
+	<string>Dieses Werkzeug ist für die aktuelle Benutzernachricht nicht verfügbar.</string>
+	<key>Timeout</key>
+	<string>Zeitüberschreitung</string>
+	<key>Title</key>
+	<string>Titel</string>
+	<key>To</key>
+	<string>Vergleichsdatei</string>
+	<key>Tool</key>
+	<string>Werkzeug</string>
+	<key>Tool input was rejected: %@</key>
+	<string>Die Werkzeugeingabe wurde abgelehnt: %@</string>
+	<key>Tool results</key>
+	<string>Werkzeugergebnisse</string>
+	<key>Tool schemas</key>
+	<string>Werkzeugschemas</string>
+	<key>Tools</key>
+	<string>Werkzeuge</string>
+	<key>Truncated</key>
+	<string>Abgeschnitten</string>
+	<key>Turns the current terminal input into one command. Choose a fast model.</key>
+	<string>Wandelt die aktuelle Terminaleingabe in einen Befehl um. Wählen Sie ein schnelles Modell.</string>
+	<key>URL</key>
+	<string>URL</string>
+	<key>Undelivered</key>
+	<string>Nicht zugestellt</string>
+	<key>Unknown tool: %@</key>
+	<string>Unbekanntes Werkzeug: %@</string>
+	<key>Unnamed entry</key>
+	<string>Unbenannter Eintrag</string>
+	<key>Untitled conversation</key>
+	<string>Unbenannte Unterhaltung</string>
+	<key>Untitled result</key>
+	<string>Ergebnis ohne Titel</string>
+	<key>Update skill</key>
+	<string>Skill aktualisieren</string>
+	<key>Used for chat, tools, and the Assistant sidebar.</key>
+	<string>Wird für Chats, Werkzeuge und die Assistenten-Seitenleiste verwendet.</string>
+	<key>User</key>
+	<string>Benutzer</string>
+	<key>User profile</key>
+	<string>Benutzerprofil</string>
+	<key>Vertex lists Model Garden entries rather than the models this project can call. Add the ones you use.</key>
+	<string>Vertex listet Model-Garden-Einträge auf, nicht die Modelle, die dieses Projekt aufrufen kann. Fügen Sie die Modelle hinzu, die Sie verwenden.</string>
+	<key>Video</key>
+	<string>Video</string>
+	<key>Video Generation</key>
+	<string>Videoerzeugung</string>
+	<key>Wait stopped by user input</key>
+	<string>Warten durch Benutzereingabe beendet</string>
+	<key>Wait timed out</key>
+	<string>Zeitüberschreitung beim Warten</string>
+	<key>Waiting for approval</key>
+	<string>Wartet auf Genehmigung</string>
+	<key>Waiting for user</key>
+	<string>Wartet auf Benutzereingabe</string>
+	<key>Web Search</key>
+	<string>Websuche</string>
+	<key>Web search run by the model provider.</key>
+	<string>Vom Modellanbieter ausgeführte Websuche.</string>
+	<key>Working directory</key>
+	<string>Arbeitsverzeichnis</string>
+	<key>Workspace</key>
+	<string>Arbeitsbereich</string>
+	<key>Workspace is empty</key>
+	<string>Arbeitsbereich ist leer</string>
+	<key>Workspace usage</key>
+	<string>Arbeitsbereichsnutzung</string>
+	<key>Write skill file</key>
+	<string>Skill-Datei schreiben</string>
+	<key>Yes</key>
+	<string>Ja</string>
+	<key>allowed-tools was kept for reference only. Skills never pre-approve a tool.</key>
+	<string>allowed-tools wurde nur als Referenz beibehalten. Skills genehmigen niemals ein Werkzeug vorab.</string>
+	<key>memory</key>
+	<string>Erinnerungen</string>
+	<key>no reason given</key>
+	<string>kein Grund angegeben</string>
+	<key>not a PKCS#8 RSA private key</key>
+	<string>kein privater RSA-Schlüssel im PKCS#8-Format</string>
+	<key>not base64 PEM</key>
+	<string>kein Base64-kodiertes PEM</string>
+	<key>offset %lld is past the end of the file (%lld lines).</key>
+	<string>Offset %1$lld liegt hinter dem Dateiende (%2$lld Zeilen).</string>
+	<key>offset, limit, and maximumBytes must be positive.</key>
+	<string>offset, limit und maximumBytes müssen positiv sein.</string>
+	<key>the key data ends early</key>
+	<string>unvollständige Schlüsseldaten</string>
+	<key>unknown reason</key>
+	<string>unbekannter Grund</string>
+</dict>
+</plist>

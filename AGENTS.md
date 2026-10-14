@@ -10,7 +10,8 @@ AgentKit is a Swift Package Manager library for macOS 15+ and iOS 18+. Core runt
 - `swift test` — build and run the complete Swift Testing suite.
 - `swift format lint --recursive --strict Sources Tests Package.swift` — enforce `.swift-format` rules without changing files.
 - `swift format format --recursive --in-place Sources Tests Package.swift` — apply the repository formatter.
-- `Scripts/check-zh-localization.sh` — validate the string catalog and Simplified Chinese spacing/completeness; requires `jq`.
+- `python3 Scripts/check-localization.py` — validate all six translation languages for completeness, format arguments, plurals, and language-specific spacing.
+- `python3 -m unittest discover -s Scripts/Tests` — run localization validator regression tests.
 - `Scripts/build-localizations.sh` — regenerate committed `.strings`/`.stringsdict` resources with `xcrun xcstringstool` after catalog edits.
 
 ## Coding Style & Naming Conventions

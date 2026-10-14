@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · **简体中文（中国）** · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md)
+[English](README.md) · **简体中文（中国）** · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
 用 Swift 构建 AI 智能体，集成工具编排、明确的权限控制和持久化的对话状态。
 
@@ -16,7 +16,7 @@
 添加包依赖：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.16.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
 ```
 
 然后将核心产品添加到目标：
@@ -209,8 +209,11 @@ Anthropic 的独立缓存计数则单独处理。实时 Chat Completions 收到�
   安装过程不会执行脚本。
 - `AgentMemoryAccessing` 提供按需记忆检索和已保存对话搜索。
   在上下文管线中使用 `AgentMemoryContext` 仅注入可撤销的检索策略，不注入记忆正文。
-  `memory_search` 返回有界的完整条目。`AgentMemoryLearningService` 基于有界参考数据提出
-  经过验证的更新，由宿主决定何时审查和应用。
+  `memory_search` 返回有界的完整条目。词法搜索会将自然语言问题拆分为搜索词（包括中文词语），
+  先查找匹配所有有效搜索词的条目，仅在没有结果时扩大到匹配任意搜索词的条目。
+  它不会推断同义词，也不会进行跨语言翻译。`AgentSearchQuery` 与宿主的 `session_search`
+  存储共享这套查询解析和安全的 FTS5 搜索词引用处理。`AgentMemoryLearningService` 基于有界参考数据
+  提出经过验证的更新，由宿主决定何时审查和应用。
 
 工具注册与上下文注入彼此独立：通过 `AgentTurnContextSnapshot.skillCatalog` 传入已启用技能目录的
 `catalogBlock`，模型就能发现适用流程，而无需加载所有技能正文。
@@ -323,10 +326,10 @@ Guardian 在隔离的 `.reviewing` 模式下运行，默认不注册调查工具
 
 ## 本地化
 
-面向用户的字符串位于 `Localizations/Localizable.xcstrings`，包含英语、简体中文、正体中文和日语，
+面向用户的字符串位于 `Localizations/Localizable.xcstrings`，包含英语、简体中文、正体中文、日语、德语、法语和韩语，
 由 `Scripts/build-localizations.sh` 编译到 `Sources/AgentKit/Resources/*.lproj`。
 修改字符串目录后需重新运行脚本，并提交生成的资源；`swift build` 只复制资源，不编译字符串目录。
-运行 `python3 Scripts/check-cjk-localization.py` 可检查中日文翻译的完整性、格式参数和间距。
+运行 `python3 Scripts/check-localization.py` 可统一检查六种译文的完整性、格式参数、复数和各语言的间距规范。
 
 工具卡片在渲染时根据阅读者的语言环境解析文本，因此已记录的卡片也能以另一种语言展示。
 
