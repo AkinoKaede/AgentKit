@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Deutsch](README.de.md) · **Français**
+[Deutsch](README.de.md) · [English](README.md) · **Français** · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md)
 
 Créez des agents IA en Swift avec orchestration d’outils, permissions explicites et état de conversation persistant.
 
@@ -378,7 +378,7 @@ partager un nom, notamment avec des schémas et implémentations distincts pour 
 ## Localisation
 
 Les textes destinés aux utilisateurs se trouvent dans `Localizations/Localizable.xcstrings`, en anglais,
-chinois simplifié, chinois traditionnel, japonais, coréen, allemand et français.
+allemand, français, japonais, coréen, chinois simplifié et chinois traditionnel.
 `Scripts/build-localizations.sh` les compile dans `Sources/AgentKit/Resources/*.lproj`.
 Relancez ce script après toute modification du catalogue et commitez les ressources générées :
 `swift build` les copie au lieu de compiler les catalogues de chaînes.
