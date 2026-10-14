@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · **Deutsch** · [Français](README.fr.md) · [한국어](README.ko.md)
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · **Deutsch** · [Français](README.fr.md)
 
 Entwickeln Sie KI-Agenten in Swift mit Werkzeugorchestrierung, expliziten Berechtigungen und dauerhaft gespeichertem Gesprächszustand.
 
@@ -373,7 +373,7 @@ separater Schemas und Implementierungen für den Wächter-Modus `.reviewing`.
 ## Lokalisierung
 
 Benutzerseitige Texte liegen in `Localizations/Localizable.xcstrings` vor: Englisch, vereinfachtes und
-traditionelles Chinesisch, Japanisch, Deutsch, Französisch und Koreanisch.
+traditionelles Chinesisch, Japanisch, Koreanisch, Deutsch und Französisch.
 `Scripts/build-localizations.sh` kompiliert sie nach `Sources/AgentKit/Resources/*.lproj`.
 Führen Sie das Skript nach Katalogänderungen erneut aus und committen Sie die erzeugten Ressourcen.
 `swift build` kopiert diese lediglich, statt Zeichenfolgenkataloge zu kompilieren.

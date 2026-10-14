@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · **日本語** · [Deutsch](README.de.md) · [Français](README.fr.md) · [한국어](README.ko.md)
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · **日本語** · [한국어](README.ko.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
 ツールの実行管理、明示的な権限制御、永続的な会話状態を備えたAIエージェントをSwiftで構築できます。
 
@@ -346,7 +346,7 @@ Guardianは分離された`.reviewing`モードで動作し、デフォルトで
 
 ## ローカライズ
 
-ユーザ向けの文字列は`Localizations/Localizable.xcstrings`にあり、英語、簡体字中国語、繁体字中国語、日本語、ドイツ語、フランス語、韓国語に対応しています。
+ユーザ向けの文字列は`Localizations/Localizable.xcstrings`にあり、英語、簡体字中国語、繁体字中国語、日本語、韓国語、ドイツ語、フランス語に対応しています。
 `Scripts/build-localizations.sh`で`Sources/AgentKit/Resources/*.lproj`にコンパイルします。
 カタログを編集した後は、このスクリプトを再実行し、生成されたリソースもコミットしてください。
 `swift build`はリソースをコピーするだけで、文字列カタログのコンパイルは行いません。

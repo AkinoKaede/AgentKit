@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · **正體中文（臺灣）** · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · [한국어](README.ko.md)
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · **正體中文（臺灣）** · [日本語](README.ja.md) · [한국어](README.ko.md) · [Deutsch](README.de.md) · [Français](README.fr.md)
 
 以 Swift 打造 AI 代理，整合工具協調、明確的權限控管與持久保存的對話狀態。
 
@@ -326,7 +326,7 @@ Guardian 在隔離的 `.reviewing` 模式下執行，預設不註冊調查工具
 
 ## 在地化
 
-使用者介面的字串位於 `Localizations/Localizable.xcstrings`，包含英文、簡體中文、正體中文、日文、德文、法文與韓文，
+使用者介面的字串位於 `Localizations/Localizable.xcstrings`，包含英文、簡體中文、正體中文、日文、韓文、德文與法文，
 由 `Scripts/build-localizations.sh` 編譯至 `Sources/AgentKit/Resources/*.lproj`。
 修改字串目錄後，需重新執行指令稿並提交產生的資源；`swift build` 只複製資源，不會編譯字串目錄。
 執行 `python3 Scripts/check-localization.py` 可統一檢查六種譯文的完整性、格式參數、複數與各語言的間距規範。

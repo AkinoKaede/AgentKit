@@ -1,6 +1,6 @@
 # AgentKit
 
-[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · [Deutsch](README.de.md) · [Français](README.fr.md) · **한국어**
+[English](README.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md) · [日本語](README.ja.md) · **한국어** · [Deutsch](README.de.md) · [Français](README.fr.md)
 
 도구 실행 조율, 명시적인 권한 제어, 영구 저장되는 대화 상태를 갖춘 AI 에이전트를 Swift로 구현하세요.
 
@@ -355,7 +355,7 @@ let webTools = AgentBuiltInToolConfiguration(
 ## 현지화
 
 사용자에게 표시되는 문자열은 `Localizations/Localizable.xcstrings`에 있으며, 영어, 중국어 간체,
-중국어 번체, 일본어, 독일어, 프랑스어, 한국어를 포함합니다.
+중국어 번체, 일본어, 한국어, 독일어, 프랑스어를 포함합니다.
 `Scripts/build-localizations.sh`는 이를 `Sources/AgentKit/Resources/*.lproj`로 컴파일합니다.
 카탈로그를 수정한 뒤에는 스크립트를 다시 실행하고 생성된 리소스도 커밋하세요.
 `swift build`는 리소스를 복사할 뿐 문자열 카탈로그를 컴파일하지 않습니다.
