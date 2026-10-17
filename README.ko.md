@@ -115,7 +115,7 @@ func runAgent(
 ## 아키텍처
 
 각 `AgentToolDetailPresenter`의 `layout: AgentToolDetailLayout`으로 표시 정책을 등록합니다.
-`compactHeader`와 `boundsApprovalHeight`는 각각 간결한 제목과 승인 상세 높이 제한을 지정하고,
+`singleLineHeader`와 `boundsApprovalHeight`는 각각 한 줄 제목과 승인 상세 높이 제한을 지정하고,
 `truncateStrategy`는 표시 전용 접기에 `head`, `tail`, `middle`, `none`을 선택합니다.
 기본값은 일반 제목, 자연스러운 승인 높이, `head`이며 `.compact`는 두 레이아웃 옵션을 모두 활성화합니다.
 호스트는 도구 이름으로 분기하지 말고 등록된 설정을 `AgentToolDetail(items:layout:)`에 전달합니다.
@@ -126,7 +126,7 @@ MCP 페이로드에서는 받지 않습니다. 모델 출력 잘라내기, 저�
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )

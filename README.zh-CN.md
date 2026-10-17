@@ -111,7 +111,7 @@ func runAgent(
 ## 架构
 
 通过每个 `AgentToolDetailPresenter` 的 `layout: AgentToolDetailLayout` 注册展示策略。
-`compactHeader` 和 `boundsApprovalHeight` 分别声明紧凑标题与审批详情高度约束；`truncateStrategy`
+`singleLineHeader` 和 `boundsApprovalHeight` 分别声明单行标题与审批详情高度约束；`truncateStrategy`
 为纯展示折叠选择 `head`、`tail`、`middle` 或 `none`。默认使用普通标题、自然审批高度和 `head`；
 `.compact` 同时启用两项布局提示。宿主将注册的布局传入 `AgentToolDetail(items:layout:)`，不要按工具名
 分支。元数据文本块设置 `isCollapsible: false`，无论处于什么位置都不占正文预览预算。审批参数始终可以
@@ -121,7 +121,7 @@ func runAgent(
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )

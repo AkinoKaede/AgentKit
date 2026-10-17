@@ -117,7 +117,7 @@ Für die Integration in Ihre App:
 ## Architektur
 
 Jeder `AgentToolDetailPresenter` registriert seine Darstellungsregeln über `layout: AgentToolDetailLayout`.
-`compactHeader` und `boundsApprovalHeight` steuern unabhängig die kompakte Überschrift und die Höhe der
+`singleLineHeader` und `boundsApprovalHeight` steuern unabhängig die einzeilige Überschrift und die Höhe der
 Genehmigungsdetails. `truncateStrategy` wählt `head`, `tail`, `middle` oder `none` für das reine Einklappen der
 Anzeige. Standard sind eine normale Überschrift, natürliche Genehmigungshöhe und `head`; `.compact` aktiviert
 beide Layoutoptionen. Der Host übergibt das registrierte Layout an `AgentToolDetail(items:layout:)`, statt nach
@@ -129,7 +129,7 @@ Ausgaben und Kürzungsmarker bleiben unverändert.
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )

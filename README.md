@@ -113,7 +113,7 @@ For app integration:
 ## Architecture
 
 Register display policy with each `AgentToolDetailPresenter` through its `layout: AgentToolDetailLayout`.
-`compactHeader` and `boundsApprovalHeight` are independent host-rendering hints; `truncateStrategy` selects
+`singleLineHeader` and `boundsApprovalHeight` are independent host-rendering hints; `truncateStrategy` selects
 `head`, `tail`, `middle`, or `none` for display-only folding. Defaults are a standard header, intrinsic approval
 height, and `head`; `.compact` enables both layout hints. Hosts carry the registered layout into
 `AgentToolDetail(items:layout:)` rather than branching on tool names. Mark metadata text blocks with
@@ -124,7 +124,7 @@ This policy does not change model truncation, capture files, or truncation marke
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )

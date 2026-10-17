@@ -116,7 +116,7 @@ Pour intégrer AgentKit à votre app :
 ## Architecture
 
 Chaque `AgentToolDetailPresenter` enregistre sa politique d’affichage via `layout: AgentToolDetailLayout`.
-`compactHeader` et `boundsApprovalHeight` indiquent séparément un en-tête compact et une hauteur limitée pour
+`singleLineHeader` et `boundsApprovalHeight` indiquent séparément un en-tête sur une ligne et une hauteur limitée pour
 les détails d’approbation. `truncateStrategy` choisit `head`, `tail`, `middle` ou `none` pour le repli visuel.
 Les valeurs par défaut sont un en-tête normal, une hauteur naturelle et `head` ; `.compact` active les deux
 options de disposition. L’hôte transmet la configuration enregistrée à `AgentToolDetail(items:layout:)`, sans
@@ -128,7 +128,7 @@ modifie ni la troncature du modèle, ni les fichiers capturés, ni les marqueurs
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )

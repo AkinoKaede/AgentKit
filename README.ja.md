@@ -115,7 +115,7 @@ Guardianのレビュー担当が未設定でも`.askForApproval`には影響し�
 ## アーキテクチャ
 
 各 `AgentToolDetailPresenter` の `layout: AgentToolDetailLayout` で表示方針を登録します。
-`compactHeader` と `boundsApprovalHeight` はそれぞれ簡潔な見出しと承認詳細の高さ制限を指定し、
+`singleLineHeader` と `boundsApprovalHeight` はそれぞれ単一行の見出しと承認詳細の高さ制限を指定し、
 `truncateStrategy` は表示専用の折りたたみに `head`、`tail`、`middle`、`none` を選びます。
 既定値は通常の見出し、自然な承認領域の高さ、`head` です。`.compact` は両方のレイアウト指定を有効にします。
 ホストはツール名で分岐せず、登録済みの設定を `AgentToolDetail(items:layout:)` に渡します。
@@ -126,7 +126,7 @@ Guardianのレビュー担当が未設定でも`.askForApproval`には影響し�
 ```swift
 static let presenter = AgentToolDetailPresenter(
     id: "example.logs",
-    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    layout: .init(singleLineHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
     present: present,
     presentArguments: presentArguments
 )
