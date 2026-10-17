@@ -185,6 +185,52 @@ struct AgentTruncateTests {
     }
 
     @Test
+    func capturedQuotedOutputKeepsReadableLinesAfterRedaction() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let workspace = AgentScratchWorkspace(base: directory)
+        let accumulator = AgentOutputAccumulator(workspace: workspace, path: { "captures/quoted-output.txt" })
+        let source = (1...400).map {
+            "line \($0) " + String(repeating: "x", count: 192) + " token=\"private-value\"\n"
+        }.joined()
+        accumulator.append(Data(source.utf8))
+        let snapshot = await accumulator.snapshot()
+        var raw = AgentToolResult(
+            callID: "call",
+            content: AgentToolOutputProjection.frame(["output": .string(snapshot.output)]),
+            isTruncated: snapshot.isTruncated,
+            metadata: [
+                "untrusted": .bool(true),
+                "output_total_lines": .number(Double(snapshot.totalLines)),
+                "output_line_offset": .number(Double(snapshot.lineOffset)),
+            ])
+        raw.outputCapture = snapshot.capture
+        let projected = await AgentToolOutputProjection(workspace: workspace).project(
+            raw, invocation: invocation(), strategy: .tail)
+        let value = try fields(projected)
+        #expect((value["returned_lines"]?.integerValue ?? 0) > 0)
+        let output = try #require(value["output"]?.stringValue)
+        #expect(value["returned_lines"]?.integerValue == AgentTruncateResult.logicalLines(output).count)
+        #expect(output.contains("line 400 "))
+        #expect(!output.contains("private-value"))
+        #expect(projected.truncateMarker?.contains("-400 of 400. Full output: captures/quoted-output.txt") == true)
+        #expect(try #require(projected.modelContent).utf8.count <= AgentTruncateLimits.maximumBytes)
+    }
+
+    @Test(arguments: [AgentTruncateStrategy.head, .none])
+    func smallJSONOutputRemainsValidWhenTextContainsQuotedSecrets(strategy: AgentTruncateStrategy) async throws {
+        let raw = AgentToolResult(
+            callID: "call",
+            content: AgentToolOutputProjection.frame([
+                "output": .string("export token=\"private-value\"\nfinished\n")
+            ]),
+            metadata: ["untrusted": .bool(true)])
+        let projected = await AgentToolOutputProjection().project(raw, invocation: invocation(), strategy: strategy)
+        #expect(try fields(projected)["output"]?.stringValue == "export token=\"[REDACTED]\"\nfinished\n")
+        #expect(projected.truncateMarker == nil)
+    }
+
+    @Test
     func streamingProjectionKeepsOriginalLineNumbersAfterTwoTailSelections() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }

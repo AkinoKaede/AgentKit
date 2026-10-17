@@ -16,7 +16,7 @@
 添加包依赖：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
 ```
 
 然后将核心产品添加到目标：

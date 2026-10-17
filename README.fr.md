@@ -17,7 +17,7 @@ Nécessite **macOS 15+ ou iOS 18+**, ainsi qu’une chaîne d’outils **Swift 6
 Ajoutez la dépendance au package :
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
 ```
 
 Ajoutez ensuite le produit principal à votre cible :

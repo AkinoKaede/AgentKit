@@ -26,9 +26,17 @@ public nonisolated struct AgentToolOutputProjection: Sendable {
             invocation.call.name != "request_user_secret", !result.isProviderNative
         else { return result }
         var projected = result
-        let clean = AgentSensitiveDataRedactor.visibleText(result.content)
-        let payload = result.untrustedPayload.map { AgentSensitiveDataRedactor.visibleText($0) } ?? clean
-        let object = (try? AgentJSONValue.decode(Data(payload.utf8)))?.objectValue
+        let originalPayload = result.untrustedPayload ?? result.content
+        // Redact decoded fields, not JSON syntax: inserting quotes into an
+        // escaped string can invalidate the envelope and erase its line structure.
+        let value = (try? AgentJSONValue.decode(Data(originalPayload.utf8)))
+            .map(AgentSensitiveDataRedactor.redactedJSON)
+        let payload = value?.encodedString ?? AgentSensitiveDataRedactor.visibleText(originalPayload)
+        let clean =
+            result.untrustedPayload == nil
+            ? payload
+            : AgentToolResult.untrustedDataOpeningMarker + payload + AgentToolResult.untrustedDataClosingMarker
+        let object = value?.objectValue
         let readable = object?["output"]?.stringValue ?? Self.archiveText(payload)
         let limits = AgentTruncateLimits(bytes: maximumBytes, lines: maximumLines)
         if strategy == .none || result.metadata["skill_instructions"]?.boolValue == true {

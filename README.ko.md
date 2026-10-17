@@ -17,7 +17,7 @@ AgentKit은 모델과 도구 간의 실행 루프, 승인, 대화 상태를 담�
 패키지 의존성을 추가하세요.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
 ```
 
 그런 다음 대상 타깃에 코어 제품을 추가하세요.
