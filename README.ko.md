@@ -17,7 +17,7 @@ AgentKit은 모델과 도구 간의 실행 루프, 승인, 대화 상태를 담�
 패키지 의존성을 추가하세요.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.1.0")
 ```
 
 그런 다음 대상 타깃에 코어 제품을 추가하세요.
@@ -113,6 +113,24 @@ func runAgent(
   `AgentSystemPrompt.default`를 포함하세요.
 
 ## 아키텍처
+
+각 `AgentToolDetailPresenter`의 `layout: AgentToolDetailLayout`으로 표시 정책을 등록합니다.
+`compactHeader`와 `boundsApprovalHeight`는 각각 간결한 제목과 승인 상세 높이 제한을 지정하고,
+`truncateStrategy`는 표시 전용 접기에 `head`, `tail`, `middle`, `none`을 선택합니다.
+기본값은 일반 제목, 자연스러운 승인 높이, `head`이며 `.compact`는 두 레이아웃 옵션을 모두 활성화합니다.
+호스트는 도구 이름으로 분기하지 말고 등록된 설정을 `AgentToolDetail(items:layout:)`에 전달합니다.
+메타데이터 텍스트 블록에 `isCollapsible: false`를 지정하면 위치와 무관하게 미리보기 제한에서 제외됩니다.
+승인 인수는 항상 전체를 읽을 수 있어야 합니다. 설정은 신뢰할 수 있는 로컬 presenter 레지스트리에서만 해석하며
+MCP 페이로드에서는 받지 않습니다. 모델 출력 잘라내기, 저장 파일, 잘라내기 마커에는 영향을 주지 않습니다.
+
+```swift
+static let presenter = AgentToolDetailPresenter(
+    id: "example.logs",
+    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    present: present,
+    presentArguments: presentArguments
+)
+```
 
 `AgentRuntime`은 전체 실행을 조율하며, 제공업체나 도구 구현을 하나로 합친 거대한 구성 요소가 아닙니다.
 한 번의 실행에 속한 태스크, 대화 기록 스냅샷, 추가 지시 큐, 이벤트 채널을 관리하고 각 단계를

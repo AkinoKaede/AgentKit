@@ -3,7 +3,7 @@ import Foundation
 public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let name = "skill_read_file"
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.skill_read_file", present: present, presentArguments: presentArguments)
+        id: "builtin.skill_read_file", layout: .compact, present: present, presentArguments: presentArguments)
     /// Presentation compatibility only. This never registers an executable legacy tool.
     public static let legacyPresenter = AgentToolDetailPresenter(id: "builtin.load_skill", present: present)
     public let skills: AgentSkillCatalog
@@ -94,7 +94,8 @@ public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchem
 }
 
 public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBuilding {
-    public static let presenter = AgentToolDetailPresenter(id: "builtin.skills_list", present: present)
+    public static let presenter = AgentToolDetailPresenter(
+        id: "builtin.skills_list", layout: .compact, present: present)
     public let skills: [AgentSkill]
     public let readOnlyNames: Set<String>
     public init(skills: [AgentSkill], readOnlyNames: Set<String> = []) {
@@ -129,7 +130,7 @@ public nonisolated struct SkillsListTool: AgentToolDefinition, AgentToolSchemaBu
 
 public nonisolated struct SkillManageTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.skill_manage", present: present, presentArguments: presentArguments)
+        id: "builtin.skill_manage", layout: .compact, present: present, presentArguments: presentArguments)
     public let library: any AgentSkillLibraryManaging
     public init(library: any AgentSkillLibraryManaging) { self.library = library }
     public var descriptor: AgentToolDescriptor {

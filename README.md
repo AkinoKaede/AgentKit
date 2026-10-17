@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.1.0")
 ```
 
 Then add the core product to your target:
@@ -111,6 +111,24 @@ For app integration:
   `authorizationEvidence`. Include `AgentSystemPrompt.default` when composing a custom system prompt.
 
 ## Architecture
+
+Register display policy with each `AgentToolDetailPresenter` through its `layout: AgentToolDetailLayout`.
+`compactHeader` and `boundsApprovalHeight` are independent host-rendering hints; `truncateStrategy` selects
+`head`, `tail`, `middle`, or `none` for display-only folding. Defaults are a standard header, intrinsic approval
+height, and `head`; `.compact` enables both layout hints. Hosts carry the registered layout into
+`AgentToolDetail(items:layout:)` rather than branching on tool names. Mark metadata text blocks with
+`isCollapsible: false` so they stay outside the preview budget regardless of their position. Approval arguments
+remain fully readable. Resolve layout from the trusted local presenter registry, never from MCP payloads.
+This policy does not change model truncation, capture files, or truncation markers.
+
+```swift
+static let presenter = AgentToolDetailPresenter(
+    id: "example.logs",
+    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    present: present,
+    presentArguments: presentArguments
+)
+```
 
 `AgentRuntime` is the coordinator, not a monolithic provider or tool implementation. It owns one
 run's task, transcript snapshot, steering queue, and event channel, and delegates each phase to a

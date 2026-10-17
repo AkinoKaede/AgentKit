@@ -17,7 +17,7 @@ AgentKitがモデルとツールの実行ループ、承認、会話状態を管
 パッケージの依存関係を追加します。
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.1.0")
 ```
 
 次に、ターゲットにコアのプロダクトを追加します。
@@ -113,6 +113,24 @@ Guardianのレビュー担当が未設定でも`.askForApproval`には影響し�
   `AgentSystemPrompt.default`も含めてください。
 
 ## アーキテクチャ
+
+各 `AgentToolDetailPresenter` の `layout: AgentToolDetailLayout` で表示方針を登録します。
+`compactHeader` と `boundsApprovalHeight` はそれぞれ簡潔な見出しと承認詳細の高さ制限を指定し、
+`truncateStrategy` は表示専用の折りたたみに `head`、`tail`、`middle`、`none` を選びます。
+既定値は通常の見出し、自然な承認領域の高さ、`head` です。`.compact` は両方のレイアウト指定を有効にします。
+ホストはツール名で分岐せず、登録済みの設定を `AgentToolDetail(items:layout:)` に渡します。
+メタデータのテキストブロックを `isCollapsible: false` にすると、位置に関係なくプレビューの制限対象外になります。
+承認引数は常に全文を読めます。設定は信頼されたローカルの presenter レジストリから解決し、MCP の内容からは
+受け取りません。モデル向けの切り詰め、保存ファイル、切り詰めマーカーには影響しません。
+
+```swift
+static let presenter = AgentToolDetailPresenter(
+    id: "example.logs",
+    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    present: present,
+    presentArguments: presentArguments
+)
+```
 
 `AgentRuntime`は実行全体を調整します。プロバイダやツールの実装をすべて抱えるクラスではありません。
 1回の実行に属するタスク、会話履歴のスナップショット、追加指示のキュー、イベントチャネルを管理し、

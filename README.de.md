@@ -18,7 +18,7 @@ Erfordert **macOS 15+ oder iOS 18+** und eine **Swift-6.2+-Toolchain**.
 Fügen Sie die Paketabhängigkeit hinzu:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.1.0")
 ```
 
 Fügen Sie anschließend Ihrem Target das Kernprodukt hinzu:
@@ -115,6 +115,25 @@ Für die Integration in Ihre App:
   System-Prompts `AgentSystemPrompt.default` ein.
 
 ## Architektur
+
+Jeder `AgentToolDetailPresenter` registriert seine Darstellungsregeln über `layout: AgentToolDetailLayout`.
+`compactHeader` und `boundsApprovalHeight` steuern unabhängig die kompakte Überschrift und die Höhe der
+Genehmigungsdetails. `truncateStrategy` wählt `head`, `tail`, `middle` oder `none` für das reine Einklappen der
+Anzeige. Standard sind eine normale Überschrift, natürliche Genehmigungshöhe und `head`; `.compact` aktiviert
+beide Layoutoptionen. Der Host übergibt das registrierte Layout an `AgentToolDetail(items:layout:)`, statt nach
+Werkzeugnamen zu verzweigen. Metadatenblöcke mit `isCollapsible: false` bleiben unabhängig von ihrer Position
+außerhalb des Vorschaubudgets. Genehmigungsargumente bleiben vollständig lesbar. Das Layout stammt ausschließlich
+aus der vertrauenswürdigen lokalen Presenter-Registry, niemals aus MCP-Nutzdaten. Modellkürzung, gespeicherte
+Ausgaben und Kürzungsmarker bleiben unverändert.
+
+```swift
+static let presenter = AgentToolDetailPresenter(
+    id: "example.logs",
+    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    present: present,
+    presentArguments: presentArguments
+)
+```
 
 `AgentRuntime` koordiniert den Ablauf, statt Anbieter- und Werkzeugimplementierungen in einer
 monolithischen Komponente zu bündeln. Die Runtime verwaltet Task, Gesprächssnapshot, Warteschlange

@@ -2,7 +2,7 @@ import Foundation
 
 public nonisolated struct MemoryTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.memory", present: present, presentArguments: presentArguments)
+        id: "builtin.memory", layout: .compact, present: present, presentArguments: presentArguments)
     public let store: any AgentMemoryAccessing
     public init(store: any AgentMemoryAccessing) { self.store = store }
     public static var operationSchema: AgentJSONValue {
@@ -42,7 +42,7 @@ public nonisolated struct MemoryTool: AgentToolDefinition, AgentToolSchemaBuildi
 
 public nonisolated struct MemorySearchTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.memory_search", present: present, presentArguments: presentArguments)
+        id: "builtin.memory_search", layout: .compact, present: present, presentArguments: presentArguments)
     public let store: any AgentMemoryAccessing
     public init(store: any AgentMemoryAccessing) { self.store = store }
     public var descriptor: AgentToolDescriptor {
@@ -78,7 +78,7 @@ public nonisolated struct MemorySearchTool: AgentToolDefinition, AgentToolSchema
 
 public nonisolated struct SessionSearchTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.session_search", present: present, presentArguments: presentArguments)
+        id: "builtin.session_search", layout: .compact, present: present, presentArguments: presentArguments)
     public let store: any AgentMemoryAccessing
     public init(store: any AgentMemoryAccessing) { self.store = store }
     public var descriptor: AgentToolDescriptor {

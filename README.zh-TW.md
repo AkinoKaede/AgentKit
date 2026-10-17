@@ -16,7 +16,7 @@
 加入套件相依項目：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.1")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.1.0")
 ```
 
 接著將核心產品加入目標：
@@ -109,6 +109,23 @@ func runAgent(
   `AgentSystemPrompt.default`。
 
 ## 架構
+
+透過每個 `AgentToolDetailPresenter` 的 `layout: AgentToolDetailLayout` 註冊展示策略。
+`compactHeader` 與 `boundsApprovalHeight` 分別宣告緊湊標題與核准詳情高度限制；`truncateStrategy`
+為純展示摺疊選擇 `head`、`tail`、`middle` 或 `none`。預設使用一般標題、自然核准高度與 `head`；
+`.compact` 同時啟用兩項版面提示。宿主將註冊的版面傳入 `AgentToolDetail(items:layout:)`，不要依工具名稱
+分支。中繼資料文字區塊設定 `isCollapsible: false`，無論位於何處都不占正文預覽預算。核准參數始終可以
+完整閱讀。版面只從可信的本機 presenter 註冊表解析，不接受 MCP 承載內容中的設定。這些策略不改變模型
+截斷、儲存檔案或截斷 marker。
+
+```swift
+static let presenter = AgentToolDetailPresenter(
+    id: "example.logs",
+    layout: .init(compactHeader: true, boundsApprovalHeight: true, truncateStrategy: .tail),
+    present: present,
+    presentArguments: presentArguments
+)
+```
 
 `AgentRuntime` 是協調器，而不是把模型介接與工具實作集中在一起的龐大元件。
 它管理一次執行的工作、對話快照、引導訊息佇列與事件通道，將各階段委派給可獨立測試的元件。
