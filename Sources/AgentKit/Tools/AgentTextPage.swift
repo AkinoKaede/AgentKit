@@ -11,8 +11,8 @@ public nonisolated struct AgentTextPage: Sendable, Equatable {
 /// A bounded UTF-8 line scanner shared by local and streaming file readers.
 /// Feed chunks until isComplete, or call finish at EOF. Skipped lines are not retained.
 public nonisolated struct AgentTextPageReader: Sendable {
-    public static let defaultMaximumBytes = 50 * 1_024
-    public static let defaultLineLimit = 2_000
+    public static let defaultMaximumBytes = AgentTruncateLimits.maximumBytes
+    public static let defaultLineLimit = AgentTruncateLimits.maximumLines
     private let offset: Int
     private let limit: Int
     private let maximumBytes: Int

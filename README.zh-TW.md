@@ -16,7 +16,7 @@
 加入套件相依項目：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 接著將核心產品加入目標：
@@ -30,7 +30,7 @@
 
 ## 使用方式
 
-以下範例使用 Responses 端點，僅啟用目前對話的私有暫存區工具。
+以下範例使用 Responses 端點和一律提供的共用暫存區工具。
 請在非同步情境中呼叫，從應用程式的認證資訊儲存區提供 API 金鑰，並傳入 `manualApproval` 閉包：
 由閉包顯示核准介面，回傳 `.allow` 或 `.deny(reason)`。
 
@@ -51,19 +51,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -183,8 +183,8 @@ Anthropic 的獨立快取計數則另外處理。即時 Chat Completions 收到�
 
 | 工具群組 | 工具 | 相依項目 |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`、`scratch_read`、`scratch_search`、`scratch_write`、`scratch_replace`、`scratch_copy`、`scratch_move`、`scratch_diff`、`scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`、`web_search`、`scratch_fetch` | 擷取需要 `web: AgentWebFetching`；搜尋需要 `search: AgentWebSearching`；`scratch_fetch` 還需要 `.scratch` 與暫存區 |
+| 一律提供 | `scratch_list`、`scratch_read`、`scratch_search`、`scratch_write`、`scratch_replace`、`scratch_copy`、`scratch_move`、`scratch_diff`、`scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`、`web_search`、`scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`、`request_user_secret` | 無工具目錄相依項目；需要提供 runtime 的使用者互動處理器 |
 | `.planning` | `present_plan` | 暫存區與 `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`；僅限行動模式 |
@@ -244,7 +244,7 @@ let webTools = AgentBuiltInToolConfiguration(
 ```
 
 將設定傳給 `AgentToolCatalog.registry(builtIn:)`。只提供 `web:` 會啟用網頁擷取，**不會**啟用
-`web_search`；`search:` 是獨立的相依項目。若要啟用 `scratch_fetch`，還需選擇 `.scratch` 並提供暫存區。
+`web_search`；`search:` 是獨立的相依項目。`scratch_fetch` 自動使用共用暫存區。
 
 若服務供應商與模型支援原生搜尋，可以將 `AgentProviderClient(webSearch:)` 設為 `true`，並省略 `search:`。
 請先檢查 `ModelProvider.supportsNativeWebSearch(model:)`；協定相容不代表閘道實作了伺服器端搜尋。
@@ -302,6 +302,48 @@ Guardian 在隔離的 `.reviewing` 模式下執行，預設不註冊調查工具
 工具輸出一律視為不可信資料。
 唯一的有限例外是已安裝技能的 `SKILL.md`：它可以提供操作流程，但不能授予權限；
 輔助檔案仍是不可信的參考資料。
+
+## 共用暫存區與工具輸出
+
+Scratch 是必要能力，同一裝置上同一應用程式內的所有對話共用。`AgentScratchWorkspace.shared(applicationName:)` 傳回同一個協調器，工具設定與 `AgentLoopConfiguration.outputProjection` 應使用同一實例。根目錄為 Application Support / applicationName / Scratch，不再附加對話 ID；刪除或分支對話不會刪除或複製檔案。AI 必須主動選擇與任務相關的相對路徑，覆寫前檢查現有檔案。缺少的父目錄會自動建立，路徑、符號連結檢查及檔案和工作區配額仍有效。
+
+`AgentTruncateStrategy` 支援 `head`（預設）、`tail`、`middle` 和 `none`。`AgentTruncateLimits` 預設為 64 KiB（65,536 UTF-8 位元組）及 2,000 個邏輯行，不截斷半行；單行超限時也不傳回不完整的行。模型投影包含 JSON 跳脫和外層欄位的開銷。分頁讀取保留實際的下一偏移量，不建立 accumulator，也不將讀取的分頁再次存檔。
+
+存檔由工具選擇採用，不是模型參數，也不是 Scratch 開關。下方通用工廠接收完整 Scratch 相對路徑的產生閉包，僅在需要存檔時呼叫。目錄與檔名由工具決定；AgentKit 不強制前綴或副檔名，只自動建立父目錄、驗證路徑邊界並避免覆寫同名檔案。工具建議使用 `<conversationID>/outputs/<tool-name>-<UUID>.txt`（工具名中的底線改為連字號）；這是檔案組織慣例，不是對話隔離。沒有 conversationID 的呼叫環境可以使用 runID。外部 MCP 的存檔使用被呼叫工具的名稱。連續快照重用同一檔案；非串流工具可呼叫 `await accumulator.capturing(result)`。
+
+AgentKit 統一產生兩種不翻譯的 marker：成功存檔使用 `[Showing lines <start>-<end> of <total>. Full output: <path>]`，其餘情況使用 `[Showing lines <start>-<end> of <total>]`。存檔錯誤與續讀 offset/cursor 保留在獨立結果欄位中，不增加 marker。UI 摺疊獨立，既不產生截斷 marker，也不觸發存檔。呈現層可顯示實際截斷時凍結的 `AgentToolResult.truncateMarker`。呼叫外部 MCP 的回傳值使用 `middle` 並存檔；外部用戶端呼叫本機工具時不套用模型截斷，也不建立 Scratch 輸出。
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Scratch 配額為每個檔案 8 MiB、每個工作區 64 MiB、512 個項目。面向模型的 accumulator 保留有界資料，並以不可分割的操作替換累積快照，不是無限容量的磁碟串流。`snapshot(capturePath:)` 可依工具指定的路徑儲存獨立快照。配額或寫入失敗會回報 `capture.error`，不宣稱已儲存完整副本。
+
+Marker 參考 Pi 的行範圍格式。`middle` 列出保留的兩段範圍；總行數未知時省略 `of <total>`；超長單行可能得到 `[Showing 0 of 1 lines]`。僅成功存檔時附加 `Full output: <path>`。
+
+### 內建工具輸出策略
+
+| 工具 / 結果 | 策略 | 自動存檔 |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | 是 |
+| MCP | `middle` | 是 |
+| `scratch_read`, `skill_read_file` | `head`，分頁 | 否 |
+| `read_chat` | `head`，分頁 | 否 |
+| `scratch_search` | `head` | 否 |
+| 其他內建工具 | `head` | 否 |
+| 傳回外部用戶端的結果 | 略過 | 否 |
+
+`scratch_fetch` 的主要操作是寫入呼叫端指定的目標路徑，而非自動截斷存檔。結果數量、分頁範圍等來源端限制仍有效。可信任的已安裝 `SKILL.md` 指令使用獨立的匯入與驗證限制。
+
+### 從 1.x 遷移
+
+工具目錄與輸出投影應使用同一個共用 workspace。`.scratch` 僅保留為相容的群組標籤，不再控制工具開關；工具設定的 workspace 為 nil 時回退至 `.shared()`。`AgentToolOutputProjection.workspace` 不再可選，請將明確指定的 `nil` 改為共用 workspace。舊 workspace 的 `conversationID` 參數不再選取目錄，`copyScope` 不再執行操作。現有對話資料夾保留原位，成為一般的相對路徑目錄；讀取舊檔案時需加上原目錄名稱。不要隨對話刪除共用 Scratch。需要自動存檔的工具必須採用 accumulator，輸出投影不再為所有超限結果自動存檔。
 
 ## 擴充 AgentKit
 

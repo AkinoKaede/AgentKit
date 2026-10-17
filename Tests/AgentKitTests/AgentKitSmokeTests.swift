@@ -5,27 +5,26 @@ import Testing
 
 @Suite
 struct AgentKitSmokeTests {
-    /// A group whose dependency is missing contributes nothing. `.userInteraction`
-    /// is the exception and stays: its handler comes from the run rather than
-    /// from this configuration, so there is nothing for it to be missing.
+    static let scratchNames: Set<String> = [
+        "scratch_list", "scratch_read", "scratch_search", "scratch_write", "scratch_replace",
+        "scratch_copy", "scratch_move", "scratch_diff", "scratch_delete",
+    ]
+    /// Mandatory scratch does not depend on optional service selection.
     @Test
-    func groupsWithoutTheirDependenciesRegisterNothing() {
+    func missingOptionalDependenciesStillLeaveMandatoryScratch() {
         let names = Set(
             AgentToolCatalog.registry(builtIn: .init()).descriptors.map(\.name)
         )
-        #expect(names == ["request_user_input", "request_user_secret"])
+        #expect(names == Set(["request_user_input", "request_user_secret"]).union(Self.scratchNames))
 
         let none = AgentToolCatalog.registry(
             builtIn: .init(groups: [.web, .scratch, .planning, .tasks, .skills])
         )
-        #expect(none.descriptors.isEmpty)
+        #expect(Set(none.descriptors.map(\.name)) == Self.scratchNames)
     }
 
-    /// `scratch_fetch` spans two groups, and needs both. Taking `.web` alone
-    /// would otherwise hand the model a tool that writes files nothing in the
-    /// run can read back.
     @Test
-    func scratchFetchNeedsBothItsGroups() throws {
+    func scratchFetchUsesMandatoryScratchWhenWebIsAvailable() throws {
         let workspace = AgentScratchWorkspace(
             conversationID: UUID(), base: FileManager.default.temporaryDirectory
         )
@@ -39,7 +38,7 @@ struct AgentKitSmokeTests {
             )
         }
 
-        #expect(!names([.web]).contains("scratch_fetch"))
+        #expect(names([.web]).contains("scratch_fetch"))
         #expect(names([.web]).contains("fetch"))
         #expect(!names([.scratch]).contains("scratch_fetch"))
         #expect(names([.scratch, .web]).contains("scratch_fetch"))

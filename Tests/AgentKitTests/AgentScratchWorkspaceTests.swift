@@ -356,7 +356,7 @@ struct AgentScratchWorkspaceTests {
         _ = try await workspace.write("tree/a.txt", data: Data("a".utf8))
         _ = try await workspace.write("anchor.txt", data: Data("anchor".utf8))
 
-        let scope = base.appending(path: id.uuidString)
+        let scope = base
         try FileManager.default.createSymbolicLink(
             at: scope.appending(path: "tree/link.txt"),
             withDestinationURL: scope.appending(path: "anchor.txt")

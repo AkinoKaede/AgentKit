@@ -38,14 +38,17 @@ public nonisolated struct FetchTool: AgentToolDefinition, AgentToolSchemaBuildin
         let document = try await web.document(for: arguments.string("url"))
         let format = arguments.optionalString("format") ?? "markdown"
         let selected = format == "original" ? document.original : document.markdown
-        let content = AgentToolSupport.bounded(selected, maximumBytes: 256 * 1_024)
-        return Self.result(
+        let result = Self.result(
             invocation,
             .object([
                 "title": .string(document.title), "url": .string(document.url.absoluteString),
-                "format": .string(format), "content": .string(content.text),
-                "truncated": .bool(content.truncated),
-            ]), truncated: content.truncated)
+                "format": .string(format), "content": .string(selected),
+                "truncated": .bool(false),
+            ]))
+        let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+        return await context.makeOutputAccumulator {
+            "\(conversationID)/outputs/fetch-\(UUID().uuidString.lowercased()).txt"
+        }.capturing(result)
     }
 }
 
@@ -97,18 +100,20 @@ public nonisolated struct WebSearchTool: AgentToolDefinition, AgentToolSchemaBui
         let rows = try await web.search(
             Self.query(arguments), count: arguments.optionalInt("count") ?? 5
         )
-        let limit = 32 * 1_024
-        return Self.result(
+        let result = Self.result(
             invocation,
             .array(
                 rows.map { row in
-                    let markdown = AgentToolSupport.bounded(row.markdown, maximumBytes: limit)
                     return .object([
                         "engine": row.engine.map(AgentJSONValue.string) ?? .null,
                         "title": .string(row.title), "url": .string(row.url.absoluteString),
-                        "markdown": .string(markdown.text), "truncated": .bool(markdown.truncated),
+                        "markdown": .string(row.markdown), "truncated": .bool(false),
                     ])
-                }), truncated: rows.contains { $0.markdown.utf8.count > limit })
+                }))
+        let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+        return await context.makeOutputAccumulator {
+            "\(conversationID)/outputs/web-search-\(UUID().uuidString.lowercased()).txt"
+        }.capturing(result)
     }
 }
 nonisolated
@@ -199,16 +204,5 @@ nonisolated
                     )),
             ]
         }
-    }
-}
-nonisolated
-
-    extension AgentToolSupport
-{
-    fileprivate static func bounded(
-        _ text: String, maximumBytes: Int
-    ) -> (text: String, truncated: Bool) {
-        guard text.utf8.count > maximumBytes else { return (text, false) }
-        return (String(decoding: text.utf8.prefix(maximumBytes), as: UTF8.self), true)
     }
 }

@@ -13,7 +13,11 @@ public nonisolated enum AgentSensitiveDataRedactor {
         var output = maximumCharacters.map { String(text.prefix($0)) } ?? text
         for key in sensitiveKeys {
             let escaped = NSRegularExpression.escapedPattern(for: key)
-            let pattern = "(?i)(\\\"?\(escaped)\\\"?\\s*[:=]\\s*)(\\\"[^\\\"]*\\\"|[^\\s,}]+)"
+            // A streaming snapshot may end inside a quoted value. Redact the
+            // entire unfinished value, including whitespace and escaped quotes.
+            let pattern =
+                "(?i)(\\\"?\(escaped)\\\"?\\s*[:=]\\s*)"
+                + #"(\"(?:\\.|[^\"\\])*(?:\"|$)|'(?:\\.|[^'\\])*(?:'|$)|[^\s,}]+)"#
             output = output.replacingOccurrences(
                 of: pattern, with: "$1\"[REDACTED]\"", options: .regularExpression
             )

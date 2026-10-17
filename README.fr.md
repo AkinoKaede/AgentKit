@@ -17,7 +17,7 @@ Nécessite **macOS 15+ ou iOS 18+**, ainsi qu’une chaîne d’outils **Swift 6
 Ajoutez la dépendance au package :
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 Ajoutez ensuite le produit principal à votre cible :
@@ -31,8 +31,7 @@ un client web reposant sur ScrubberKit, sans imposer de dépendance à WebKit au
 
 ## Utilisation
 
-Cet exemple utilise un point de terminaison Responses et active uniquement les outils de l’espace
-de travail temporaire privé de la conversation. Appelez-le depuis un contexte asynchrone en fournissant
+Cet exemple utilise un point de terminaison Responses et les outils Scratch partagés obligatoires. Appelez-le depuis un contexte asynchrone en fournissant
 une clé API issue du stockage d’identifiants de votre app, ainsi qu’une closure `manualApproval`
 qui présente votre interface d’approbation et renvoie `.allow` ou `.deny(reason)`.
 
@@ -53,19 +52,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -206,8 +205,8 @@ La sélection d’un groupe ne crée pas ses services.
 
 | Groupe | Outils | Dépendances |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching` pour la récupération ; `search: AgentWebSearching` pour la recherche ; `scratch_fetch` nécessite aussi `.scratch` et un espace de travail |
+| Toujours disponible | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`, `request_user_secret` | Aucune dépendance du catalogue ; fournir le gestionnaire d’interactions utilisateur du runtime |
 | `.planning` | `present_plan` | Un espace de travail et `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList` ; uniquement en mode action |
@@ -279,7 +278,7 @@ let webTools = AgentBuiltInToolConfiguration(
 
 Transmettez cette configuration à `AgentToolCatalog.registry(builtIn:)`.
 Fournir uniquement `web:` active la récupération, **pas** `web_search` ; `search:` est une dépendance indépendante.
-Pour activer `scratch_fetch`, sélectionnez également `.scratch` et fournissez un espace de travail.
+`scratch_fetch` utilise automatiquement l’espace de travail partagé.
 
 Si le fournisseur et le modèle prennent en charge la recherche native, vous pouvez à la place définir
 `AgentProviderClient(webSearch:)` à `true` et omettre `search:`.
@@ -349,6 +348,83 @@ Le texte en clair est exclu des entrées du modèle, des vérifications, des év
 Les sorties des outils sont des données non fiables. La seule exception, étroitement délimitée,
 est le fichier `SKILL.md` d’une compétence installée : il peut fournir des procédures, jamais des permissions.
 Ses fichiers complémentaires restent des données de référence non fiables.
+
+## Scratch partagé et sorties des outils
+
+Scratch est obligatoire et partagé entre toutes les conversations de la même application sur cet appareil. Passez
+le même coordinateur obtenu avec `AgentScratchWorkspace.shared(applicationName:)` à la configuration des outils et
+à `AgentLoopConfiguration.outputProjection`. La racine est Application Support / applicationName / Scratch, sans
+identifiant de conversation. Supprimer ou bifurquer une conversation ne supprime ni ne copie les fichiers. L’agent
+doit choisir des chemins relatifs propres à la tâche et vérifier les fichiers avant de les écraser. Les répertoires
+parents sont créés automatiquement ; les contrôles des chemins, des liens symboliques et des quotas restent actifs.
+
+`AgentTruncateStrategy` prend en charge `head` (par défaut), `tail`, `middle` et `none`. `AgentTruncateLimits`
+utilise par défaut 64 KiB (65 536 octets UTF-8) et 2 000 lignes logiques. Même une ligne trop longue n’est jamais
+coupée en partie. La projection du modèle compte l’échappement JSON et les champs d’enveloppe. Les lectures
+paginées conservent le véritable décalage suivant et ne créent ni accumulator ni fichier de capture supplémentaire.
+
+La capture est facultative pour chaque outil, et non un argument du modèle ou un interrupteur Scratch. La factory
+ci-dessous reçoit une closure qui renvoie le chemin relatif complet dans Scratch et ne l’appelle que si nécessaire.
+L’outil choisit le répertoire et le nom ; AgentKit n’impose ni préfixe ni extension, crée les répertoires parents,
+vérifie les limites du chemin et n’écrase aucun fichier homonyme. La convention recommandée est
+`<conversationID>/outputs/<tool-name>-<UUID>.txt`, avec des tirets à la place des traits de soulignement. Elle
+organise les fichiers sans isoler les conversations. Sans conversationID, le contexte peut utiliser runID. Les
+captures MCP sortantes portent le nom de l’outil appelé. Les instantanés cumulatifs réutilisent le même fichier.
+Les outils non diffusés peuvent utiliser `await accumulator.capturing(result)`.
+
+AgentKit génère seulement deux marqueurs non traduits : `[Showing lines <start>-<end> of <total>. Full output:
+<path>]` après une capture réussie, sinon `[Showing lines <start>-<end> of <total>]`. Les erreurs et les
+offsets/curseurs de continuation restent des champs de résultat distincts, sans marqueur supplémentaire. Le repli
+de l’interface est indépendant : il ne crée ni marqueur de troncature ni fichier. La présentation peut afficher le
+`AgentToolResult.truncateMarker` figé lors d’une véritable troncature. Les résultats MCP sortants utilisent
+`middle` avec capture ; les réponses aux clients externes ne subissent ni troncature du modèle ni capture Scratch.
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Les quotas Scratch sont de 8 MiB par fichier, 64 MiB par espace de travail et 512 entrées. Les accumulateurs
+destinés au modèle conservent des données bornées et remplacent atomiquement les instantanés cumulatifs ; ils ne
+sont pas des tampons disque illimités. `snapshot(capturePath:)` permet de sauvegarder un instantané distinct dans
+un chemin choisi par l’outil. Les erreurs de quota ou d’écriture sont signalées dans `capture.error`, sans
+promettre une copie complète sauvegardée.
+
+Les marqueurs suivent le style de plages de lignes de Pi. `middle` indique les deux plages conservées ; un total
+inconnu omet `of <total>`, et une ligne trop longue peut produire `[Showing 0 of 1 lines]`. Seule une capture
+réussie ajoute `Full output: <path>`.
+
+### Politiques de sortie des outils intégrés
+
+| Outil / résultat | Stratégie | Capture automatique |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | Oui |
+| MCP | `middle` | Oui |
+| `scratch_read`, `skill_read_file` | `head`, paginé | Non |
+| `read_chat` | `head`, paginé | Non |
+| `scratch_search` | `head` | Non |
+| Autres outils intégrés | `head` | Non |
+| Réponses aux clients externes | Contournement | Non |
+
+`scratch_fetch` écrit à la destination choisie par l’appelant comme opération principale, et non comme capture
+automatique. Les limites de la source, telles que le nombre de résultats et les fenêtres de pagination, restent en
+vigueur. Les instructions `SKILL.md` installées et approuvées utilisent leurs limites distinctes d’importation et
+de validation.
+
+### Migration depuis 1.x
+
+Utilisez le même workspace partagé pour le catalogue et la projection des sorties. `.scratch` reste un libellé de
+compatibilité mais ne désactive plus les outils ; un workspace nil dans le catalogue utilise `.shared()`.
+`AgentToolOutputProjection.workspace` n’est plus optionnel : remplacez tout `nil` explicite par un workspace
+partagé. L’ancien argument `conversationID` ne sélectionne plus de répertoire et `copyScope` ne fait plus rien. Les
+anciens dossiers de conversation restent des répertoires ordinaires à chemin relatif ; incluez leur nom existant
+pour lire les anciens fichiers. Ne supprimez pas Scratch partagé avec une conversation. Les outils doivent adopter
+l’accumulateur pour la capture automatique ; la projection n’archive plus tous les résultats trop volumineux.
 
 ## Étendre AgentKit
 

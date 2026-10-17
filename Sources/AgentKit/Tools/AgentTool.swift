@@ -3,6 +3,7 @@ import Foundation
 public nonisolated struct AgentToolExecutionContext: Sendable {
     public init(
         runID: UUID,
+        conversationID: UUID? = nil,
         userIntent: String,
         secretBroker: SecretBroker,
         userInteraction: any AgentUserInteractionHandling,
@@ -10,9 +11,12 @@ public nonisolated struct AgentToolExecutionContext: Sendable {
         preflightMetadata: [String: AgentJSONValue],
         authorize: @escaping @Sendable (AgentApprovalRequest) async -> AgentApprovalDecision,
         report: (@Sendable (AgentToolResult) -> Void)? = nil,
-        whenUserInterjects: (@Sendable () async -> Void)? = nil
+        whenUserInterjects: (@Sendable () async -> Void)? = nil,
+        workspace: AgentScratchWorkspace = .shared(),
+        outputAudience: AgentOutputAudience = .model
     ) {
         self.runID = runID
+        self.conversationID = conversationID
         self.userIntent = userIntent
         self.secretBroker = secretBroker
         self.userInteraction = userInteraction
@@ -21,9 +25,15 @@ public nonisolated struct AgentToolExecutionContext: Sendable {
         self.authorize = authorize
         self.report = report ?? { _ in }
         self.whenUserInterjects = whenUserInterjects ?? {}
+        self.workspace = workspace
+        self.outputAudience = outputAudience
     }
 
     public var runID: UUID
+    /// Host conversation identity for tool-owned paths; never a scratch access boundary.
+    public var conversationID: UUID?
+    public let workspace: AgentScratchWorkspace
+    public let outputAudience: AgentOutputAudience
     public var userIntent: String
     public var secretBroker: SecretBroker
     public var userInteraction: any AgentUserInteractionHandling
@@ -52,10 +62,17 @@ public nonisolated struct AgentToolExecutionContext: Sendable {
     /// is only watching costs nothing, while giving up on one that dispatched
     /// work elsewhere would strand it.
     public var whenUserInterjects: @Sendable () async -> Void = {}
+
+    /// Optional per-tool capture. The closure supplies a complete scratch-relative
+    /// path; the tool owns directory and filename conventions, not the runtime.
+    public func makeOutputAccumulator(path: @escaping @Sendable () -> String) -> AgentOutputAccumulator {
+        AgentOutputAccumulator(workspace: workspace, audience: outputAudience, path: path)
+    }
 }
 
 public nonisolated protocol AgentTool: Sendable {
     var descriptor: AgentToolDescriptor { get }
+    var truncateStrategy: AgentTruncateStrategy { get }
     func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight
     func execute(
         _ invocation: AgentToolInvocation,
@@ -94,6 +111,8 @@ nonisolated
 
     extension AgentTool
 {
+    public var truncateStrategy: AgentTruncateStrategy { .head }
+
     public func preflight(_ invocation: AgentToolInvocation) async throws -> AgentToolPreflight {
         AgentToolPreflight(invocation: invocation, approvalPolicy: descriptor.approvalPolicy)
     }
@@ -103,6 +122,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
     public static let ordinaryRunModes: Set<AgentRunMode> = [.planning, .acting]
 
     public let descriptor: AgentToolDescriptor
+    public let truncateStrategy: AgentTruncateStrategy
     /// The run postures in which this definition may be advertised or called.
     /// Registration metadata stays local; providers receive only `descriptor`.
     public let availableIn: Set<AgentRunMode>
@@ -115,6 +135,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
         availableIn: Set<AgentRunMode> = Self.ordinaryRunModes
     ) {
         descriptor = tool.registeredDescriptor
+        truncateStrategy = tool.truncateStrategy
         self.availableIn = availableIn
         preflightClosure = tool.preflight
         executeClosure = tool.execute
@@ -125,6 +146,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
         availableIn: Set<AgentRunMode> = Self.ordinaryRunModes
     ) {
         descriptor = tool.descriptor
+        truncateStrategy = tool.truncateStrategy
         self.availableIn = availableIn
         preflightClosure = tool.preflight
         executeClosure = tool.execute
@@ -133,6 +155,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
     public init(
         descriptor: AgentToolDescriptor,
         availableIn: Set<AgentRunMode> = Self.ordinaryRunModes,
+        truncateStrategy: AgentTruncateStrategy = .head,
         preflight: (@Sendable (AgentToolInvocation) async throws -> AgentToolPreflight)? = nil,
         execute:
             @escaping @Sendable (
@@ -140,6 +163,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
             ) async throws -> AgentToolResult
     ) {
         self.descriptor = descriptor
+        self.truncateStrategy = truncateStrategy
         self.availableIn = availableIn
         preflightClosure =
             preflight ?? { invocation in
@@ -161,7 +185,7 @@ public nonisolated struct AnyAgentTool: AgentTool, Sendable {
 
     func restricting(to modes: Set<AgentRunMode>) -> AnyAgentTool {
         AnyAgentTool(
-            descriptor: descriptor, availableIn: modes,
+            descriptor: descriptor, availableIn: modes, truncateStrategy: truncateStrategy,
             preflight: preflightClosure, execute: executeClosure
         )
     }

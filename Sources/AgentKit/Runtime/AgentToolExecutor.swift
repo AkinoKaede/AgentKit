@@ -125,6 +125,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
     public var isToolAvailable: @Sendable (String) async -> Bool = { _ in true }
     public var authorizationEvidence: @Sendable () async -> [GuardianEvidence] = { [] }
     public let runID: UUID
+    public let conversationID: UUID?
     public let permissionMode: AgentPermissionMode
     public let userIntent: String
     /// Not behind the progress gate and not scoped to one call: a tool asks
@@ -140,6 +141,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         userInteraction: any AgentUserInteractionHandling,
         services: AgentToolServices = AgentToolServices(),
         runID: UUID,
+        conversationID: UUID? = nil,
         permissionMode: AgentPermissionMode,
         userIntent: String,
         interjection: (@Sendable () async -> Void)? = nil,
@@ -158,6 +160,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         self.userInteraction = userInteraction
         self.services = services
         self.runID = runID
+        self.conversationID = conversationID
         self.permissionMode = permissionMode
         self.userIntent = userIntent
         self.interjection = interjection ?? {}
@@ -338,6 +341,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
     ) -> AgentToolExecutionContext {
         AgentToolExecutionContext(
             runID: runID,
+            conversationID: conversationID,
             userIntent: userIntent,
             secretBroker: secretBroker,
             userInteraction: EventingAgentUserInteraction(
@@ -351,7 +355,9 @@ public nonisolated struct AgentToolExecutor: Sendable {
             report: gate.forward { [channel, invocation = ready.invocation] partial in
                 channel.emit(.toolProgress(invocation, partial))
             },
-            whenUserInterjects: interjection
+            whenUserInterjects: interjection,
+            workspace: outputProjection.workspace,
+            outputAudience: outputProjection.audience
         )
     }
 
@@ -364,7 +370,8 @@ public nonisolated struct AgentToolExecutor: Sendable {
         var final = await hooks.didExecute(
             ready.invocation, descriptor: ready.descriptor, result: result
         )
-        final = await outputProjection.project(final, invocation: ready.invocation)
+        final = await outputProjection.project(
+            final, invocation: ready.invocation, strategy: ready.tool.truncateStrategy)
         final.toolPresentation = ready.descriptor.presentation
         channel.emit(.toolFinished(ready.invocation, final))
         return final

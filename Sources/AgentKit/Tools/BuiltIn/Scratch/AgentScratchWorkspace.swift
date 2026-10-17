@@ -265,7 +265,7 @@ public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
 
 // MARK: - Workspace
 
-/// A per-conversation staging directory inside the app's own container.
+/// A device-local staging directory shared by every conversation in the app.
 ///
 /// It exists so bytes can move between a host and the model's attention without
 /// passing *through* the model: a transfer tool can land a file here and take
@@ -295,7 +295,6 @@ public actor AgentScratchWorkspace {
         /// whole is what the offset/limit window and a transfer tool are for.
         public static let inlineReadBytes = AgentTextPageReader.defaultMaximumBytes
         public static let searchQueryCharacters = 4_096
-        public static let searchLineBytes = 1_024
         public static let searchResults = 100
         public static let replacements = 32
         /// The ceiling on one replacement's `count`, and on how many regions it
@@ -304,20 +303,19 @@ public actor AgentScratchWorkspace {
         public static let matchesPerReplacement = 10_000
     }
 
-    private let conversationID: UUID
     private let base: URL?
     private let applicationName: String
     private var scope: URL?
+    var outputCaptures: [UUID: (path: String, revision: Int, info: AgentOutputCaptureInfo)] = [:]
 
-    /// `base` is injectable for tests only; in the app it resolves to Application
-    /// Support inside the sandbox container, under `applicationName`.
-    public init(conversationID: UUID, applicationName: String = "Agent", base: URL? = nil) {
-        self.conversationID = conversationID
+    /// All conversations share this application's device-local workspace.
+    /// The legacy conversation argument no longer selects a directory.
+    public init(conversationID: UUID? = nil, applicationName: String = "Agent", base: URL? = nil) {
         self.applicationName = applicationName
         self.base = base
     }
 
-    /// The folder every scope lives under, named for the app that owns it.
+    /// The shared workspace folder, named for the app that owns it.
     ///
     /// Application Support rather than Caches deliberately: the system may evict a
     /// Caches directory mid-run, and a staging area that can vanish between two tool
@@ -337,21 +335,7 @@ public actor AgentScratchWorkspace {
     public static func copyScope(
         from sourceID: UUID, to destinationID: UUID, applicationName: String
     ) throws {
-        let base = try defaultBase(applicationName: applicationName)
-        let source = base.appending(path: sourceID.uuidString, directoryHint: .isDirectory)
-        guard FileManager.default.fileExists(atPath: source.path(percentEncoded: false)) else {
-            return
-        }
-        let destination = base.appending(
-            path: destinationID.uuidString, directoryHint: .isDirectory
-        )
-        guard
-            !FileManager.default.fileExists(
-                atPath: destination.path(percentEncoded: false)
-            )
-        else { return }
-        try FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
-        try FileManager.default.copyItem(at: source, to: destination)
+        // Compatibility for older adopters. Forking must not duplicate shared data.
     }
 
     // MARK: Reading
@@ -455,7 +439,6 @@ public actor AgentScratchWorkspace {
         var matchingLines = 0
         var searchedFiles = 0
         var skippedBinaryFiles = 0
-        var previewWasTruncated = false
 
         for filePath in files {
             let file = try data(at: filePath)
@@ -468,29 +451,17 @@ public actor AgentScratchWorkspace {
             let (lines, _) = UnifiedDiff.split(normalized)
             for (index, line) in lines.enumerated() {
                 let wholeLine = NSRange(line.startIndex..<line.endIndex, in: line)
-                guard
-                    let first = expression.firstMatch(
-                        in: line, range: wholeLine
-                    ), let range = Range(first.range, in: line)
-                else { continue }
+                guard expression.firstMatch(in: line, range: wholeLine) != nil else { continue }
                 matchingLines += 1
                 guard matches.count < limit else { continue }
-                let preview = Self.searchPreview(
-                    of: line, around: range, maximumBytes: Limits.searchLineBytes
-                )
-                previewWasTruncated = previewWasTruncated || preview.truncated
-                matches.append(
-                    ScratchSearchMatch(
-                        path: filePath, line: index + 1, text: preview.text,
-                        textTruncated: preview.truncated
-                    ))
+                matches.append(ScratchSearchMatch(path: filePath, line: index + 1, text: line, textTruncated: false))
             }
         }
         return ScratchSearchOutcome(
             matches: matches, matchingLines: matchingLines,
             searchedFiles: searchedFiles, skippedBinaryFiles: skippedBinaryFiles,
             caseSensitive: caseSensitive,
-            isTruncated: previewWasTruncated || matchingLines > matches.count
+            isTruncated: matchingLines > matches.count
         )
     }
 
@@ -778,15 +749,14 @@ public actor AgentScratchWorkspace {
         return (files, bytes, relativePaths.isEmpty ? [""] : relativePaths)
     }
 
-    /// Called when the conversation this workspace belongs to is deleted.
+    /// Legacy lifecycle hook. Shared files survive conversation deletion.
     public func removeScope() throws {
-        guard let scope = try? root() else { return }
-        self.scope = nil
-        guard FileManager.default.fileExists(atPath: scope.path(percentEncoded: false)) else {
-            return
-        }
-        try FileManager.default.removeItem(at: scope)
+        // Compatibility for older adopters. Deleting a chat must not erase shared data.
     }
+
+    public func directoryURL() throws -> URL { try root() }
+
+    public func fileURL(_ path: String) throws -> URL { try resolve(path, in: root()) }
 
     // MARK: - Containment
 
@@ -801,8 +771,7 @@ public actor AgentScratchWorkspace {
         values.isExcludedFromBackup = true
         try? backupExcluded.setResourceValues(values)
 
-        let scope = base.appending(path: conversationID.uuidString, directoryHint: .isDirectory)
-        try FileManager.default.createDirectory(at: scope, withIntermediateDirectories: true)
+        let scope = base
         self.scope = scope
         return scope
     }
@@ -1000,23 +969,6 @@ public actor AgentScratchWorkspace {
         var entries: [ScratchEntry] = []
         try walk(url, root: root, recursive: true) { entries.append($0) }
         return entries.filter { $0.kind == .file }.map(\.path).sorted()
-    }
-
-    /// Keep the first match visible in a bounded UTF-8 window. The byte boundaries
-    /// are advanced to scalar boundaries so clipping never introduces replacement
-    /// characters into a valid text file.
-    private static func searchPreview(
-        of line: String, around match: Range<String.Index>, maximumBytes: Int
-    ) -> (text: String, truncated: Bool) {
-        let bytes = Array(line.utf8)
-        guard bytes.count > maximumBytes else { return (line, false) }
-        let matchOffset = line[..<match.lowerBound].utf8.count
-        var start = max(0, min(bytes.count - maximumBytes, matchOffset - maximumBytes / 2))
-        while start < bytes.count, bytes[start] & 0xC0 == 0x80 { start += 1 }
-        var end = min(bytes.count, start + maximumBytes)
-        while end < bytes.count, bytes[end] & 0xC0 == 0x80 { end -= 1 }
-        let body = String(decoding: bytes[start..<end], as: UTF8.self)
-        return ((start > 0 ? "…" : "") + body + (end < bytes.count ? "…" : ""), true)
     }
 
     // MARK: - Matching

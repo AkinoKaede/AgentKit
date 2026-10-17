@@ -102,7 +102,9 @@ public actor AgentRuntime {
         channel: AgentEventChannel? = nil
     ) {
         self.model = model
-        self.tools = registry
+        self.tools = AgentToolCatalog.registry(
+            builtIn: .init(groups: [], workspace: configuration.outputProjection.workspace),
+            additional: registry.registeredTools)
         self.approval = approval
         self.repository = repository
         self.secretBroker = secretBroker
@@ -234,7 +236,7 @@ public actor AgentRuntime {
                 tools: availableTools, approval: approval, hooks: hooks, channel: channel,
                 secretBroker: secretBroker, userInteraction: userInteraction,
                 services: services,
-                runID: runID, permissionMode: request.permissionMode,
+                runID: runID, conversationID: request.conversationID, permissionMode: request.permissionMode,
                 userIntent: request.prompt,
                 interjection: { [interjection] in await interjection.wait() },
                 outputProjection: configuration.outputProjection,

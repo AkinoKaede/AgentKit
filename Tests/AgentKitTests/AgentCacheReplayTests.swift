@@ -114,31 +114,33 @@ struct AgentCacheReplayTests {
         let workspace = AgentScratchWorkspace(conversationID: UUID(), base: directory)
         let invocation = AgentToolInvocation(
             runID: UUID(), call: .init(id: "call", name: "inspect", arguments: .object([:])))
-        let content = (1...40).map { "line \($0) 中文" }.joined(separator: "\n")
+        let content = (1...2_010).map { "line \($0) 中文" }.joined(separator: "\n")
         let raw = AgentToolResult(callID: "call", content: content, isError: true)
-        let result = await AgentToolOutputProjection(workspace: workspace, maximumBytes: 120, maximumLines: 8).project(
-            raw, invocation: invocation)
+        let accumulator = AgentOutputAccumulator(workspace: workspace, path: { "output/frozen.txt" })
+        let captured = await accumulator.capturing(raw)
+        let result = await AgentToolOutputProjection(workspace: workspace).project(
+            captured, invocation: invocation)
         #expect(result.content == content)
         #expect(result.isError)
         let text = try #require(result.modelContent)
         let fields = try projectedFields(result)
         let path = try #require(fields["captured_output_path"]?.stringValue)
-        #expect(path == "tool-output-\(invocation.id.uuidString).txt")
+        #expect(path == "output/frozen.txt")
         #expect(fields["is_error"] == .bool(true))
         #expect(fields["captured_bytes"] == .number(Double(content.utf8.count)))
         let preview = try #require(fields["preview"]?.stringValue)
-        #expect(preview.utf8.count <= 120)
-        let saved = try await workspace.read(path)
-        #expect(saved.content == content)
+        #expect(preview.utf8.count <= 65_536)
+        let saved = try await workspace.data(at: path)
+        #expect(String(decoding: saved.data, as: UTF8.self) == content)
         let tool = AgentTranscriptMessage(
             role: .tool, text: content, toolCallID: "call", toolName: "inspect", modelText: text)
         #expect(replay([tool]).first?.text == text)
         #expect(replay([tool, .init(role: .assistant, text: "older now")]).first?.text == text)
-        let noWorkspace = await AgentToolOutputProjection(maximumBytes: 120).project(raw, invocation: invocation)
+        let noWorkspace = await AgentToolOutputProjection().project(raw, invocation: invocation)
         let uncaptured = try projectedFields(noWorkspace)
         #expect(uncaptured["captured_output_path"] == nil)
-        #expect(uncaptured["captured_bytes"] == fields["captured_bytes"])
-        #expect(uncaptured["preview"]?.stringValue?.utf8.count ?? .max <= 120)
+        #expect(uncaptured["capture_status"] == .string("not_requested"))
+        #expect(uncaptured["preview"]?.stringValue?.utf8.count ?? .max <= 65_536)
     }
 
     private func projectedFields(_ result: AgentToolResult) throws -> [String: AgentJSONValue] {
@@ -177,7 +179,9 @@ struct AgentCacheReplayTests {
         }
         let requests = await model.requests
         #expect(requests.count == 2)
-        #expect(requests.allSatisfy { $0.tools.map(\.name) == ["surface_tool"] })
+        #expect(
+            requests.allSatisfy { Set($0.tools.map(\.name)) == AgentKitSmokeTests.scratchNames.union(["surface_tool"]) }
+        )
         #expect(requests.allSatisfy { $0.messages.filter { $0.id == user.id }.count == 1 })
         #expect(results.first?.isError == true)
     }

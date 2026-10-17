@@ -1,99 +1,185 @@
 import Foundation
 
-/// Produces a tool result's model representation once, before toolFinished is emitted.
-/// The ordinary content remains available to the host's presentation and storage.
+/// Freezes one model representation. Raw results and external-client responses are untouched.
 public nonisolated struct AgentToolOutputProjection: Sendable {
-    public var workspace: AgentScratchWorkspace?
+    public var workspace: AgentScratchWorkspace
     public var maximumBytes: Int
     public var maximumLines: Int
+    public var audience: AgentOutputAudience
 
     public init(
-        workspace: AgentScratchWorkspace? = nil,
-        maximumBytes: Int = AgentTextPageReader.defaultMaximumBytes,
-        maximumLines: Int = AgentTextPageReader.defaultLineLimit
+        workspace: AgentScratchWorkspace = .shared(),
+        maximumBytes: Int = AgentTruncateLimits.maximumBytes,
+        maximumLines: Int = AgentTruncateLimits.maximumLines,
+        audience: AgentOutputAudience = .model
     ) {
         self.workspace = workspace
         self.maximumBytes = max(1, maximumBytes)
-        self.maximumLines = max(2, maximumLines)
+        self.maximumLines = max(1, maximumLines)
+        self.audience = audience
     }
 
-    public func project(_ result: AgentToolResult, invocation: AgentToolInvocation) async -> AgentToolResult {
-        // Secret handles are deliberately live-only; historical replay sanitizes them.
-        guard invocation.call.name != "request_user_secret", !result.isProviderNative else { return result }
+    public func project(
+        _ result: AgentToolResult, invocation: AgentToolInvocation, strategy: AgentTruncateStrategy = .head
+    ) async -> AgentToolResult {
+        guard audience == .model, result.modelContent == nil,
+            invocation.call.name != "request_user_secret", !result.isProviderNative
+        else { return result }
         var projected = result
         let clean = AgentSensitiveDataRedactor.visibleText(result.content)
-        if result.hasBoundedModelContent || !exceedsLimit(clean) {
+        let payload = result.untrustedPayload.map { AgentSensitiveDataRedactor.visibleText($0) } ?? clean
+        let object = (try? AgentJSONValue.decode(Data(payload.utf8)))?.objectValue
+        let readable = object?["output"]?.stringValue ?? Self.archiveText(payload)
+        let limits = AgentTruncateLimits(bytes: maximumBytes, lines: maximumLines)
+        if strategy == .none || result.metadata["skill_instructions"]?.boolValue == true {
+            projected.modelContent = clean
+            return projected
+        }
+        if result.hasBoundedModelContent, let object,
+            object["offset"]?.integerValue != nil, object["content"]?.stringValue != nil
+        {
+            return projectPage(result, object: object)
+        }
+        if result.hasBoundedModelContent, let object,
+            object["message_offset"]?.integerValue != nil, object["messages"]?.arrayValue != nil
+        {
+            return projectMessagePage(result, object: object)
+        }
+        let initial = AgentTruncateResult.apply(readable, strategy: strategy, limits: limits)
+        // Trusted installed instructions retain their separate import/validation contract.
+        if !initial.isTruncated && !result.isTruncated && clean.utf8.count <= maximumBytes
+            && result.outputCapture == nil
+        {
             projected.modelContent = clean
             return projected
         }
 
-        let payload = result.untrustedPayload.map { AgentSensitiveDataRedactor.visibleText($0) } ?? clean
-        let readable = Self.archiveText(payload)
+        let capture = result.outputCapture
+        projected.outputCapture = capture
+        let totalLines =
+            result.metadata["output_total_lines"]?.integerValue ?? (result.isTruncated ? nil : initial.totalLines)
+        let lineOffset = result.metadata["output_line_offset"]?.integerValue ?? 0
         var fields: [String: AgentJSONValue] = [
             "is_error": .bool(result.isError),
-            "preview": .string(Self.preview(readable, maximumBytes: maximumBytes, maximumLines: maximumLines)),
-            "captured_bytes": .number(Double(payload.utf8.count)),
+            "source_bytes": .number(Double(initial.totalBytes)),
             "source_truncated": .bool(result.isTruncated),
+            "capture_status": .string(
+                capture == nil ? "not_requested" : capture?.error == nil && capture?.path != nil ? "saved" : "failed"),
         ]
-        let object = (try? AgentJSONValue.decode(Data(payload.utf8)))?.objectValue
-        for key in ["exit_code", "signal", "status", "stdout_truncated", "stderr_truncated"] {
+        for key in [
+            "handle", "host_id", "status", "exit_code", "signal", "error", "stdin_closed", "next_offset", "offset",
+            "eof", "path",
+        ] {
             if let value = object?[key] { fields[key] = value }
         }
-        if let workspace {
-            do {
-                // Names are local invocation identities, never remote-chosen paths.
-                let path = "tool-output-\(invocation.id.uuidString).txt"
-                let archive = readable
-                _ = try await workspace.write(path, data: Data(archive.utf8))
-                fields["captured_output_path"] = .string(path)
-                fields["notice"] = .string(
-                    "The preview is shortened. Use scratch_read or scratch_search on captured_output_path for the captured result."
-                )
-            } catch {
-                fields["notice"] = .string(
-                    "The preview is shortened. Saving the captured output failed; no complete copy is available.")
-            }
-        } else {
-            fields["notice"] = .string(
-                "The preview is shortened. No scratch workspace is available to save the captured output.")
+        if let path = capture?.path, capture?.error == nil {
+            fields["captured_bytes"] = .number(Double(capture?.bytes ?? 0))
+            fields["captured_output_path"] = .string(path)
+            fields["captured_local_path"] = capture?.localPath.map(AgentJSONValue.string)
+            fields["continuation"] = .string(
+                "Use scratch_read(path: \"\(path)\", offset: 1) or scratch_search with this path.")
         }
-        if result.isTruncated {
-            fields["source_notice"] = .string(
-                "The source already truncated this result; omitted source data is not in the saved capture.")
+        if let error = capture?.error {
+            fields["capture_error"] = .string(error)
         }
-        let text = AgentJSONValue.object(fields).encodedString
-        projected.modelContent =
-            AgentToolResult.untrustedDataOpeningMarker + text + AgentToolResult.untrustedDataClosingMarker
+        if result.isTruncated, result.outputCapture == nil {
+            fields["source_notice"] = .string("The source was already limited. Use its continuation to read more.")
+        }
+        let bodyKey = object?["output"] == nil ? "preview" : "output"
+        var budget = maximumBytes
+        var selected = initial
+        var text = ""
+        // Account for JSON escaping and the footer, dropping whole lines rather
+        // than slicing the serialized result into invalid JSON.
+        repeat {
+            selected = AgentTruncateResult.apply(
+                readable, strategy: strategy,
+                limits: .init(bytes: budget, lines: maximumLines))
+            fields[bodyKey] = .string(selected.content)
+            fields["returned_lines"] = .number(Double(selected.returnedLines))
+            fields["total_lines"] = totalLines.map { .number(Double($0)) }
+            fields["oversized_line"] = .bool(selected.oversizedLine)
+            projected.truncateMarker = AgentTruncateMarker.render(
+                ranges: selected.ranges.map { ($0.lowerBound + lineOffset)...($0.upperBound + lineOffset) },
+                totalLines: totalLines, capture: capture)
+            fields["notice"] = projected.truncateMarker.map(AgentJSONValue.string)
+            text = Self.frame(fields)
+            guard text.utf8.count > maximumBytes, budget > 0 else { break }
+            budget = smallerBudget(budget, encodedBytes: text.utf8.count)
+        } while true
+        // A tiny custom budget cannot fit an envelope. Never slice a saved path.
+        if text.utf8.count > maximumBytes {
+            let notice = projected.truncateMarker ?? ""
+            text = notice.utf8.count <= maximumBytes ? notice : ""
+        }
+        projected.metadata["output_truncated"] = .bool(true)
+        projected.metadata["truncate_strategy"] = .string(strategy.rawValue)
+        projected.modelContent = text
         return projected
     }
 
-    private func exceedsLimit(_ text: String) -> Bool {
-        text.utf8.count > maximumBytes
-            || text.split(separator: "\n", omittingEmptySubsequences: false).count > maximumLines
+    /// A page's continuation must describe the lines actually returned, not the
+    /// larger source window before JSON escaping and envelope costs were counted.
+    private func projectPage(_ result: AgentToolResult, object: [String: AgentJSONValue]) -> AgentToolResult {
+        var fields = object
+        let offset = fields["offset"]!.integerValue!
+        let content = fields["content"]!.stringValue!
+        let count = fields["returned_lines"]?.integerValue ?? content.components(separatedBy: "\n").count
+        let pageText = count == 0 ? "" : content + "\n"
+        var budget = maximumBytes
+        var selected: AgentTruncateResult
+        var encoded: String
+        repeat {
+            selected = AgentTruncateResult.apply(
+                pageText, limits: .init(bytes: budget, lines: maximumLines))
+            fields["content"] = .string(
+                selected.content.hasSuffix("\n") ? String(selected.content.dropLast()) : selected.content)
+            fields["returned_lines"] = .number(Double(selected.returnedLines))
+            fields["capture_status"] = .string("not_requested")
+            if selected.isTruncated {
+                fields["truncated"] = .bool(true)
+                fields["next_offset"] = .number(Double(offset + selected.returnedLines))
+                if fields["eof"] != nil { fields["eof"] = .bool(false) }
+            }
+            if let next = fields["next_offset"]?.integerValue {
+                fields["notice"] = .string(
+                    AgentTruncateMarker.render(
+                        ranges: selected.ranges.map { ($0.lowerBound + offset - 1)...($0.upperBound + offset - 1) },
+                        totalLines: fields["total_lines"]?.integerValue))
+                if selected.returnedLines == 0 {
+                    fields["continuation"] = .string(
+                        "Line \(offset) exceeds the response limit. Use a file transfer to retrieve it; offset \(offset + 1) skips this line."
+                    )
+                } else {
+                    fields["continuation"] = .string("Continue with offset \(next).")
+                }
+            }
+            encoded = Self.frame(fields)
+            guard encoded.utf8.count > maximumBytes, budget > 0 else { break }
+            budget = smallerBudget(budget, encodedBytes: encoded.utf8.count)
+        } while true
+        var projected = result
+        let fallback = AgentTruncateMarker.render(ranges: [], totalLines: fields["total_lines"]?.integerValue)
+        projected.modelContent =
+            encoded.utf8.count <= maximumBytes ? encoded : fallback.utf8.count <= maximumBytes ? fallback : ""
+        projected.truncateMarker = fields["notice"]?.stringValue
+        if selected.isTruncated { projected.metadata["output_truncated"] = .bool(true) }
+        return projected
     }
 
-    private static func preview(_ text: String, maximumBytes: Int, maximumLines: Int) -> String {
-        let marker = "[… omitted …]"
-        let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
-        let lineBudget = max(0, maximumLines - 3)
-        let lineBounded =
-            lines.count > max(1, lineBudget)
-            ? (lines.prefix(lineBudget / 2).map(String.init) + [marker]
-                + lines.suffix(lineBudget - lineBudget / 2).map(String.init)).joined(separator: "\n") : text
-        guard lineBounded.utf8.count > maximumBytes else { return lineBounded }
-        let separator = "\n" + marker + "\n"
-        let byteBudget = max(0, maximumBytes - separator.utf8.count)
-        if byteBudget == 0 { return String("...".prefix(maximumBytes)) }
-        let bytes = Data(lineBounded.utf8)
-        var head = Data(bytes.prefix(byteBudget / 2))
-        var tail = Data(bytes.suffix(byteBudget - byteBudget / 2))
-        while String(data: head, encoding: .utf8) == nil { head.removeLast() }
-        while String(data: tail, encoding: .utf8) == nil { tail.removeFirst() }
-        return String(decoding: head, as: UTF8.self) + separator + String(decoding: tail, as: UTF8.self)
+    static func frame(_ fields: [String: AgentJSONValue]) -> String {
+        AgentToolResult.untrustedDataOpeningMarker + AgentJSONValue.object(fields).encodedString
+            + AgentToolResult.untrustedDataClosingMarker
     }
 
-    /// Expand JSON string fields into actual lines so captured stdout can be paged.
-    private static func archiveText(_ payload: String) -> String {
+    /// Escaping can multiply byte cost. Subtracting the encoded overage from the
+    /// raw budget may jump straight to zero even when many complete lines fit.
+    func smallerBudget(_ budget: Int, encodedBytes: Int) -> Int {
+        max(0, min(budget - 1, Int(Double(budget) * Double(maximumBytes) / Double(encodedBytes))))
+    }
+
+    /// JSON string fields become actual lines, allowing captured output to be paged.
+    static func archiveText(_ payload: String) -> String {
         guard let value = try? AgentJSONValue.decode(Data(payload.utf8)) else { return payload }
         func render(_ value: AgentJSONValue) -> String {
             switch value {

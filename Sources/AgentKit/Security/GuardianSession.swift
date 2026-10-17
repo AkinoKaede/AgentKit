@@ -168,7 +168,7 @@ private actor GuardianSession {
                     runID: runID, permissionMode: .askForApproval,
                     userIntent: request.userIntent,
                     outputProjection: AgentToolOutputProjection(
-                        maximumBytes: 16 * 1024, maximumLines: 200
+                        maximumBytes: AgentTruncateLimits.maximumBytes, maximumLines: AgentTruncateLimits.maximumLines
                     )
                 ),
                 mode: .sequential, maximumConcurrency: 1

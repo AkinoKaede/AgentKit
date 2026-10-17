@@ -17,7 +17,7 @@ AgentKit은 모델과 도구 간의 실행 루프, 승인, 대화 상태를 담�
 패키지 의존성을 추가하세요.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 그런 다음 대상 타깃에 코어 제품을 추가하세요.
@@ -31,7 +31,7 @@ ScrubberKit 기반 웹 클라이언트를 제공하며, 코어에 WebKit 의존�
 
 ## 사용법
 
-다음 예제는 Responses 엔드포인트를 사용하며, 해당 대화 전용의 임시 작업 공간 도구만 활성화합니다.
+다음 예제는 Responses 엔드포인트와 항상 제공되는 공유 Scratch 도구를 사용합니다.
 비동기 컨텍스트에서 호출하고 앱의 자격 증명 저장소에서 가져온 API 키를 전달하세요.
 `manualApproval` 클로저는 승인 UI를 표시한 뒤 `.allow` 또는 `.deny(reason)`을 반환해야 합니다.
 
@@ -52,19 +52,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -197,8 +197,8 @@ func runAgent(
 
 | 그룹 | 도구 | 의존성 |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`, `web_search`, `scratch_fetch` | 가져오기에는 `web: AgentWebFetching`, 검색에는 `search: AgentWebSearching` 필요. `scratch_fetch`에는 `.scratch`와 작업 공간도 필요 |
+| 항상 제공 | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`, `request_user_secret` | 카탈로그 의존성 없음. 런타임에 사용자 상호작용 핸들러 제공 |
 | `.planning` | `present_plan` | 작업 공간과 `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`. 작업 수행 모드(`.acting`)에서만 사용 가능 |
@@ -262,8 +262,7 @@ let webTools = AgentBuiltInToolConfiguration(
 ```
 
 이 설정을 `AgentToolCatalog.registry(builtIn:)`에 전달하세요. `web:`만 제공하면 가져오기만 활성화되며
-`web_search`는 **활성화되지 않습니다**. `search:`는 별도의 의존성입니다. `scratch_fetch`를 활성화하려면
-`.scratch`도 선택하고 작업 공간을 제공해야 합니다.
+`web_search`는 **활성화되지 않습니다**. `search:`는 별도의 의존성입니다. `scratch_fetch`는 공유 작업 공간을 자동으로 사용합니다.
 
 제공업체와 모델이 네이티브 검색을 지원한다면 `AgentProviderClient(webSearch:)`를 `true`로 설정하고
 `search:`를 생략할 수도 있습니다. 먼저 `ModelProvider.supportsNativeWebSearch(model:)`를 확인하세요.
@@ -325,6 +324,48 @@ let webTools = AgentBuiltInToolConfiguration(
 도구 출력은 신뢰할 수 없는 데이터입니다. 제한적인 예외는 설치된 스킬의
 `SKILL.md`로, 절차를 제공할 수는 있지만 권한을 부여할 수는 없습니다.
 스킬의 보조 파일은 여전히 신뢰할 수 없는 참고 데이터로 취급합니다.
+
+## 공유 Scratch와 도구 출력
+
+Scratch는 필수 기능이며 같은 기기의 같은 앱에 속한 모든 대화가 공유합니다. `AgentScratchWorkspace.shared(applicationName:)`가 반환한 동일한 조정자를 도구 설정과 `AgentLoopConfiguration.outputProjection`에 전달하세요. 루트는 Application Support / applicationName / Scratch이며 대화 ID를 붙이지 않습니다. 대화를 삭제하거나 분기해도 파일을 삭제하거나 복사하지 않습니다. AI는 작업별 상대 경로를 선택하고 덮어쓰기 전에 기존 파일을 확인해야 합니다. 상위 디렉터리는 자동으로 생성하며 경로, 심볼릭 링크 검사와 파일/작업 공간 할당량은 유지합니다.
+
+`AgentTruncateStrategy`는 `head`(기본값), `tail`, `middle`, `none`을 지원합니다. `AgentTruncateLimits`의 기본값은 64 KiB(65,536 UTF-8 바이트)와 논리적 줄 2,000개입니다. 매우 긴 한 줄도 중간에서 자르지 않습니다. 모델 투영은 JSON 이스케이프와 외부 필드의 크기도 계산합니다. 페이지 읽기는 실제 다음 오프셋을 유지하며 accumulator나 추가 저장 파일을 만들지 않습니다.
+
+저장은 도구별 선택 기능이며 모델 인자나 Scratch 켜기/끄기 설정이 아닙니다. 아래 팩터리에 Scratch 기준의 전체 상대 경로를 반환하는 클로저를 전달하며 저장이 필요할 때만 호출합니다. 디렉터리와 파일 이름은 도구가 결정합니다. AgentKit은 접두사나 확장자를 강제하지 않고 부모 디렉터리를 만들고 경계를 검증하며 이름 충돌 시 덮어쓰지 않습니다. 권장 규칙은 `<conversationID>/outputs/<tool-name>-<UUID>.txt`이며 밑줄은 하이픈으로 바꿉니다. 이는 파일 정리 규칙이지 대화 격리가 아닙니다. conversationID가 없으면 runID를 사용할 수 있습니다. 외부 MCP 저장은 호출된 도구 이름을 사용합니다. 누적 스냅샷은 같은 파일을 갱신합니다. 비스트리밍 도구는 `await accumulator.capturing(result)`를 사용할 수 있습니다.
+
+AgentKit은 번역하지 않는 두 마커만 생성합니다. 저장 성공 시 `[Showing lines <start>-<end> of <total>. Full output: <path>]`, 그 외에는 `[Showing lines <start>-<end> of <total>]`를 사용합니다. 저장 오류와 이어 읽기 offset/cursor는 별도 결과 필드에 유지하며 마커를 추가하지 않습니다. UI 접기는 독립적이며 자르기 마커나 파일을 생성하지 않습니다. 표시 계층은 실제 자르기 시 확정된 `AgentToolResult.truncateMarker`를 표시할 수 있습니다. 외부 MCP 결과에는 `middle`과 저장을 사용하지만 외부 클라이언트 응답에는 모델 자르기나 Scratch 저장을 적용하지 않습니다.
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Scratch 할당량은 파일당 8 MiB, 작업 공간당 64 MiB, 항목 512개입니다. 모델용 accumulator는 제한된 데이터를 유지하고 누적 스냅샷을 원자적으로 교체하며 무제한 디스크 스풀이 아닙니다. `snapshot(capturePath:)`로 도구가 지정한 경로에 별도 스냅샷을 저장할 수 있습니다. 할당량 초과나 쓰기 실패는 `capture.error`로 보고하며 완전한 사본을 저장했다고 표시하지 않습니다.
+
+마커는 Pi의 줄 범위 형식을 참고합니다. `middle`은 유지된 두 범위를 나열하고 전체 줄 수를 모르면 `of <total>`을 생략합니다. 너무 긴 한 줄은 `[Showing 0 of 1 lines]`가 될 수 있습니다. 저장에 성공했을 때만 `Full output: <path>`를 추가합니다.
+
+### 내장 도구 출력 정책
+
+| 도구 / 결과 | 전략 | 자동 저장 |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | 예 |
+| MCP | `middle` | 예 |
+| `scratch_read`, `skill_read_file` | `head`, 페이지 처리 | 아니요 |
+| `read_chat` | `head`, 페이지 처리 | 아니요 |
+| `scratch_search` | `head` | 아니요 |
+| 기타 내장 도구 | `head` | 아니요 |
+| 외부 클라이언트 응답 | 적용 안 함 | 아니요 |
+
+`scratch_fetch`는 호출자가 지정한 경로에 쓰는 것이 주 작업이며 자동 자르기 저장이 아닙니다. 결과 수와 페이지 범위 같은 원본 제한은 유지됩니다. 신뢰할 수 있는 설치된 `SKILL.md` 지침은 별도의 가져오기/검증 제한을 사용합니다.
+
+### 1.x에서 마이그레이션
+
+카탈로그와 출력 투영에 같은 공유 workspace를 사용하세요. `.scratch`는 호환용 그룹 이름으로 남지만 도구를 끄지 못하며 카탈로그 workspace가 nil이면 `.shared()`를 사용합니다. `AgentToolOutputProjection.workspace`는 더 이상 Optional이 아니므로 명시적 `nil`을 공유 workspace로 바꾸세요. 기존 workspace의 `conversationID` 인자는 디렉터리를 선택하지 않으며 `copyScope`는 아무 작업도 하지 않습니다. 기존 대화 폴더는 일반 상대 경로 디렉터리로 유지되므로 이전 파일을 읽을 때 원래 폴더 이름을 포함해야 합니다. 대화와 함께 공유 Scratch를 삭제하지 마세요. 자동 저장이 필요한 도구는 accumulator를 사용해야 하며 출력 투영은 더 이상 모든 초과 결과를 자동 저장하지 않습니다.
 
 ## AgentKit 확장
 

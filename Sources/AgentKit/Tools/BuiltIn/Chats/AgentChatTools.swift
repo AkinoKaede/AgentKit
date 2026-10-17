@@ -365,10 +365,12 @@ public nonisolated struct ReadChatTool: AgentChatTool {
         -> AgentToolResult
     {
         let arguments = try Arguments(invocation)
-        return Self.result(
+        var result = Self.result(
             invocation,
             try await coordinator.readChat(
                 id: try arguments.chatID("chat_id"), cursor: arguments.optionalString("cursor")))
+        result.hasBoundedModelContent = true
+        return result
     }
 }
 

@@ -70,7 +70,7 @@ public nonisolated struct SkillReadFileTool: AgentToolDefinition, AgentToolSchem
         var returned: [String] = []
         var used = 0
         for line in lines.dropFirst(min(offset - 1, lines.count)).prefix(limit) {
-            guard used + line.utf8.count + 1 <= 32_768 else {
+            guard used + line.utf8.count + 1 <= AgentTruncateLimits.maximumBytes else {
                 if returned.isEmpty {
                     throw AgentToolError.invalidArguments("This line exceeds the text window; export the file.")
                 }

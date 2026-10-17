@@ -20,7 +20,7 @@ struct AgentChatToolsTests {
         let expected = Set([
             "list_models", "create_new_chat", "list_chats", "read_chat", "send_to_chat",
             "wait_chats",
-        ])
+        ]).union(AgentKitSmokeTests.scratchNames)
         #expect(Set(complete.descriptors.map(\.name)) == expected)
         #expect(complete.descriptors.allSatisfy { $0.approvalPolicy == .approve })
         #expect(Set(complete.available(in: .planning).descriptors.map(\.name)) == expected)
@@ -29,15 +29,15 @@ struct AgentChatToolsTests {
 
         let absent = AgentToolCatalog.registry(
             builtIn: .init(groups: [.chatCollaboration]))
-        #expect(absent.descriptors.isEmpty)
+        #expect(Set(absent.descriptors.map(\.name)) == AgentKitSmokeTests.scratchNames)
 
         let catalogOnly = AgentToolCatalog.registry(
             builtIn: .init(groups: [.chatCollaboration], chatModels: host))
-        #expect(catalogOnly.descriptors.map(\.name) == ["list_models"])
+        #expect(Set(catalogOnly.descriptors.map(\.name)) == AgentKitSmokeTests.scratchNames.union(["list_models"]))
 
         let missingSource = AgentToolCatalog.registry(
             builtIn: .init(groups: [.chatCollaboration], chatModels: host, chats: host))
-        #expect(missingSource.descriptors.map(\.name) == ["list_models"])
+        #expect(Set(missingSource.descriptors.map(\.name)) == AgentKitSmokeTests.scratchNames.union(["list_models"]))
     }
 
     @Test

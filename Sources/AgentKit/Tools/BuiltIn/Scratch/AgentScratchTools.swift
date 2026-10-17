@@ -13,7 +13,7 @@ public nonisolated struct ScratchListTool: AgentToolDefinition, AgentToolSchemaB
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
             "scratch_list",
-            "List the private scratch workspace and report its quota usage.",
+            "List the shared device-local scratch workspace and report its quota usage.",
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "recursive": Self.boolean(),
@@ -110,7 +110,6 @@ public nonisolated struct ScratchSearchTool: AgentToolDefinition, AgentToolSchem
     }
 
     public static let presenter = AgentToolDetailPresenter(id: "builtin.scratch_search", present: present)
-    private static let contentBytes = 128 * 1_024
     public let workspace: AgentScratchWorkspace
 
     public var descriptor: AgentToolDescriptor {
@@ -141,15 +140,9 @@ public nonisolated struct ScratchSearchTool: AgentToolDefinition, AgentToolSchem
             caseSensitive: arguments.optionalBool("case_sensitive"),
             limit: arguments.optionalInt("limit") ?? 20
         )
-        var returned = outcome.matches
-        var truncated = outcome.isTruncated
-        var payload = Self.payload(outcome, matches: returned, truncated: truncated)
-        while payload.encodedString.utf8.count > Self.contentBytes, !returned.isEmpty {
-            returned.removeLast()
-            truncated = true
-            payload = Self.payload(outcome, matches: returned, truncated: truncated)
-        }
-        return Self.result(invocation, payload, truncated: truncated)
+        return Self.result(
+            invocation, Self.payload(outcome, matches: outcome.matches, truncated: outcome.isTruncated),
+            truncated: outcome.isTruncated)
     }
 
     private static func payload(
@@ -184,7 +177,8 @@ public nonisolated struct ScratchWriteTool: AgentToolDefinition, AgentToolSchema
 
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
-            "scratch_write", "Create or overwrite a scratch file.",
+            "scratch_write",
+            "Create or overwrite a shared scratch file. Choose a task-specific relative path and check for existing files before overwriting. Missing parent directories are created automatically.",
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "content": Self.string(max: 128 * 1_024),

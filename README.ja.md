@@ -17,7 +17,7 @@ AgentKitがモデルとツールの実行ループ、承認、会話状態を管
 パッケージの依存関係を追加します。
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 次に、ターゲットにコアのプロダクトを追加します。
@@ -31,7 +31,7 @@ AgentKitがモデルとツールの実行ループ、承認、会話状態を管
 
 ## 使い方
 
-次の例ではResponsesエンドポイントを使用し、会話専用の一時ワークスペースを操作するツールだけを有効にします。
+次の例ではResponsesエンドポイントと、常に有効な共有Scratchツールを使用します。
 非同期コンテキストから呼び出し、アプリの認証情報ストアから取得したAPIキーと、承認UIを表示して
 `.allow`または`.deny(reason)`を返す`manualApproval`クロージャを渡してください。
 
@@ -52,19 +52,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -192,8 +192,8 @@ Guardianのレビュー担当が未設定でも`.askForApproval`には影響し�
 
 | グループ | ツール | 依存サービス |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`, `web_search`, `scratch_fetch` | 取得には`web: AgentWebFetching`、検索には`search: AgentWebSearching`が必要。`scratch_fetch`にはさらに`.scratch`とワークスペースが必要 |
+| 常に有効 | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`, `request_user_secret` | カタログへの依存はなし。ランタイムにユーザ操作のハンドラを渡す |
 | `.planning` | `present_plan` | ワークスペースと`plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`。`.acting`の実行でのみ利用可能 |
@@ -256,8 +256,7 @@ let webTools = AgentBuiltInToolConfiguration(
 ```
 
 この設定を`AgentToolCatalog.registry(builtIn:)`に渡します。`web:`だけを指定した場合は取得が有効になりますが、
-`web_search`は有効になりません。`search:`は独立した依存サービスです。`scratch_fetch`を有効にするには、
-`.scratch`も選択し、ワークスペースを渡してください。
+`web_search`は有効になりません。`search:`は独立した依存サービスです。`scratch_fetch`は共有ワークスペースを自動的に使用します。
 
 プロバイダとモデルがネイティブ検索に対応している場合は、代わりに`AgentProviderClient(webSearch:)`を
 `true`に設定し、`search:`を省略できます。先に`ModelProvider.supportsNativeWebSearch(model:)`を確認してください。
@@ -319,6 +318,48 @@ Guardianは分離された`.reviewing`モードで動作し、デフォルトで
 ツールの出力は信頼しないデータとして扱います。
 限定的な例外は、インストール済みスキルの`SKILL.md`です。手順を提供することはできますが、
 権限を与えることはできません。その補助ファイルは引き続き信頼しない参照データとして扱います。
+
+## 共有Scratchとツール出力
+
+Scratchは必須機能で、同じデバイスの同じアプリ内の全会話で共有されます。`AgentScratchWorkspace.shared(applicationName:)`で得た同じコーディネーターをツール設定と`AgentLoopConfiguration.outputProjection`に渡してください。ルートはApplication Support / applicationName / Scratchで、会話IDは追加されません。会話の削除や分岐はファイルを削除・複製しません。AIは作業別の相対パスを選び、上書き前に既存ファイルを確認します。親ディレクトリは自動作成され、パス・シンボリックリンクの検証と容量制限は維持されます。
+
+`AgentTruncateStrategy`は`head`（既定）、`tail`、`middle`、`none`に対応します。`AgentTruncateLimits`の既定値は64 KiB（65,536 UTF-8バイト）と2,000論理行です。長すぎる単一行も途中では切りません。モデル投影にはJSONエスケープと外側のフィールドの容量も含めます。ページ読み取りは実際の次のオフセットを保ち、accumulatorや追加の保存ファイルを作成しません。
+
+保存はツールごとの任意機能で、モデル引数やScratchの有効化スイッチではありません。以下のファクトリーにはScratchからの完全な相対パスを返すクロージャを渡し、保存が必要な時だけ呼び出します。ディレクトリとファイル名はツールが決めます。AgentKitは接頭辞や拡張子を強制せず、親ディレクトリの作成と境界の検証を行い、同名ファイルを上書きしません。推奨規則は`<conversationID>/outputs/<tool-name>-<UUID>.txt`（アンダースコアをハイフンに変換）です。これは整理規則であり、会話の隔離ではありません。conversationIDがない場合はrunIDを使用できます。外部MCPの保存には呼び出したツール名を使います。累積スナップショットは同じファイルを更新します。非ストリーミングツールは`await accumulator.capturing(result)`を使用できます。
+
+AgentKitが翻訳しない2種類のマーカーを生成します。保存成功時は`[Showing lines <start>-<end> of <total>. Full output: <path>]`、それ以外は`[Showing lines <start>-<end> of <total>]`です。保存エラーと続きのoffset/cursorは別の結果フィールドに保持し、マーカーは増やしません。UIの折りたたみは独立し、切り詰めマーカーもファイルも生成しません。表示側は実際の切り詰め時に確定した`AgentToolResult.truncateMarker`を表示できます。外部MCPの結果は`middle`と保存を使用し、外部クライアントへの応答にはモデルの切り詰めやScratch保存を適用しません。
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Scratchの上限は1ファイル8 MiB、ワークスペース全体64 MiB、512項目です。モデル向けaccumulatorは保持データを制限し、累積スナップショットをアトミックに置き換えます。無制限のディスクスプールではありません。`snapshot(capturePath:)`でツール指定のパスに独立したスナップショットを保存できます。容量超過や書き込み失敗は`capture.error`で報告し、完全なコピーを保存したとは表示しません。
+
+マーカーはPiの行範囲形式を参考にしています。`middle`は保持した2つの範囲を列挙し、総行数が不明なら`of <total>`を省略します。長すぎる単一行では`[Showing 0 of 1 lines]`になる場合があります。保存成功時だけ`Full output: <path>`を追加します。
+
+### 組み込みツールの出力ポリシー
+
+| ツール / 結果 | 方式 | 自動保存 |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | あり |
+| MCP | `middle` | あり |
+| `scratch_read`, `skill_read_file` | `head`、ページ分割 | なし |
+| `read_chat` | `head`、ページ分割 | なし |
+| `scratch_search` | `head` | なし |
+| その他の組み込みツール | `head` | なし |
+| 外部クライアントへの応答 | 適用しない | なし |
+
+`scratch_fetch`は主処理として呼び出し側の指定先へ書き込みます。切り詰め時の自動保存ではありません。結果件数やページ範囲などの取得元の制限は維持されます。信頼されたインストール済み`SKILL.md`の指示には個別のインポート・検証制限を適用します。
+
+### 1.xからの移行
+
+カタログと出力投影には同じ共有workspaceを使用してください。`.scratch`は互換用グループ名として残りますが、ツールを無効化しません。カタログのworkspaceがnilなら`.shared()`を使用します。`AgentToolOutputProjection.workspace`は非Optionalとなるため、明示的な`nil`を共有workspaceに変更してください。旧workspaceの`conversationID`引数はディレクトリを選択せず、`copyScope`も何もしません。既存の会話フォルダーは通常の相対パスディレクトリとして残るため、旧ファイルを読む際は元のフォルダー名を含めます。会話とともに共有Scratchを削除しないでください。自動保存が必要なツールはaccumulatorを使用します。出力投影はすべての超過結果を自動保存しなくなります。
 
 ## AgentKitの拡張
 

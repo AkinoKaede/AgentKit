@@ -1,6 +1,7 @@
 # AgentKit
 
-**Deutsch** · [English](README.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md)
+**Deutsch** · [English](README.md) · [Français](README.fr.md) · [日本語](README.ja.md) · [한국어](README.ko.md) ·
+[简体中文（中国）](README.zh-CN.md) · [正體中文（臺灣）](README.zh-TW.md)
 
 Entwickeln Sie KI-Agenten in Swift mit Werkzeugorchestrierung, expliziten Berechtigungen und dauerhaft gespeichertem Gesprächszustand.
 
@@ -17,7 +18,7 @@ Erfordert **macOS 15+ oder iOS 18+** und eine **Swift-6.2+-Toolchain**.
 Fügen Sie die Paketabhängigkeit hinzu:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 Fügen Sie anschließend Ihrem Target das Kernprodukt hinzu:
@@ -31,8 +32,7 @@ Das Target `AgentKit` hat keine Abhängigkeiten von Drittanbietern. Das optional
 
 ## Verwendung
 
-Dieses Beispiel verwendet einen Responses-Endpunkt und aktiviert nur die privaten Werkzeuge des
-temporären Arbeitsbereichs der Unterhaltung. Rufen Sie es aus einem asynchronen Kontext auf.
+Dieses Beispiel verwendet einen Responses-Endpunkt mit dem verpflichtenden gemeinsamen Scratch-Bereich. Rufen Sie es aus einem asynchronen Kontext auf.
 Übergeben Sie einen API-Schlüssel aus dem Anmeldedatenspeicher Ihrer App und eine
 `manualApproval`-Closure, die Ihre Genehmigungsoberfläche anzeigt und `.allow` oder `.deny(reason)` zurückgibt.
 
@@ -53,19 +53,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -202,8 +202,8 @@ Die Auswahl einer Gruppe erzeugt nicht automatisch die benötigten Dienste.
 
 | Gruppe | Werkzeuge | Abhängigkeiten |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching` zum Abrufen; `search: AgentWebSearching` zum Suchen; `scratch_fetch` benötigt zusätzlich `.scratch` und einen Arbeitsbereich |
+| Immer verfügbar | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`, `request_user_secret` | Keine Katalogabhängigkeit; stellen Sie den Benutzerinteraktions-Handler der Runtime bereit |
 | `.planning` | `present_plan` | Ein Arbeitsbereich und `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`; nur im Ausführungsmodus |
@@ -273,7 +273,7 @@ let webTools = AgentBuiltInToolConfiguration(
 
 Übergeben Sie die Konfiguration an `AgentToolCatalog.registry(builtIn:)`. Nur `web:` bereitzustellen,
 aktiviert den Abruf, **nicht** `web_search`; `search:` ist eine eigenständige Abhängigkeit.
-Für `scratch_fetch` müssen Sie außerdem `.scratch` auswählen und einen Arbeitsbereich bereitstellen.
+`scratch_fetch` verwendet den gemeinsamen Arbeitsbereich automatisch.
 
 Unterstützen Anbieter und Modell die native Suche, können Sie stattdessen
 `AgentProviderClient(webSearch:)` auf `true` setzen und `search:` weglassen.
@@ -344,6 +344,84 @@ Der Klartext gelangt weder in Modelleingaben noch in Prüfungen, Ereignisse oder
 Werkzeugausgaben sind nicht vertrauenswürdige Daten. Die eng begrenzte Ausnahme ist die `SKILL.md`
 eines installierten Skills: Sie darf Abläufe vorgeben, niemals Berechtigungen.
 Die Hilfsdateien des Skills bleiben nicht vertrauenswürdige Referenzdaten.
+
+## Gemeinsamer Scratch-Bereich und Werkzeugausgaben
+
+Scratch ist verpflichtend und wird von allen Unterhaltungen derselben Anwendung auf diesem Gerät gemeinsam genutzt.
+Übergeben Sie denselben Koordinator aus `AgentScratchWorkspace.shared(applicationName:)` an die
+Werkzeugkonfiguration und `AgentLoopConfiguration.outputProjection`. Der Stamm ist Application Support /
+applicationName / Scratch, ohne Unterhaltungs-ID. Löschen oder Verzweigen einer Unterhaltung löscht oder kopiert
+keine Dateien. Der Agent muss aufgabenspezifische relative Pfade wählen und vorhandene Dateien vor dem
+Überschreiben prüfen. Fehlende Elternverzeichnisse werden automatisch erstellt; Pfad-, Symlink- und
+Kontingentprüfungen bleiben bestehen.
+
+`AgentTruncateStrategy` unterstützt `head` (Standard), `tail`, `middle` und `none`. `AgentTruncateLimits` verwendet
+standardmäßig 64 KiB (65.536 UTF-8-Bytes) und 2.000 logische Zeilen. Auch übergroße Einzelzeilen werden niemals
+teilweise ausgegeben. Die Modellprojektion berücksichtigt JSON-Escaping und Hüllfelder. Seitenweise Lesezugriffe
+behalten den tatsächlichen nächsten Offset und erzeugen weder einen Accumulator noch zusätzliche Ausgabedateien.
+
+Die Erfassung ist je Werkzeug optional, kein Modellargument und kein Scratch-Schalter. Die folgende Factory erhält
+eine Closure für den vollständigen Scratch-relativen Pfad, die erst bei Bedarf aufgerufen wird. Das Werkzeug
+bestimmt Verzeichnis und Dateinamen; AgentKit erzwingt weder Präfix noch Erweiterung, erstellt Elternverzeichnisse,
+prüft Pfadgrenzen und überschreibt keine Namenskollision. Empfohlen wird
+`<conversationID>/outputs/<tool-name>-<UUID>.txt` mit Bindestrichen statt Unterstrichen im Werkzeugnamen. Dies
+organisiert Dateien, isoliert aber keine Gespräche. Ohne conversationID kann runID verwendet werden. Ausgehende
+MCP-Erfassungen verwenden den Namen des aufgerufenen Werkzeugs. Kumulative Schnappschüsse aktualisieren dieselbe
+Datei. Nicht streamende Werkzeuge können `await accumulator.capturing(result)` verwenden.
+
+AgentKit erzeugt nur zwei unübersetzte Marker: `[Showing lines <start>-<end> of <total>. Full output: <path>]` nach
+erfolgreichem Speichern, sonst `[Showing lines <start>-<end> of <total>]`. Fehler sowie Offsets und Cursor zur
+Fortsetzung bleiben separate Ergebnisfelder und bilden keine weiteren Marker. Das Einklappen der UI ist unabhängig
+und erzeugt weder Kürzungsmarker noch Dateien. Die Darstellung kann den bei tatsächlicher Kürzung eingefrorenen
+`AgentToolResult.truncateMarker` anzeigen. Ausgehende MCP-Ergebnisse verwenden `middle` mit Erfassung; Antworten an
+externe Clients umgehen Modellkürzung und Scratch-Erfassung.
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Scratch erlaubt 8 MiB pro Datei, 64 MiB pro Arbeitsbereich und 512 Einträge. Accumulatoren für das Modell halten
+begrenzte Daten und ersetzen kumulative Schnappschüsse atomar; sie sind keine unbegrenzten Festplattenspools.
+`snapshot(capturePath:)` speichert bei Bedarf einen separaten Schnappschuss unter einem werkzeugeigenen Pfad.
+Kontingent- und Schreibfehler werden als `capture.error` gemeldet, ohne eine vollständige gespeicherte Kopie zu
+versprechen.
+
+Die Marker orientieren sich an Pis Zeilenbereichen. `middle` nennt beide erhaltenen Bereiche, unbekannte
+Gesamtzahlen lassen `of <total>` weg, und eine übergroße Einzelzeile kann `[Showing 0 of 1 lines]` ergeben. Nur
+erfolgreiche Erfassungen ergänzen `Full output: <path>`.
+
+### Ausgaberichtlinien integrierter Werkzeuge
+
+| Werkzeug / Ergebnis | Strategie | Automatische Erfassung |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | Ja |
+| MCP | `middle` | Ja |
+| `scratch_read`, `skill_read_file` | `head`, seitenweise | Nein |
+| `read_chat` | `head`, seitenweise | Nein |
+| `scratch_search` | `head` | Nein |
+| Andere integrierte Werkzeuge | `head` | Nein |
+| Antworten an externe Clients | Umgehen | Nein |
+
+`scratch_fetch` schreibt als Hauptoperation an das vom Aufrufer gewählte Ziel, nicht als automatische Erfassung.
+Quellseitige Grenzen wie Ergebnisanzahl und Seitenfenster bleiben erhalten. Vertrauenswürdige installierte
+`SKILL.md`-Anweisungen nutzen separate Import- und Validierungsgrenzen.
+
+### Migration von 1.x
+
+Verwenden Sie denselben gemeinsamen Workspace für Katalog und Ausgabeprojektion. `.scratch` bleibt als
+Kompatibilitätslabel erhalten, schaltet Werkzeuge aber nicht mehr ab; ein nil-Workspace im Katalog nutzt
+`.shared()`. `AgentToolOutputProjection.workspace` ist nicht mehr optional: Ersetzen Sie explizites `nil` durch
+einen gemeinsamen Workspace. Das bisherige `conversationID`-Argument wählt kein Verzeichnis mehr, und `copyScope`
+tut nichts mehr. Bestehende Gesprächsordner bleiben als normale relative Verzeichnisse erhalten; verwenden Sie beim
+Lesen alter Dateien deren bisherige Ordnernamen. Löschen Sie gemeinsamen Scratch nicht mit einer Unterhaltung.
+Werkzeuge müssen den Accumulator für automatische Erfassung ausdrücklich verwenden; die Projektion archiviert nicht
+mehr jedes übergroße Ergebnis.
 
 ## AgentKit erweitern
 

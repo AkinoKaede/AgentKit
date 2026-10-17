@@ -66,7 +66,7 @@ public nonisolated struct UnifiedDiff: Hashable, Sendable {
 
     public static let defaultContext = 3
     public static let defaultLineLimit = 10_000
-    public static let defaultByteLimit = 64 * 1_024
+    public static let defaultByteLimit = AgentTruncateLimits.maximumBytes
 
     public nonisolated enum Failure: LocalizedError, Sendable, Equatable {
         case tooLarge(lines: Int, limit: Int)

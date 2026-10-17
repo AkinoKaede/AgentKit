@@ -18,6 +18,7 @@ public nonisolated struct AgentToolGroup: RawRepresentable, Hashable, Sendable {
     public init(rawValue: String) { self.rawValue = rawValue }
     public init(_ rawValue: String) { self.rawValue = rawValue }
 
+    /// Compatibility label only: scratch is mandatory regardless of selected groups.
     /// `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`,
     /// `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`,
     /// `scratch_delete`. Needs a workspace.
@@ -65,8 +66,7 @@ nonisolated
 /// "no fetcher" is a model that was never told `fetch` existed.
 public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
     public var groups: Set<AgentToolGroup>
-    /// Per conversation rather than per run, so a file staged before the user
-    /// interrupted is still there for the run that answers them.
+    /// Shared device-local workspace. Scratch is always available.
     public var workspace: AgentScratchWorkspace?
     public var web: (any AgentWebFetching)?
     /// Separate from `web` because most providers now search on their own
@@ -108,7 +108,7 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         mcpClient: MCPClient = MCPClient()
     ) {
         self.groups = groups
-        self.workspace = workspace
+        self.workspace = workspace ?? .shared()
         self.web = web
         self.search = search
         self.tasks = tasks
@@ -201,10 +201,6 @@ public nonisolated enum AgentToolCatalog {
             return WebSearchTool(web: search)
         },
         .init(ScratchFetchTool.self) { configuration in
-            // Both groups, not just a workspace that happens to exist. This tool
-            // is a fetch whose result lands in the staging area, so an app that
-            // took `.web` without `.scratch` asked for pages in the transcript
-            // and would get files it has no other tool to read.
             guard configuration.includes(.web), let web = configuration.web,
                 let workspace = configuration.scratch
             else { return nil }
@@ -346,9 +342,9 @@ nonisolated
 
     extension AgentBuiltInToolConfiguration
 {
-    /// The workspace, but only when the scratch group asked for it.
+    /// Scratch is mandatory; the legacy group selection no longer gates it.
     fileprivate var scratch: AgentScratchWorkspace? {
-        includes(.scratch) ? workspace : nil
+        workspace ?? .shared()
     }
 }
 

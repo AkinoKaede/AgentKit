@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "2.0.0")
 ```
 
 Then add the core product to your target:
@@ -31,7 +31,7 @@ provides a ScrubberKit-backed web client without making the core depend on WebKi
 
 ## Usage
 
-This example uses a Responses endpoint and enables only the conversation's private scratch tools.
+This example uses a Responses endpoint with the mandatory shared scratch tools.
 Call it from an async context, supplying an API key from your app's credential store and a
 `manualApproval` closure that presents your approval UI and returns `.allow` or `.deny(reason)`.
 
@@ -52,19 +52,19 @@ func runAgent(
         baseURL: "https://api.openai.com/v1"
     )
     let model = AIModel(id: "gpt-4.1-mini", abilities: [.toolCall])
-    let workspace = AgentScratchWorkspace(
-        conversationID: conversationID,
-        applicationName: "MyApp"
-    )
+    let workspace = AgentScratchWorkspace.shared(applicationName: "MyApp")
+    var configuration = AgentLoopConfiguration()
+    configuration.outputProjection = AgentToolOutputProjection(workspace: workspace)
     let runtime = AgentRuntime(
         model: AgentProviderClient(provider: provider, model: model, secret: apiKey),
         registry: AgentToolCatalog.registry(
             builtIn: AgentBuiltInToolConfiguration(
-                groups: [.scratch],
+                groups: [],
                 workspace: workspace
             )
         ),
-        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval)
+        approval: AgentApprovalBroker(reviewer: nil, manualApproval: manualApproval),
+        configuration: configuration
     )
     let request = AgentRunRequest(
         conversationID: conversationID,
@@ -192,8 +192,8 @@ registered only when their dependencies are available; selecting a group does no
 
 | Group | Tools | Dependencies |
 | --- | --- | --- |
-| `.scratch` | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
-| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching` for fetch; `search: AgentWebSearching` for search; `scratch_fetch` also requires `.scratch` and a workspace |
+| Always available | `scratch_list`, `scratch_read`, `scratch_search`, `scratch_write`, `scratch_replace`, `scratch_copy`, `scratch_move`, `scratch_diff`, `scratch_delete` | `workspace: AgentScratchWorkspace` |
+| `.web` | `fetch`, `web_search`, `scratch_fetch` | `web: AgentWebFetching`, `search: AgentWebSearching` |
 | `.userInteraction` | `request_user_input`, `request_user_secret` | No catalog dependency; supply the runtime's user-interaction handler |
 | `.planning` | `present_plan` | A workspace and `plans: AgentPlanRecorder` |
 | `.tasks` | `manage_tasks` | `tasks: AgentTaskList`; acting runs only |
@@ -256,8 +256,7 @@ let webTools = AgentBuiltInToolConfiguration(
 ```
 
 Pass this configuration to `AgentToolCatalog.registry(builtIn:)`. Supplying only `web:` enables
-fetching, **not** `web_search`; the `search:` dependency is independent. To enable `scratch_fetch`,
-also select `.scratch` and supply a workspace.
+fetching, **not** `web_search`; the `search:` dependency is independent. `scratch_fetch` uses the shared workspace automatically.
 
 When the provider/model supports native search, you can instead set `AgentProviderClient(webSearch:)`
 to `true` and omit `search:`. Check `ModelProvider.supportsNativeWebSearch(model:)` first; protocol
@@ -318,6 +317,79 @@ it returns `secret_handle` and `single_use`. Plaintext is
 excluded from model input, reviews, events, and persistence. Tool output
 is untrusted data. The narrow exception is an installed skill's `SKILL.md`, which may supply
 procedures but never permissions; its supporting files remain untrusted reference data.
+
+## Shared Scratch and Tool Output
+
+Scratch is mandatory and shared by all conversations in the same application on this device.
+`AgentScratchWorkspace.shared(applicationName:)` returns one coordinator; pass it to both the tool configuration
+and `AgentLoopConfiguration.outputProjection`. The root is Application Support / applicationName / Scratch, without
+a conversation-ID suffix. Conversation deletion and forks do not delete or copy files. The agent must choose
+explicit task-specific relative paths and check before overwriting. Missing parent directories are created
+automatically; containment, symlink checks and file/workspace quotas still apply.
+
+`AgentTruncateStrategy` supports `head` (default), `tail`, `middle`, and `none`. `AgentTruncateLimits` defaults to
+64 KiB (65,536 UTF-8 bytes) and 2,000 logical lines. Selection never cuts a line in half, including an oversized
+single line. Model projection includes JSON escaping and envelope costs. Paginated reads preserve the actual next
+offset and do not create an accumulator or archive their pages.
+
+Capture is optional per tool, not a model argument or a scratch on/off switch. Use the generic factory below: the
+path closure supplies the complete scratch-relative path and is called lazily when capture is needed. The tool owns
+the directory and filename; AgentKit imposes no prefix or extension, creates missing parents, validates containment
+and never overwrites a collision. The recommended tool convention is
+`<conversationID>/outputs/<tool-name>-<UUID>.txt` (underscores become hyphens). This is organization, not
+conversation isolation. Contexts without a conversation ID may use the run ID. Outbound MCP captures use the called
+tool name. Cumulative snapshots reuse one file. Non-streaming tools can call `await accumulator.capturing(result)`.
+
+AgentKit generates only two unlocalized markers: `[Showing lines <start>-<end> of <total>. Full output: <path>]`
+after successful capture and `[Showing lines <start>-<end> of <total>]` otherwise. Capture errors and continuation
+offsets/cursors remain separate result fields, not additional markers. UI folding is independent: it creates
+neither a truncation marker nor a file. A presenter may display the frozen `AgentToolResult.truncateMarker` for
+actual truncation. Outbound MCP results use `middle` with capture; external-client responses bypass model
+truncation and scratch capture.
+
+```swift
+let conversationID = (context.conversationID ?? context.runID).uuidString.lowercased()
+let accumulator = context.makeOutputAccumulator {
+    "\(conversationID)/outputs/my-tool-\(UUID().uuidString.lowercased()).txt"
+}
+accumulator.append(Data("one complete line\n".utf8))
+let snapshot = await accumulator.snapshot()
+// snapshot.output, snapshot.capture?.path, snapshot.capture?.error
+```
+
+Scratch quotas are 8 MiB per file, 64 MiB per workspace, and 512 entries. Model-audience accumulators retain
+bounded data and atomically replace cumulative snapshots; they are not unlimited disk spools.
+`snapshot(capturePath:)` can save a separate snapshot with a tool-owned path. Quota or write failures report
+`capture.error` and do not claim a complete saved copy.
+
+Markers follow Pi’s line-range style. `middle` lists both retained ranges, unknown totals omit `of <total>`, and an
+oversized single line can produce `[Showing 0 of 1 lines]`. Only a successful capture adds `Full output: <path>`.
+
+### Built-in output policies
+
+| Tool / result | Strategy | Automatic capture |
+| --- | --- | --- |
+| `fetch`, `web_search` | `head` | Yes |
+| MCP | `middle` | Yes |
+| `scratch_read`, `skill_read_file` | `head`, paginated | No |
+| `read_chat` | `head`, paginated | No |
+| `scratch_search` | `head` | No |
+| Other built-in tools | `head` | No |
+| Responses to external clients | Bypass | No |
+
+`scratch_fetch` writes to the caller-selected destination as its main operation, not as an automatic capture.
+Source-level limits (such as result counts and page windows) remain in force. Trusted installed `SKILL.md`
+instructions use their separate import/validation limits.
+
+### Migrating from 1.x
+
+Use one shared workspace for the catalog and output projection. `.scratch` remains a compatibility group label but
+no longer disables tools, and a nil catalog workspace falls back to `.shared()`.
+`AgentToolOutputProjection.workspace` is nonoptional: replace explicit `nil` with a shared workspace. The legacy
+workspace `conversationID` argument no longer selects a directory and `copyScope` is a no-op. Existing conversation
+folders remain in place and are now ordinary relative-path directories; include their existing names when reading
+old files. Do not delete shared Scratch with a conversation. Tools that need automatic capture must opt into the
+accumulator; projection no longer archives every oversized result.
 
 ## Extending AgentKit
 
