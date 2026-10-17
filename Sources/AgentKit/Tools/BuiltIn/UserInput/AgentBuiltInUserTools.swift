@@ -152,18 +152,7 @@ public nonisolated struct RequestUserInputTool: AgentToolDefinition, AgentToolSc
 }
 
 public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolSchemaBuilding {
-    /// The tools allowed to spend a handle this tool issues.
-    ///
-    /// Named by the app, because they are the app's tools. A non-empty list
-    /// becomes a JSON Schema enumeration, so the model cannot ask for a secret
-    /// on behalf of something that was never going to consume it; an empty list
-    /// accepts any name and leaves the binding check to
-    /// `SecretBroker.consume(_:matching:)`, which enforces it either way.
-    public var consumerTools: [String]
-
-    public init(consumerTools: [String] = []) {
-        self.consumerTools = consumerTools
-    }
+    public init() {}
 
     public static let presenter = AgentToolDetailPresenter(
         id: "builtin.request_user_secret", present: present
@@ -171,17 +160,15 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
 
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
-            "request_user_secret", "Collect a secret in SecureField and return a one-shot bound handle.",
+            "request_user_secret", "Collect a secret in SecureField and return a one-shot handle.",
             properties: [
-                "prompt": Self.string(max: 4_096), "host_id": Self.string(),
-                "consumer_tool": consumerTools.isEmpty
-                    ? Self.string(max: 128) : Self.enumeration(consumerTools),
+                "prompt": Self.string(max: 4_096),
                 "purpose": Self.string(max: 256),
                 "timeout_seconds": Self.integer(
                     min: AgentUserInputLimits.minimumTimeoutSeconds,
                     max: AgentUserInputLimits.maximumTimeoutSeconds
                 ),
-            ], required: ["prompt", "host_id", "consumer_tool", "purpose"],
+            ], required: ["prompt", "purpose"],
             // Sequential, by the default, and it should stay that way despite
             // being read-only: this and `request_user_input` are the two tools
             // whose work is done by a person. Racing them against other calls
@@ -198,8 +185,6 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
         _ invocation: AgentToolInvocation, context: AgentToolExecutionContext
     ) async throws -> AgentToolResult {
         let arguments = try Arguments(invocation)
-        let hostID = try arguments.uuid("host_id")
-        let toolName = try arguments.string("consumer_tool")
         let purpose = try arguments.string("purpose")
         let timeoutSeconds =
             arguments.optionalInt("timeout_seconds")
@@ -212,7 +197,7 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
                     id: "secret", prompt: try arguments.string("prompt"), kind: .secret
                 )
             ],
-            purpose: purpose, hostID: hostID,
+            purpose: purpose,
             timeout: .seconds(timeoutSeconds)
         )
         switch await context.userInteraction.request(request) {
@@ -226,12 +211,7 @@ public nonisolated struct RequestUserSecretTool: AgentToolDefinition, AgentToolS
                     "The secret prompt returned ordinary text."
                 )
             }
-            let handle = try await context.secretBroker.issue(
-                secret,
-                binding: SecretBinding(
-                    runID: context.runID, toolName: toolName, hostID: hostID, purpose: purpose
-                )
-            )
+            let handle = try await context.secretBroker.issue(secret)
             return Self.result(
                 invocation,
                 .object([
@@ -319,11 +299,6 @@ nonisolated
         var items: [AgentToolDetail.Item] = []
         F.appendField(&items, "Request", input.arguments["prompt"]?.stringValue, locale: input.locale)
         F.appendField(&items, "Purpose", input.arguments["purpose"]?.stringValue, locale: input.locale)
-        F.appendField(
-            &items, "Consumer",
-            input.arguments["consumer_tool"]?.stringValue.map(F.humanized),
-            locale: input.locale
-        )
         items.append(
             F.field(
                 "Status", F.localized("Secret received securely", locale: input.locale),

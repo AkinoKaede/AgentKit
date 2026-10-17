@@ -462,8 +462,6 @@
 	<string>La clé privée n’a pas pu être lue : %@.</string>
 	<key>The run was cancelled before this tool ran.</key>
 	<string>L’exécution a été annulée avant le lancement de cet outil.</string>
-	<key>The secret is not valid for this host, tool, or purpose.</key>
-	<string>Le secret n’est pas valide pour cet hôte, cet outil ou cet usage.</string>
 	<key>The secret is unavailable or has already been used.</key>
 	<string>Le secret est indisponible ou a déjà été utilisé.</string>
 	<key>The selected file window is not UTF-8 text.</key>

@@ -10259,46 +10259,6 @@
         }
       }
     },
-    "The secret is not valid for this host, tool, or purpose.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此机密信息不适用于该主机、工具或用途。"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此機密資訊不適用於該主機、工具或用途。"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "このシークレットは、このホスト、ツール、用途には使用できません。"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Geheimnis ist für diesen Host, dieses Werkzeug oder diesen Zweck nicht gültig."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le secret n’est pas valide pour cet hôte, cet outil ou cet usage."
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "이 비밀 정보는 해당 호스트, 도구 또는 용도에 사용할 수 없습니다."
-          }
-        }
-      }
-    },
     "The secret is unavailable or has already been used.": {
       "localizations": {
         "zh-Hans": {

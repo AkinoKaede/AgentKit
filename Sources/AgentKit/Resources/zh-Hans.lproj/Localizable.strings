@@ -476,8 +476,6 @@
 	<string>无法读取私钥：%@。</string>
 	<key>The run was cancelled before this tool ran.</key>
 	<string>此工具运行前的运行已被取消。</string>
-	<key>The secret is not valid for this host, tool, or purpose.</key>
-	<string>此机密信息不适用于该主机、工具或用途。</string>
 	<key>The secret is unavailable or has already been used.</key>
 	<string>此机密信息不可用或已被使用。</string>
 	<key>The selected file window is not UTF-8 text.</key>

@@ -62,21 +62,13 @@ public nonisolated enum AgentSensitiveDataRedactor {
     }
 }
 
-/// Removes capabilities whose lifetime ended with the run that issued them.
-///
-/// Secret handles are deliberately process-local, run-bound, and single-use.
-/// A transcript is durable and replayed, so retaining a handle there would
-/// invite a future model turn to reuse a value that cannot possibly work. The
-/// live run is not passed through this type: it still needs the real result for
-/// the immediate handoff from `request_user_secret` to whichever tool consumes
-/// the handle.
+/// Removes unavailable capabilities from replayed history without expiring
+/// handles that the caller's broker still owns. Durable storage preserves none.
 public nonisolated enum AgentSecretLifecycle {
     /// The argument a consuming tool takes a handle in.
     ///
     /// One name, shared, because history is sanitized without knowing which
-    /// tools an app registered: anything called with a `secret_handle` had one,
-    /// and a handle in a replayed transcript is a capability that expired with
-    /// the run that issued it.
+    /// tools an app registered.
     public static let handleArgumentKey = "secret_handle"
 
     public static let expiredResultContent =
@@ -88,7 +80,8 @@ public nonisolated enum AgentSecretLifecycle {
         + AgentToolResult.untrustedDataClosingMarker
 
     public static func sanitizeHistoricalMessages(
-        _ messages: [AgentTranscriptMessage]
+        _ messages: [AgentTranscriptMessage],
+        availableHandles: Set<UUID> = []
     ) -> [AgentTranscriptMessage] {
         let secretRequestCallIDs = Set(
             messages.flatMap(\.toolCalls).compactMap { call in
@@ -100,7 +93,8 @@ public nonisolated enum AgentSecretLifecycle {
             if message.role == .assistant {
                 message.toolCalls = message.toolCalls.map { originalCall in
                     guard var arguments = originalCall.arguments.objectValue,
-                        arguments[handleArgumentKey] != nil
+                        arguments[handleArgumentKey] != nil,
+                        !isAvailable(arguments[handleArgumentKey], in: availableHandles)
                     else { return originalCall }
                     arguments.removeValue(forKey: handleArgumentKey)
                     var call = originalCall
@@ -112,8 +106,15 @@ public nonisolated enum AgentSecretLifecycle {
                 message.toolName == "request_user_secret"
                     || message.toolCallID.map(secretRequestCallIDs.contains) == true
             {
-                message.text = expiredResultContent
-                message.modelText = nil
+                let result = AgentToolResult(
+                    callID: message.toolCallID ?? "", content: message.text,
+                    metadata: ["untrusted": .bool(true)])
+                let payload = result.untrustedPayload ?? message.text
+                let value = try? AgentJSONValue.decode(Data(payload.utf8))
+                if !isAvailable(value?.objectValue?[handleArgumentKey], in: availableHandles) {
+                    message.text = expiredResultContent
+                    message.modelText = nil
+                }
             }
             return message
         }
@@ -121,5 +122,10 @@ public nonisolated enum AgentSecretLifecycle {
 
     public static func persistedResultText(toolName: String?, original: String) -> String {
         toolName == "request_user_secret" ? expiredResultContent : original
+    }
+
+    private static func isAvailable(_ value: AgentJSONValue?, in handles: Set<UUID>) -> Bool {
+        guard let raw = value?.stringValue, let id = UUID(uuidString: raw) else { return false }
+        return handles.contains(id)
     }
 }

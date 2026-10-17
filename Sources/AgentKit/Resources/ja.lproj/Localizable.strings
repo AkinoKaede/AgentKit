@@ -476,8 +476,6 @@
 	<string>秘密鍵を読み取れませんでした：%@。</string>
 	<key>The run was cancelled before this tool ran.</key>
 	<string>このツールが実行される前に、今回の実行がキャンセルされました。</string>
-	<key>The secret is not valid for this host, tool, or purpose.</key>
-	<string>このシークレットは、このホスト、ツール、用途には使用できません。</string>
 	<key>The secret is unavailable or has already been used.</key>
 	<string>このシークレットは利用できないか、すでに使用されています。</string>
 	<key>The selected file window is not UTF-8 text.</key>

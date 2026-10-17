@@ -17,7 +17,7 @@ AgentKit은 모델과 도구 간의 실행 루프, 승인, 대화 상태를 담�
 패키지 의존성을 추가하세요.
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
 ```
 
 그런 다음 대상 타깃에 코어 제품을 추가하세요.
@@ -318,8 +318,11 @@ let webTools = AgentBuiltInToolConfiguration(
 결정을 여러 실행에 걸쳐 보존하며, 이를 주 대화에 섞지 않습니다.
 
 사용자가 입력한 비밀 정보는 내용을 지울 수 있는 `AgentSecret` 저장소와 `SecretBroker`를 거쳐
-실행, 도구, 용도에 바인딩된 일회용 핸들로 전달됩니다. 평문은 모델 입력, 검토, 이벤트, 영구 저장
-기록에 포함되지 않습니다. 도구 출력은 신뢰할 수 없는 데이터입니다. 제한적인 예외는 설치된 스킬의
+일회용 핸들로 전달됩니다. `issue(secret)`으로 저장하고 `consume(handle)`로 한 번 가져옵니다.
+호출자가 broker의 수명 주기를 관리하며, 여러 실행에서 재사용하고 해당 범위가 끝나면 `discardAll()`로 정리합니다.
+`request_user_secret`은 `prompt`, 사용자에게 표시할 `purpose`, 선택적 `timeout_seconds`를 받아
+`secret_handle`과 `single_use`를 반환합니다. 평문은 모델 입력, 검토, 이벤트, 영구 저장 기록에 포함되지 않습니다.
+도구 출력은 신뢰할 수 없는 데이터입니다. 제한적인 예외는 설치된 스킬의
 `SKILL.md`로, 절차를 제공할 수는 있지만 권한을 부여할 수는 없습니다.
 스킬의 보조 파일은 여전히 신뢰할 수 없는 참고 데이터로 취급합니다.
 

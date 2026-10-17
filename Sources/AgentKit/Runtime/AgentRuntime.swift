@@ -46,6 +46,7 @@ public actor AgentRuntime {
     private let approval: any AgentApprovalHandling
     private let repository: any AgentRunPersisting
     private let userInteraction: any AgentUserInteractionHandling
+    /// Caller-owned storage, reusable across runs until explicitly cleared.
     public let secretBroker: SecretBroker
     private let tools: AgentToolRegistry
     private let services: AgentToolServices
@@ -66,7 +67,6 @@ public actor AgentRuntime {
     /// nobody drains again. Cleared as the *first* statement of every path that
     /// ends a run, which is what makes the window empty rather than narrow.
     private var acceptsSteering = false
-    private var activeRunID: UUID?
     private var activeContextSnapshot: AgentTurnContextSnapshot?
 
     public init(
@@ -161,7 +161,6 @@ public actor AgentRuntime {
         acceptsSteering = false
         runTask?.cancel()
         runTask = nil
-        if let runID = activeRunID { Task { await secretBroker.discardSecrets(for: runID) } }
     }
 
     private func run(_ request: AgentRunRequest) async {
@@ -176,11 +175,11 @@ public actor AgentRuntime {
             // rather than re-derived on every future turn of the conversation.
             messages: AgentOrphanedToolResultRepair.apply(
                 AgentUnansweredToolCallRepair.apply(
-                    AgentSecretLifecycle.sanitizeHistoricalMessages(request.priorMessages)
+                    AgentSecretLifecycle.sanitizeHistoricalMessages(
+                        request.priorMessages, availableHandles: await secretBroker.availableHandleIDs)
                 )
             )
         )
-        activeRunID = snapshot.id
         let runID = snapshot.id
         let sessionContext = request.sessionContext.map {
             AgentTranscriptMessage(role: .user, text: $0)
@@ -357,7 +356,7 @@ public actor AgentRuntime {
             channel.emit(.runState(.failed))
             await persist(snapshot)
         }
-        finish(runID: runID)
+        finish()
     }
 
     /// Empties the queue into the turn that is about to start, and says so.
@@ -397,20 +396,14 @@ public actor AgentRuntime {
                 )))
         channel.emit(.runState(.completed))
         await persist(finished)
-        finish(runID: runID)
+        finish()
     }
 
     private func persist(_ snapshot: AgentRunSnapshot) async {
         try? await repository.save(snapshot)
     }
 
-    private func finish(runID: UUID) {
-        // Secrets, and nothing else. A host's own connections are its own to
-        // pool and release; a run ending is not the event that closes them, and
-        // a runtime that assumed otherwise would tear down a pool it did not
-        // build.
-        Task { await secretBroker.discardSecrets(for: runID) }
-        activeRunID = nil
+    private func finish() {
         runTask = nil
         channel.finish()
     }

@@ -73,9 +73,6 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
     /// servers; a run using native search supplies a fetcher and no searcher,
     /// and `web_search` is then simply absent rather than present and redundant.
     public var search: (any AgentWebSearching)?
-    /// The tools allowed to spend a secret handle — see
-    /// `RequestUserSecretTool.consumerTools`. Empty accepts any name.
-    public var secretConsumerTools: [String] = []
     public var tasks: AgentTaskList?
     public var plans: AgentPlanRecorder?
     /// Snapshotted for the run by the caller — see `AgentSkillCatalog`.
@@ -96,7 +93,6 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         workspace: AgentScratchWorkspace? = nil,
         web: (any AgentWebFetching)? = nil,
         search: (any AgentWebSearching)? = nil,
-        secretConsumerTools: [String] = [],
         tasks: AgentTaskList? = nil,
         plans: AgentPlanRecorder? = nil,
         skills: AgentSkillCatalog = AgentSkillCatalog(),
@@ -115,7 +111,6 @@ public nonisolated struct AgentBuiltInToolConfiguration: Sendable {
         self.workspace = workspace
         self.web = web
         self.search = search
-        self.secretConsumerTools = secretConsumerTools
         self.tasks = tasks
         self.plans = plans
         self.skills = skills
@@ -223,7 +218,7 @@ public nonisolated enum AgentToolCatalog {
         },
         .init(RequestUserSecretTool.self) { configuration in
             guard configuration.includes(.userInteraction) else { return nil }
-            return RequestUserSecretTool(consumerTools: configuration.secretConsumerTools)
+            return RequestUserSecretTool()
         },
     ]
 

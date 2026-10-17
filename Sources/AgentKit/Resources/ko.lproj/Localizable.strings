@@ -474,8 +474,6 @@
 	<string>개인 키를 읽을 수 없음: %@.</string>
 	<key>The run was cancelled before this tool ran.</key>
 	<string>이 도구가 실행되기 전에 전체 실행이 취소되었습니다.</string>
-	<key>The secret is not valid for this host, tool, or purpose.</key>
-	<string>이 비밀 정보는 해당 호스트, 도구 또는 용도에 사용할 수 없습니다.</string>
 	<key>The secret is unavailable or has already been used.</key>
 	<string>비밀 정보를 사용할 수 없거나 이미 사용되었습니다.</string>
 	<key>The selected file window is not UTF-8 text.</key>

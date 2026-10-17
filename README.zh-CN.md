@@ -16,7 +16,7 @@
 添加包依赖：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
 ```
 
 然后将核心产品添加到目标：
@@ -294,8 +294,12 @@ Guardian 在隔离的 `.reviewing` 模式下运行，默认不注册调查工具
 `ReviewerReadOnlyApproval` 只允许已标记为 `.approve` 的调用，且没有升级审批路径，避免递归审查。
 `GuardianSessionStore` 在多次运行间保存有界的授权基线和决定，不将它们混入主对话。
 
-用户输入的秘密通过可清零的 `AgentSecret` 存储和 `SecretBroker` 以一次性句柄传递，并绑定到运行、工具和用途；
-明文不会进入模型输入、审查、事件和持久化记录。工具输出均视为不可信数据。
+用户输入的秘密通过可清零的 `AgentSecret` 存储和 `SecretBroker` 以一次性句柄传递。
+通过 `issue(secret)` 存入秘密，通过 `consume(handle)` 取出一次。调用方管理 broker 的生命周期，
+可在多次运行间复用，并在其作用域结束时调用 `discardAll()` 清理。
+`request_user_secret` 接收 `prompt`、向用户展示的 `purpose` 和可选的 `timeout_seconds`，
+返回 `secret_handle` 和 `single_use`。明文不会进入模型输入、审查、事件和持久化记录。
+工具输出均视为不可信数据。
 唯一的窄范围例外是已安装技能的 `SKILL.md`：它可以提供操作流程，但不能授予权限；
 其辅助文件仍是不可信的参考数据。
 

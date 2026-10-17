@@ -158,7 +158,7 @@ struct AgentContextPipelineTests {
     }
 
     @Test
-    func historicalSecretCapabilitiesExpireBeforeAnotherRun() throws {
+    func unavailableHistoricalSecretCapabilitiesAreRemoved() throws {
         let realHandle = UUID().uuidString
         let messages = [
             AgentTranscriptMessage(
@@ -167,10 +167,8 @@ struct AgentContextPipelineTests {
                     AgentToolCall(
                         id: "exec", name: "run_command",
                         arguments: .object([
-                            "host_id": .string(UUID().uuidString),
                             "command": .string("uptime"),
                             "secret_handle": .string("[REDACTED]"),
-                            "stdin_purpose": .null,
                         ])
                     ),
                     AgentToolCall(
@@ -192,7 +190,6 @@ struct AgentContextPipelineTests {
         )
 
         #expect(execArguments["secret_handle"] == nil)
-        #expect(execArguments["stdin_purpose"] == .null)
         #expect(sanitized[1].text == AgentSecretLifecycle.expiredResultContent)
         #expect(!sanitized[1].text.contains(realHandle))
     }

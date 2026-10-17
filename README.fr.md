@@ -17,7 +17,7 @@ Nécessite **macOS 15+ ou iOS 18+**, ainsi qu’une chaîne d’outils **Swift 6
 Ajoutez la dépendance au package :
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
 ```
 
 Ajoutez ensuite le produit principal à votre cible :
@@ -340,7 +340,11 @@ déjà marqués `.approve` et ne permet aucune escalade de l’approbation, ce q
 les exécutions, sans les mélanger à la conversation principale.
 
 Les secrets saisis par l’utilisateur passent par un stockage `AgentSecret` effaçable et par
-`SecretBroker`, sous forme de références à usage unique liées à l’exécution, à l’outil et à la finalité.
+`SecretBroker`, sous forme de références à usage unique. `issue(secret)` stocke un secret,
+et `consume(handle)` permet de le récupérer une seule fois. L’appelant gère le cycle de vie du broker,
+peut le réutiliser entre plusieurs exécutions et appelle `discardAll()` à la fin de sa portée.
+`request_user_secret` reçoit `prompt`, `purpose` (affiché à l’utilisateur) et le paramètre facultatif
+`timeout_seconds`, puis renvoie `secret_handle` et `single_use`.
 Le texte en clair est exclu des entrées du modèle, des vérifications, des événements et de la persistance.
 Les sorties des outils sont des données non fiables. La seule exception, étroitement délimitée,
 est le fichier `SKILL.md` d’une compétence installée : il peut fournir des procédures, jamais des permissions.

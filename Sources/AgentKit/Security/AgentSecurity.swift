@@ -250,25 +250,6 @@ public nonisolated struct ReviewerReadOnlyApproval: AgentApprovalHandling, Senda
     }
 }
 
-public nonisolated struct SecretBinding: Hashable, Sendable {
-    public init(
-        runID: UUID,
-        toolName: String,
-        hostID: UUID? = nil,
-        purpose: String
-    ) {
-        self.runID = runID
-        self.toolName = toolName
-        self.hostID = hostID
-        self.purpose = purpose
-    }
-
-    public var runID: UUID
-    public var toolName: String
-    public var hostID: UUID?
-    public var purpose: String
-}
-
 public nonisolated struct SecretHandle: Identifiable, Hashable, Sendable, Codable {
     public init(
         id: UUID
@@ -280,56 +261,42 @@ public nonisolated struct SecretHandle: Identifiable, Hashable, Sendable, Codabl
 }
 
 public nonisolated enum SecretBrokerError: LocalizedError, Sendable, Equatable {
-    case notFound, bindingMismatch
+    case notFound
 
     public var errorDescription: String? {
         switch self {
         case .notFound: String(localized: "The secret is unavailable or has already been used.", bundle: .module)
-        case .bindingMismatch:
-            String(localized: "The secret is not valid for this host, tool, or purpose.", bundle: .module)
         }
     }
 }
 
-/// Plaintext exists only in this actor and in the executor call that consumes it.
-/// A failed binding check does not consume the handle; a successful read always does.
+/// Owns secrets until their handles are consumed or explicitly discarded.
+///
+/// Handles are single-use capabilities. The caller owns the broker's lifetime
+/// and may share it across multiple runs.
 public actor SecretBroker {
     public init() {}
 
-    private struct Entry {
-        var secret: AgentSecret
-        var binding: SecretBinding
-    }
-    private var entries: [SecretHandle.ID: Entry] = [:]
+    private var entries: [SecretHandle.ID: AgentSecret] = [:]
 
-    public func issue(_ secret: AgentSecret, binding: SecretBinding) throws -> SecretHandle {
+    public func issue(_ secret: AgentSecret) throws -> SecretHandle {
         let handle = SecretHandle(id: UUID())
-        entries[handle.id] = Entry(
-            secret: try secret.transferringOwnership(), binding: binding
-        )
+        entries[handle.id] = try secret.transferringOwnership()
         return handle
     }
 
-    public func consume(_ handle: SecretHandle, matching binding: SecretBinding) throws -> AgentSecret {
-        guard let entry = entries[handle.id] else { throw SecretBrokerError.notFound }
-        guard entry.binding == binding else { throw SecretBrokerError.bindingMismatch }
-        entries[handle.id] = nil
-        return entry.secret
-    }
-
-    public func discardSecrets(for runID: UUID) {
-        for entry in entries.values where entry.binding.runID == runID {
-            entry.secret.clear()
-        }
-        entries = entries.filter { $0.value.binding.runID != runID }
+    public func consume(_ handle: SecretHandle) throws -> AgentSecret {
+        guard let secret = entries.removeValue(forKey: handle.id) else { throw SecretBrokerError.notFound }
+        return secret
     }
 
     public func discardAll() {
-        for entry in entries.values { entry.secret.clear() }
+        for secret in entries.values { secret.clear() }
         entries.removeAll()
     }
 
     public var count: Int { entries.count }
+    var availableHandleIDs: Set<UUID> { Set(entries.keys) }
 }
 
 /// One choice offered by `request_user_input`.
@@ -443,14 +410,12 @@ public nonisolated struct AgentUserInputRequest: Identifiable, Hashable, Sendabl
         createdAt: Date = .now,
         questions: [AgentUserQuestion],
         purpose: String = "",
-        hostID: UUID? = nil,
         timeout: Duration = .seconds(AgentUserInputLimits.defaultTimeoutSeconds)
     ) {
         self.id = id
         self.createdAt = createdAt
         self.questions = questions
         self.purpose = purpose
-        self.hostID = hostID
         self.timeout = timeout
     }
 
@@ -458,7 +423,6 @@ public nonisolated struct AgentUserInputRequest: Identifiable, Hashable, Sendabl
     public var createdAt: Date = .now
     public var questions: [AgentUserQuestion]
     public var purpose: String = ""
-    public var hostID: UUID?
     /// Starts when this request reaches the head of its presentation queue.
     /// Time spent behind another prompt does not consume this duration.
     public var timeout: Duration = .seconds(AgentUserInputLimits.defaultTimeoutSeconds)

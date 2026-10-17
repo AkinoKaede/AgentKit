@@ -17,7 +17,7 @@ Erfordert **macOS 15+ oder iOS 18+** und eine **Swift-6.2+-Toolchain**.
 Fügen Sie die Paketabhängigkeit hinzu:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "0.19.2")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "1.20.0")
 ```
 
 Fügen Sie anschließend Ihrem Target das Kernprodukt hinzu:
@@ -335,7 +335,11 @@ mit `.approve` markierte Aufrufe und bietet keinen Eskalationsweg. Das verhinder
 über Läufe hinweg auf, ohne sie in die Hauptunterhaltung einzumischen.
 
 Vom Benutzer eingegebene Geheimnisse werden über löschbaren `AgentSecret`-Speicher und `SecretBroker`
-als einmalig verwendbare Handles weitergegeben, gebunden an Lauf, Werkzeug und Zweck.
+als einmalig verwendbare Handles weitergegeben. `issue(secret)` speichert ein Geheimnis,
+`consume(handle)` ruft es genau einmal ab. Der Aufrufer verwaltet den Lebenszyklus des Brokers,
+kann ihn über mehrere Läufe hinweg verwenden und leert ihn mit `discardAll()`, wenn sein Gültigkeitsbereich endet.
+`request_user_secret` nimmt `prompt`, den dem Benutzer angezeigten `purpose` und optional `timeout_seconds`
+entgegen und gibt `secret_handle` und `single_use` zurück.
 Der Klartext gelangt weder in Modelleingaben noch in Prüfungen, Ereignisse oder persistente Aufzeichnungen.
 Werkzeugausgaben sind nicht vertrauenswürdige Daten. Die eng begrenzte Ausnahme ist die `SKILL.md`
 eines installierten Skills: Sie darf Abläufe vorgeben, niemals Berechtigungen.
