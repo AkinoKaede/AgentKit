@@ -49,29 +49,6 @@ struct AgentSecretTests {
     }
 
     @Test
-    func consumerIdentityChecksAllFieldsWithoutRepeatingPurpose() async throws {
-        let broker = SecretBroker()
-        let runID = UUID()
-        let hostID = UUID()
-        var source = Data("one-use".utf8)
-        let handle = try await broker.issue(
-            AgentSecret(consumingUTF8: &source),
-            binding: SecretBinding(runID: runID, toolName: "consumer", hostID: hostID, purpose: "User explanation")
-        )
-        for identity in [(UUID(), "consumer", hostID), (runID, "other", hostID), (runID, "consumer", UUID())] {
-            await #expect(throws: SecretBrokerError.bindingMismatch) {
-                try await broker.consume(handle, runID: identity.0, toolName: identity.1, hostID: identity.2)
-            }
-        }
-        let secret = try await broker.consume(handle, runID: runID, toolName: "consumer", hostID: hostID)
-        defer { secret.clear() }
-        #expect(try bytes(secret) == Array("one-use".utf8))
-        await #expect(throws: SecretBrokerError.notFound) {
-            try await broker.consume(handle, runID: runID, toolName: "consumer", hostID: hostID)
-        }
-    }
-
-    @Test
     func discardingASecretRemovesItsHandle() async throws {
         let broker = SecretBroker()
         let runID = UUID()

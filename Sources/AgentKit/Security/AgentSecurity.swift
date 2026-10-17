@@ -317,19 +317,6 @@ public actor SecretBroker {
         return entry.secret
     }
 
-    /// Consumes a handle for its trusted consumer identity. The original purpose
-    /// remains issuance metadata and need not be repeated by the consumer.
-    public func consume(
-        _ handle: SecretHandle, runID: UUID, toolName: String, hostID: UUID?
-    ) throws -> AgentSecret {
-        guard let entry = entries[handle.id] else { throw SecretBrokerError.notFound }
-        guard entry.binding.runID == runID, entry.binding.toolName == toolName, entry.binding.hostID == hostID else {
-            throw SecretBrokerError.bindingMismatch
-        }
-        entries[handle.id] = nil
-        return entry.secret
-    }
-
     public func discardSecrets(for runID: UUID) {
         for entry in entries.values where entry.binding.runID == runID {
             entry.secret.clear()
