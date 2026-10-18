@@ -5,15 +5,18 @@ public nonisolated struct MCPDiscovery: Sendable {
     public init(
         protocolVersion: String,
         serverName: String,
+        serverDescription: String? = nil,
         tools: [MCPTool]
     ) {
         self.protocolVersion = protocolVersion
         self.serverName = serverName
+        self.serverDescription = serverDescription
         self.tools = tools
     }
 
     public var protocolVersion: String
     public var serverName: String
+    public var serverDescription: String?
     public var tools: [MCPTool]
 }
 
@@ -155,17 +158,19 @@ public nonisolated struct MCPClient: Sendable {
     private func discoverStreamable(
         at url: URL, server: MCPServer, bearerToken: String?
     ) async throws -> MCPDiscovery {
-        let negotiated: (RequestContext, String)
+        let negotiated: (RequestContext, ServerInfo)
         do {
             negotiated = try await negotiate(at: url, server: server, bearerToken: bearerToken)
         } catch MCPError.wrongTransport {
             return try await discoverSSE(at: url, server: server, bearerToken: bearerToken)
         }
-        var (context, serverName) = negotiated
+        var (context, serverInfo) = negotiated
         do {
             let tools = try await listTools(context: &context)
             await endSession(context)
-            return MCPDiscovery(protocolVersion: context.version, serverName: serverName, tools: tools)
+            return MCPDiscovery(
+                protocolVersion: context.version, serverName: serverInfo.name ?? server.name,
+                serverDescription: serverInfo.description, tools: tools)
         } catch {
             await endSession(context)
             throw error
@@ -205,7 +210,7 @@ public nonisolated struct MCPClient: Sendable {
 
     /// Probe only before execution. Never replay a tool call following a transport failure.
     private func negotiate(at url: URL, server: MCPServer, bearerToken: String?) async throws -> (
-        RequestContext, String
+        RequestContext, ServerInfo
     ) {
         var context = RequestContext(
             url: url, version: Self.preferredVersion, sessionID: nil,
@@ -217,10 +222,10 @@ public nonisolated struct MCPClient: Sendable {
                 throw MCPError.malformedResponse("server/discover: no supported version")
             }
             if version == Self.preferredVersion {
+                let info = discovered._meta?["io.modelcontextprotocol/serverInfo"]?.objectValue
                 return (
                     context,
-                    discovered._meta?["io.modelcontextprotocol/serverInfo"]?.objectValue?["name"]?.stringValue
-                        ?? server.name
+                    ServerInfo(name: info?["name"]?.stringValue, description: info?["description"]?.stringValue)
                 )
             }
             fallbackVersion = version
@@ -248,7 +253,7 @@ public nonisolated struct MCPClient: Sendable {
             }
             context.version = version
             try await notify(.initialized, context: context)
-            return (context, initialized.serverInfo?.name ?? server.name)
+            return (context, initialized.serverInfo ?? ServerInfo())
         } catch {
             // Until negotiation succeeds, this scope owns any session assigned by
             // initialize, including one whose response or notification is invalid.
@@ -356,7 +361,7 @@ public nonisolated struct MCPClient: Sendable {
     /// each message to whichever request is waiting for that id.
     private func withLegacySession<Result>(
         at url: URL, server: MCPServer, bearerToken: String?,
-        operation: (RequestContext, LegacySSESession, String) async throws -> Result
+        operation: (RequestContext, LegacySSESession, ServerInfo) async throws -> Result
     ) async throws -> Result {
         var context = RequestContext(
             url: url,
@@ -408,7 +413,7 @@ public nonisolated struct MCPClient: Sendable {
 
             try await notify(.initialized, context: context)
 
-            let result = try await operation(context, events, initialize.serverInfo?.name ?? server.name)
+            let result = try await operation(context, events, initialize.serverInfo ?? ServerInfo())
             await events.cancel()
             return result
         } catch {
@@ -420,7 +425,7 @@ public nonisolated struct MCPClient: Sendable {
     private func discoverSSE(
         at url: URL, server: MCPServer, bearerToken: String?
     ) async throws -> MCPDiscovery {
-        try await withLegacySession(at: url, server: server, bearerToken: bearerToken) { context, events, name in
+        try await withLegacySession(at: url, server: server, bearerToken: bearerToken) { context, events, info in
             var tools: [MCPTool] = []
             var cursor: String?
             var id = 2
@@ -432,7 +437,9 @@ public nonisolated struct MCPClient: Sendable {
                 cursor = next
                 id += 1
             }
-            return MCPDiscovery(protocolVersion: context.version, serverName: name, tools: tools)
+            return MCPDiscovery(
+                protocolVersion: context.version, serverName: info.name ?? server.name,
+                serverDescription: info.description, tools: tools)
         }
     }
 
@@ -736,11 +743,11 @@ nonisolated private struct DiscoverResult: Decodable {
 nonisolated private struct InitializeResult: Decodable {
     var protocolVersion: String?
     var serverInfo: ServerInfo?
+}
 
-    nonisolated struct ServerInfo: Decodable {
-        var name: String?
-        var version: String?
-    }
+nonisolated private struct ServerInfo: Decodable {
+    var name: String?
+    var description: String?
 }
 
 nonisolated private struct ToolsListResult: Decodable {

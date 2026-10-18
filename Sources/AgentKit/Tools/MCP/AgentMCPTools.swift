@@ -21,6 +21,7 @@ public nonisolated struct MCPAgentTool: AgentTool {
         descriptor = AgentToolDescriptor(
             name: name,
             namespace: server.effectiveNamespaceID,
+            namespaceDescription: server.serverDescription,
             summary: "\(server.name): \(tool.summary)",
             inputSchema: AgentMCPTools.normalizedSchema(tool.inputSchema), target: .mcp,
             // Remote read-only annotations are hints, never local proof. The

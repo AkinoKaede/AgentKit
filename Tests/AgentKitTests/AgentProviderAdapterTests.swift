@@ -261,6 +261,7 @@ struct AgentProviderAdapterTests {
         let tools = try #require(body["tools"] as? [[String: Any]])
         let namespace = try #require(tools.first { $0["type"] as? String == "namespace" })
         #expect(namespace["name"] as? String == "a_b_c-d")
+        #expect(namespace["description"] as? String == "Tools provided by the \"a_b_c-d\" MCP server.")
         let children = try #require(namespace["tools"] as? [[String: Any]])
         #expect(children.first?["type"] as? String == "function")
         #expect(children.first?["name"] as? String == "lookup")
@@ -280,6 +281,30 @@ struct AgentProviderAdapterTests {
             ],
         ])
         #expect(parsed.firstTool?.name == "a_b_c-d.lookup")
+    }
+
+    @Test(arguments: [nil, "", " \n\t ", "  Search documents and inspect their contents.\n"])
+    func responsesIncludesServerDescriptionOrNamespaceFallback(_ description: String?) throws {
+        var provider = ModelProvider(name: "OpenAI")
+        provider.apiFormat = .responses
+        var first = Self.namespacedTool
+        first.namespaceDescription = description
+        var second = first
+        second.namespace = "other"
+        second.namespaceDescription = "Manage tasks."
+        let body = AgentProviderClient(
+            provider: provider, model: AIModel(id: "gpt-test"), secret: "test"
+        ).body(AgentModelRequest(systemPrompt: "test", messages: [], tools: [second, first]))
+        let tools = try #require(body["tools"] as? [[String: Any]])
+        let namespace = try #require(tools.first { $0["name"] as? String == first.namespace })
+        let expected =
+            description.flatMap {
+                $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : $0
+            } ?? "Tools provided by the \"a_b_c-d\" MCP server."
+        #expect(namespace["description"] as? String == expected)
+        #expect(tools.first { $0["name"] as? String == "other" }?["description"] as? String == "Manage tasks.")
+        let children = try #require(namespace["tools"] as? [[String: Any]])
+        #expect(children.first?["description"] as? String == first.summary)
     }
 
     @Test

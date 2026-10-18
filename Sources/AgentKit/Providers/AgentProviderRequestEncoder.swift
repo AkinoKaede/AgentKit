@@ -318,8 +318,13 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
                 tool["type"] = "function"
                 return tool
             }
+            // MCP metadata is optional; Responses requires a namespace description.
+            let description =
+                members.compactMap(\.namespaceDescription)
+                .first { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                ?? "Tools provided by the \"\(namespace)\" MCP server."
             tools.append([
-                "type": "namespace", "name": namespace, "tools": children,
+                "type": "namespace", "name": namespace, "description": description, "tools": children,
             ])
         }
         return tools

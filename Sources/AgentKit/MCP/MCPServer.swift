@@ -30,7 +30,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
         public var displayName: String {
             switch self {
             case .streamableHTTP: String(localized: "Streamable HTTP", bundle: .module)
-            case .sse: String(localized: "SSE (legacy)", bundle: .module)
+            case .sse: String(localized: "SSE (Legacy)", bundle: .module)
             }
         }
 
@@ -49,6 +49,8 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
     /// Stable model-facing namespace. An empty value is used only while a new
     /// server draft is still deriving its ID from `name`.
     public var namespaceID: String
+    /// Optional, untrusted implementation description reported by the server.
+    public var serverDescription: String?
     public var transport: Transport = .streamableHTTP
     /// The MCP endpoint. One URL for Streamable HTTP; for SSE this is the URL
     /// the stream is opened on, and the POST endpoint arrives on that stream.
@@ -70,6 +72,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
 
     public init(
         id: UUID = UUID(), name: String, namespaceID: String? = nil,
+        serverDescription: String? = nil,
         transport: Transport = .streamableHTTP, url: String = "",
         isEnabled: Bool = true, credentialRef: String = "",
         headers: [MCPHeader] = [], tools: [MCPTool] = [], oauth: MCPOAuthConfiguration? = nil,
@@ -78,6 +81,7 @@ public nonisolated struct MCPServer: Identifiable, Hashable, Sendable {
         self.id = id
         self.name = name
         self.namespaceID = namespaceID ?? MCPToolNaming.namespaceID(from: name)
+        self.serverDescription = serverDescription
         self.transport = transport
         self.url = url
         self.isEnabled = isEnabled

@@ -124,6 +124,7 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
     public init(
         name: String,
         namespace: String? = nil,
+        namespaceDescription: String? = nil,
         summary: String,
         inputSchema: AgentJSONValue,
         target: Target,
@@ -133,6 +134,7 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
     ) {
         self.name = name
         self.namespace = namespace
+        self.namespaceDescription = namespaceDescription
         self.summary = summary
         self.inputSchema = inputSchema
         self.target = target
@@ -392,6 +394,8 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
     public var name: String
     /// MCP server namespace. Built-in tools deliberately leave this unset.
     public var namespace: String? = nil
+    /// Shared server metadata, not a replacement for this function's summary.
+    public var namespaceDescription: String? = nil
     public var qualifiedName: String {
         namespace.map { "\($0).\(name)" } ?? name
     }

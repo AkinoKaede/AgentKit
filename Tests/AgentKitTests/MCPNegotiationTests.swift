@@ -90,6 +90,16 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
             result["content"] = []
             result["isError"] = false
         }
+        if mode != "no-description" {
+            let info = [
+                "name": "fixture-server", "version": "1", "description": "Search the fixture documents.",
+            ]
+            if method == "server/discover" {
+                result["_meta"] = ["io.modelcontextprotocol/serverInfo": info]
+            } else if method == "initialize" {
+                result["serverInfo"] = info
+            }
+        }
         var envelope: [String: Any] = ["jsonrpc": "2.0", "id": object["id"] ?? 1]
         if let error { envelope["error"] = error } else { envelope["result"] = result }
         if isSSE, request.url?.path == "/messages" {
@@ -143,6 +153,24 @@ struct MCPNegotiationTests {
         return MCPClient(session: URLSession(configuration: config))
     }
     let server = MCPServer(name: "test", url: "https://mcp.test/mcp")
+
+    @Test(arguments: ["modern", "legacy", "sse"])
+    func discoveryRetainsServerDescriptionAcrossTransports(_ mode: String) async throws {
+        let result = try await client(mode).discover(server, bearerToken: nil)
+        #expect(result.serverName == "fixture-server")
+        #expect(result.serverDescription == "Search the fixture documents.")
+        var connected = server
+        connected.serverDescription = result.serverDescription
+        connected.tools = result.tools
+        let descriptors = AgentMCPTools.make(servers: [(connected, nil)]).map(\.descriptor)
+        #expect(descriptors.first?.namespaceDescription == result.serverDescription)
+    }
+
+    @Test func discoveryDoesNotInventAnAbsentServerDescription() async throws {
+        let result = try await client("no-description").discover(server, bearerToken: nil)
+        #expect(result.serverName == server.name)
+        #expect(result.serverDescription == nil)
+    }
 
     @Test(arguments: ["march", "march-batch", "march-sse-batch"])
     func march2025DiscoversAndCallsWithSingleOrBatchedResponses(_ mode: String) async throws {

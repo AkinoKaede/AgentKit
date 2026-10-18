@@ -326,7 +326,7 @@
 	<string>En cours d’exécution</string>
 	<key>SHA-256</key>
 	<string>SHA-256</string>
-	<key>SSE (legacy)</key>
+	<key>SSE (Legacy)</key>
 	<string>SSE (ancien)</string>
 	<key>Same as Chat</key>
 	<string>Comme pour le chat</string>

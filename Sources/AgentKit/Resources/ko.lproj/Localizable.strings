@@ -336,7 +336,7 @@
 	<string>실행 중</string>
 	<key>SHA-256</key>
 	<string>SHA-256</string>
-	<key>SSE (legacy)</key>
+	<key>SSE (Legacy)</key>
 	<string>SSE (이전 방식)</string>
 	<key>Same as Chat</key>
 	<string>채팅과 동일</string>

@@ -338,7 +338,7 @@
 	<string>執行中</string>
 	<key>SHA-256</key>
 	<string>SHA-256</string>
-	<key>SSE (legacy)</key>
+	<key>SSE (Legacy)</key>
 	<string>SSE（舊版）</string>
 	<key>Same as Chat</key>
 	<string>與對話模型相同</string>
