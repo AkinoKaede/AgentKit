@@ -41,6 +41,45 @@ struct AgentChatToolsTests {
     }
 
     @Test
+    func readOnlyToolsForwardPaginationWithoutChangingAvailability() async throws {
+        let host = StubChatHost()
+        let source = AgentChatSourceContext(
+            conversationID: UUID(), title: "Source", modelReference: "provider::model",
+            permissionMode: .askForApproval, mode: .acting)
+        let runID = UUID()
+        let context = AgentToolExecutionContext(
+            runID: runID, userIntent: "Read chats", secretBroker: SecretBroker(),
+            userInteraction: UnavailableAgentUserInteraction(), preflightMetadata: [:],
+            authorize: { _ in .allow })
+        let list = ListChatsTool(coordinator: host, source: source)
+        _ = try await list.execute(
+            .init(
+                runID: runID,
+                call: .init(
+                    id: "list", name: "list_chats",
+                    arguments: .object(["cursor": .string("next-list"), "include_archived": .bool(true)]))),
+            context: context)
+        #expect(host.listRequests.count == 1)
+        #expect(host.listRequests.first?.cursor == "next-list")
+        #expect(host.listRequests.first?.includeArchived == true)
+
+        let chatID = UUID()
+        let read = ReadChatTool(coordinator: host, source: source)
+        let result = try await read.execute(
+            .init(
+                runID: runID,
+                call: .init(
+                    id: "read", name: "read_chat",
+                    arguments: .object(["chat_id": .string(chatID.uuidString), "cursor": .string("next-read")]))),
+            context: context)
+        #expect(host.readRequests.count == 1)
+        #expect(host.readRequests.first?.id == chatID)
+        #expect(host.readRequests.first?.cursor == "next-read")
+        #expect(result.hasBoundedModelContent)
+        #expect(result.callID == "read")
+    }
+
+    @Test
     func approvalPresentersNeverRevealCreatePromptOrSendMessage() throws {
         let chatID = UUID()
         let create = try #require(
@@ -143,6 +182,9 @@ struct AgentChatToolsTests {
 
 @MainActor
 private final class StubChatHost: AgentChatModelCatalog, AgentChatCoordinating {
+    private(set) var listRequests: [(cursor: String?, includeArchived: Bool)] = []
+    private(set) var readRequests: [(id: UUID, cursor: String?)] = []
+
     func configuredChatModels() async throws -> [AgentChatModelDescription] { [] }
 
     func createChat(
@@ -151,10 +193,14 @@ private final class StubChatHost: AgentChatModelCatalog, AgentChatCoordinating {
     ) async throws -> AgentJSONValue { .object([:]) }
 
     func listChats(cursor: String?, includeArchived: Bool) async throws -> AgentJSONValue {
-        .object([:])
+        listRequests.append((cursor, includeArchived))
+        return .object([:])
     }
 
-    func readChat(id: UUID, cursor: String?) async throws -> AgentJSONValue { .object([:]) }
+    func readChat(id: UUID, cursor: String?) async throws -> AgentJSONValue {
+        readRequests.append((id, cursor))
+        return .object([:])
+    }
 
     func sendToChat(
         id: UUID, message: String, source: AgentChatSourceContext,

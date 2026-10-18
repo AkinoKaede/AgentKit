@@ -45,6 +45,20 @@ struct AgentKitSmokeTests {
     }
 
     @Test
+    func scratchFallbackDoesNotEnablePlanningWithoutAWorkspace() {
+        var configuration = AgentBuiltInToolConfiguration(
+            groups: [.web, .planning], web: StubWebClient(), plans: AgentPlanRecorder { _ in })
+        configuration.workspace = nil
+        let registry = AgentToolCatalog.registry(builtIn: configuration)
+        let names = Set(registry.descriptors.map(\.name))
+
+        #expect(Self.scratchNames.isSubset(of: names))
+        #expect(names.contains("scratch_fetch"))
+        #expect(!names.contains("present_plan"))
+        #expect(registry["scratch_fetch"]?.descriptor.approvalPolicy == .ask)
+    }
+
+    @Test
     func networkFetchesRequireApprovalWhileSearchIsPreapproved() {
         let workspace = AgentScratchWorkspace(
             conversationID: UUID(), base: FileManager.default.temporaryDirectory

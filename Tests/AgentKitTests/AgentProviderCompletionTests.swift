@@ -131,6 +131,61 @@ struct AgentProviderCompletionTests {
         )
     }
 
+    @Test(arguments: [false, true])
+    func collidingToolNamesRoundTripThroughTransport(buffered: Bool) async throws {
+        let builtIn = AgentToolDescriptor(
+            name: "mcp__server__lookup", summary: "Built in",
+            inputSchema: .object([:]), target: .local, approvalPolicy: .approve)
+        let occupiedSuffix = AgentToolDescriptor(
+            name: "mcp__server__lookup_2", summary: "Another built in",
+            inputSchema: .object([:]), target: .local, approvalPolicy: .approve)
+        let namespaced = AgentToolDescriptor(
+            name: "lookup", namespace: "server", summary: "Remote lookup",
+            inputSchema: .object([:]), target: .mcp, approvalPolicy: .ask)
+        let request = AgentModelRequest(
+            systemPrompt: "Test",
+            messages: [
+                AgentTranscriptMessage(
+                    role: .assistant,
+                    toolCalls: [.init(id: "previous", name: namespaced.qualifiedName, arguments: .object([:]))]),
+                AgentTranscriptMessage(
+                    role: .tool, text: "OK", toolCallID: "previous", toolName: namespaced.qualifiedName),
+            ], tools: [namespaced, occupiedSuffix, builtIn])
+        let endpoint = CompletionEndpoint(
+            """
+            {"choices":[{"message":{"tool_calls":[
+              {"id":"builtin","function":{"name":"mcp__server__lookup","arguments":"{}"}},
+              {"id":"remote","function":{"name":"mcp__server__lookup_3","arguments":"{}"}}
+            ]},"finish_reason":"tool_calls"}]}
+            """, contentType: "application/json")
+        defer { endpoint.session.invalidateAndCancel() }
+        let client = endpoint.client()
+        var events: [AgentModelStreamEvent] = []
+        if buffered {
+            events = try await client.complete(request)
+        } else {
+            for try await event in client.stream(request) { events.append(event) }
+        }
+        let names = events.compactMap { event -> String? in
+            if case .toolCallDelta(_, let name, _) = event { return name }
+            return nil
+        }
+        #expect(names == [builtIn.qualifiedName, namespaced.qualifiedName])
+        #expect(endpoint.requests.count == 1)
+        let sent = try #require(endpoint.requests.first?.httpBody)
+        let body = try #require(try JSONSerialization.jsonObject(with: sent) as? [String: Any])
+        let tools = try #require(body["tools"] as? [[String: Any]])
+        let wireNames = tools.compactMap { ($0["function"] as? [String: Any])?["name"] as? String }
+        #expect(Set(wireNames) == ["mcp__server__lookup", "mcp__server__lookup_2", "mcp__server__lookup_3"])
+        let messages = try #require(body["messages"] as? [[String: Any]])
+        let replay = try #require(messages.compactMap { $0["tool_calls"] as? [[String: Any]] }.first?.first)
+        #expect((replay["function"] as? [String: Any])?["name"] as? String == "mcp__server__lookup_3")
+        #expect(
+            request.tools.map(\.qualifiedName) == [
+                namespaced.qualifiedName, occupiedSuffix.qualifiedName, builtIn.qualifiedName,
+            ])
+    }
+
     @Test(arguments: ModelAPIFormat.allCases)
     func everyProviderCompletesUsingStreamingTransport(_ format: ModelAPIFormat) async throws {
         let body: String

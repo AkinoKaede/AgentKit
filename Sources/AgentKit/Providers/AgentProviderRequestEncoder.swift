@@ -12,6 +12,11 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
     func buildRequest(
         _ input: AgentModelRequest, streaming: Bool
     ) throws -> URLRequest {
+        try buildRequest(prepare(input, streaming: streaming))
+    }
+
+    func buildRequest(_ prepared: PreparedRequest) throws -> URLRequest {
+        let streaming = prepared.streaming
         var urlString = provider.requestURL(model: model.id)
         if provider.apiFormat == .generateContent, streaming {
             urlString = urlString.replacingOccurrences(
@@ -32,7 +37,7 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
             forHTTPHeaderField: "Accept"
         )
         request.httpBody = try JSONSerialization.data(
-            withJSONObject: body(input, streaming: streaming), options: [.sortedKeys]
+            withJSONObject: body(prepared), options: [.sortedKeys]
         )
         return request
     }
@@ -40,6 +45,10 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
     func body(
         _ request: AgentModelRequest, streaming: Bool
     ) -> [String: Any] {
+        body(prepare(request, streaming: streaming))
+    }
+
+    func prepare(_ request: AgentModelRequest, streaming: Bool) -> PreparedRequest {
         var request = request
         request.tools.sort { $0.qualifiedName < $1.qualifiedName }
         let toolNames = AgentProviderToolNameMap.flat(request.tools)
@@ -48,10 +57,13 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
         )
         let normalizedReasoning = reasoningResolution.clamp(reasoning)
         let reasoningValue = reasoningResolution.wireValue(for: normalizedReasoning)
-        let prepared = PreparedRequest(
+        return PreparedRequest(
             input: request, streaming: streaming, toolNames: toolNames,
             reasoningValue: reasoningValue, output: supportedOutputFormat(request)
         )
+    }
+
+    private func body(_ prepared: PreparedRequest) -> [String: Any] {
         switch provider.apiFormat {
         case .responses: return responsesBody(prepared)
         case .chatCompletions: return chatBody(prepared)
@@ -62,7 +74,7 @@ nonisolated struct AgentProviderRequestEncoder: Sendable {
 
     /// Canonical ordering and capability decisions are resolved once, before
     /// choosing a wire format. The original request remains unchanged.
-    private struct PreparedRequest {
+    struct PreparedRequest {
         let input: AgentModelRequest
         let streaming: Bool
         let toolNames: AgentProviderToolNameMap

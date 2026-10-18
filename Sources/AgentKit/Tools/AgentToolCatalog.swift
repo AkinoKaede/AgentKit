@@ -201,10 +201,8 @@ public nonisolated enum AgentToolCatalog {
             return WebSearchTool(web: search)
         },
         .init(ScratchFetchTool.self) { configuration in
-            guard configuration.includes(.web), let web = configuration.web,
-                let workspace = configuration.scratch
-            else { return nil }
-            return ScratchFetchTool(workspace: workspace, web: web)
+            guard configuration.includes(.web), let web = configuration.web else { return nil }
+            return ScratchFetchTool(workspace: configuration.scratch, web: web)
         },
     ]
 
@@ -219,15 +217,15 @@ public nonisolated enum AgentToolCatalog {
     ]
 
     private static let scratchTools: [Registration] = [
-        .init(ScratchListTool.self) { $0.scratch.map(ScratchListTool.init(workspace:)) },
-        .init(ScratchReadTool.self) { $0.scratch.map(ScratchReadTool.init(workspace:)) },
-        .init(ScratchSearchTool.self) { $0.scratch.map(ScratchSearchTool.init(workspace:)) },
-        .init(ScratchWriteTool.self) { $0.scratch.map(ScratchWriteTool.init(workspace:)) },
-        .init(ScratchReplaceTool.self) { $0.scratch.map(ScratchReplaceTool.init(workspace:)) },
-        .init(ScratchCopyTool.self) { $0.scratch.map(ScratchCopyTool.init(workspace:)) },
-        .init(ScratchMoveTool.self) { $0.scratch.map(ScratchMoveTool.init(workspace:)) },
-        .init(ScratchDiffTool.self) { $0.scratch.map(ScratchDiffTool.init(workspace:)) },
-        .init(ScratchDeleteTool.self) { $0.scratch.map(ScratchDeleteTool.init(workspace:)) },
+        .init(ScratchListTool.self) { ScratchListTool(workspace: $0.scratch) },
+        .init(ScratchReadTool.self) { ScratchReadTool(workspace: $0.scratch) },
+        .init(ScratchSearchTool.self) { ScratchSearchTool(workspace: $0.scratch) },
+        .init(ScratchWriteTool.self) { ScratchWriteTool(workspace: $0.scratch) },
+        .init(ScratchReplaceTool.self) { ScratchReplaceTool(workspace: $0.scratch) },
+        .init(ScratchCopyTool.self) { ScratchCopyTool(workspace: $0.scratch) },
+        .init(ScratchMoveTool.self) { ScratchMoveTool(workspace: $0.scratch) },
+        .init(ScratchDiffTool.self) { ScratchDiffTool(workspace: $0.scratch) },
+        .init(ScratchDeleteTool.self) { ScratchDeleteTool(workspace: $0.scratch) },
     ]
 
     /// Presenters for tools that have since been renamed.
@@ -343,7 +341,7 @@ nonisolated
     extension AgentBuiltInToolConfiguration
 {
     /// Scratch is mandatory; the legacy group selection no longer gates it.
-    fileprivate var scratch: AgentScratchWorkspace? {
+    fileprivate var scratch: AgentScratchWorkspace {
         workspace ?? .shared()
     }
 }

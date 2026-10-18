@@ -193,6 +193,54 @@ import Testing
         #expect(!request.messages[0].text.contains("replace me"))
     }
 
+    @Test func memoryReferencesBudgetCompleteEntriesByUnicodeScalar() {
+        let entry = AgentMemoryEntry(target: .user, content: "blue e\u{301} 🧑‍💻")
+        let state = AgentMemoryState(entries: [entry])
+        let rendered = "[\(entry.id.uuidString)] user: \(entry.content)"
+        let cost = rendered.unicodeScalars.count + 1
+
+        #expect(state.referenceEntries(matching: "blue", characterBudget: cost).map(\.id) == [entry.id])
+        #expect(state.referenceEntries(matching: "blue", characterBudget: cost - 1).isEmpty)
+        #expect(state.reference(matching: "blue", characterBudget: cost + 80) == rendered)
+        let omitted = state.reference(matching: "blue", characterBudget: cost + 79)
+        #expect(!omitted.contains(entry.content))
+        #expect(omitted.contains("1 entries omitted"))
+    }
+
+    @Test(arguments: [false, true], [false, true])
+    func learningMutationsMatchTheRenderedReference(correction: Bool, visibleTarget: Bool) async throws {
+        let shown = AgentMemoryEntry(
+            target: .memory, content: "blue preference " + String(repeating: "a", count: 8_000))
+        let hidden = AgentMemoryEntry(
+            target: .memory, content: "hidden preference " + String(repeating: "b", count: 8_000))
+        let state = AgentMemoryState(entries: [shown, hidden])
+        let old = visibleTarget ? "blue preference" : "hidden preference"
+        let model = MemoryReplyModel(
+            reply:
+                "{\"operations\":[{\"action\":\"replace\",\"target\":\"memory\",\"old_text\":\"\(old)\",\"content\":\"updated preference\"}]}"
+        )
+        let message = AgentTranscriptMessage(role: .user, text: "blue preference")
+        func operations() async throws -> [AgentMemoryOperation] {
+            if correction {
+                return try await AgentMemoryLearningService().correction(
+                    message: message, context: [], state: state, model: model)
+            }
+            return try await AgentMemoryLearningService().review(messages: [message], state: state, model: model)
+        }
+        if visibleTarget {
+            let updated = try state.applying(await operations())
+            #expect(updated.entries.first { $0.id == shown.id }?.content == "updated preference")
+            #expect(updated.entries.first { $0.id == hidden.id }?.content == hidden.content)
+        } else {
+            await #expect(throws: (any Error).self) { try await operations() }
+        }
+        let request = try #require(await model.lastRequest)
+        let prompt = try #require(request.messages.first?.text)
+        #expect(prompt.contains(shown.id.uuidString))
+        #expect(!prompt.contains(hidden.id.uuidString))
+        #expect(prompt.contains("1 entries omitted"))
+    }
+
     @Test func learningIgnoresAgentRoutedMessagesForReviewAndCorrection() async throws {
         let model = MemoryReplyModel(reply: #"{"operations":[]}"#)
         let origin = AgentMessageOrigin(

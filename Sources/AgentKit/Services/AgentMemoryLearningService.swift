@@ -25,7 +25,7 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
                 ? "[continued tool batch; preceding calls are earlier in this conversation]\n" + transcript
                 : transcript
         }
-        let visible = state.referenceEntries(matching: reviewText, characterBudget: 11_920)
+        let reference = state.referenceSnapshot(matching: reviewText)
         let request = AgentModelRequest(
             systemPrompt: """
                 Review reference conversation data for durable user preferences, explicit corrections, and environment facts.
@@ -41,11 +41,11 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
                 AgentTranscriptMessage(
                     role: .user,
                     text:
-                        "<existing-memory>\n\(state.reference(matching: reviewText))\n</existing-memory>\n<conversation>\n\(reviewText)\n</conversation>"
+                        "<existing-memory>\n\(reference.text)\n</existing-memory>\n<conversation>\n\(reviewText)\n</conversation>"
                 )
             ],
             tools: [])
-        return try await operations(from: request, state: state, visible: visible, model: model, limit: 8)
+        return try await operations(from: request, state: state, visible: reference.entries, model: model, limit: 8)
     }
 
     public func correction(
@@ -58,7 +58,7 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
         // Legacy human-authored rows predate authoredText. Origin is never inferred for them,
         // so retain the historical text fallback while excluding marked agent input above.
         let corrected = AgentSensitiveDataRedactor.visibleText(message.authoredText ?? message.text)
-        let visible = state.referenceEntries(matching: corrected + recent, characterBudget: 11_920)
+        let reference = state.referenceSnapshot(matching: corrected + recent)
         let request = AgentModelRequest(
             systemPrompt: """
                 A user message may correct an earlier durable preference or fact. Extract only an explicit, lasting
@@ -74,11 +74,11 @@ public nonisolated struct AgentMemoryLearningService: Sendable {
                 AgentTranscriptMessage(
                     role: .user,
                     text:
-                        "<existing-memory>\n\(state.reference(matching: corrected + recent))\n</existing-memory>\n<recent-context>\n\(String(recent.suffix(8_000)))\n</recent-context>\n<correction>\n\(String(corrected.prefix(4_000)))\n</correction>"
+                        "<existing-memory>\n\(reference.text)\n</existing-memory>\n<recent-context>\n\(String(recent.suffix(8_000)))\n</recent-context>\n<correction>\n\(String(corrected.prefix(4_000)))\n</correction>"
                 )
             ],
             tools: [])
-        return try await operations(from: request, state: state, visible: visible, model: model, limit: 4)
+        return try await operations(from: request, state: state, visible: reference.entries, model: model, limit: 4)
     }
 
     private func operations(

@@ -272,7 +272,6 @@ public nonisolated struct ListModelsTool: AgentToolDefinition, AgentToolSchemaBu
 
 private nonisolated protocol AgentChatTool: AgentToolDefinition, AgentToolSchemaBuilding {
     var coordinator: any AgentChatCoordinating { get }
-    var source: AgentChatSourceContext { get }
 }
 
 public nonisolated struct CreateNewChatTool: AgentChatTool {
@@ -315,10 +314,8 @@ public nonisolated struct ListChatsTool: AgentChatTool {
         id: "builtin.list_chats", layout: .compact, present: AgentChatToolPresentation.chats,
         presentArguments: { _ in [] })
     let coordinator: any AgentChatCoordinating
-    let source: AgentChatSourceContext
-    public init(coordinator: any AgentChatCoordinating, source: AgentChatSourceContext) {
+    public init(coordinator: any AgentChatCoordinating, source _: AgentChatSourceContext) {
         self.coordinator = coordinator
-        self.source = source
     }
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
@@ -346,10 +343,8 @@ public nonisolated struct ReadChatTool: AgentChatTool {
         id: "builtin.read_chat", layout: .compact, present: AgentChatToolPresentation.read,
         presentArguments: AgentChatToolPresentation.safeArguments)
     let coordinator: any AgentChatCoordinating
-    let source: AgentChatSourceContext
-    public init(coordinator: any AgentChatCoordinating, source: AgentChatSourceContext) {
+    public init(coordinator: any AgentChatCoordinating, source _: AgentChatSourceContext) {
         self.coordinator = coordinator
-        self.source = source
     }
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(

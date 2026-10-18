@@ -64,21 +64,31 @@ public nonisolated struct AgentMemoryState: Codable, Hashable, Sendable {
         var selected: [AgentMemoryEntry] = []
         var size = 0
         for entry in ranked {
-            let line = "[\(entry.id.uuidString)] \(entry.target.rawValue): \(entry.content)\n"
-            if size + line.unicodeScalars.count <= characterBudget {
+            let length = Self.referenceLine(entry).unicodeScalars.count + 1
+            if size + length <= characterBudget {
                 selected.append(entry)
-                size += line.unicodeScalars.count
+                size += length
             }
         }
         return selected
     }
     public func reference(matching query: String, characterBudget: Int = 12_000) -> String {
+        referenceSnapshot(matching: query, characterBudget: characterBudget).text
+    }
+
+    /// Rendering and mutation validation must share the same bounded selection.
+    func referenceSnapshot(
+        matching query: String, characterBudget: Int = 12_000
+    ) -> (entries: [AgentMemoryEntry], text: String) {
         let selected = referenceEntries(matching: query, characterBudget: max(0, characterBudget - 80))
-        var result = selected.map { "[\($0.id.uuidString)] \($0.target.rawValue): \($0.content)" }
-            .joined(separator: "\n")
+        var text = selected.map(Self.referenceLine).joined(separator: "\n")
         let omitted = entries.count - selected.count
-        if omitted > 0 { result += "\n[\(omitted) entries omitted; search memory for details]" }
-        return result
+        if omitted > 0 { text += "\n[\(omitted) entries omitted; search memory for details]" }
+        return (selected, text)
+    }
+
+    private static func referenceLine(_ entry: AgentMemoryEntry) -> String {
+        "[\(entry.id.uuidString)] \(entry.target.rawValue): \(entry.content)"
     }
     public func applying(_ operations: [AgentMemoryOperation]) throws -> Self {
         guard !operations.isEmpty, operations.count <= 32 else {

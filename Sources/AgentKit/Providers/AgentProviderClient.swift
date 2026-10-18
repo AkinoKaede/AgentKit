@@ -110,11 +110,12 @@ public nonisolated struct AgentProviderClient: AgentModelStreaming, Sendable {
         emit: (AgentModelStreamEvent) -> Void
     ) async throws {
         try Task.checkCancellation()
-        let toolNames = AgentProviderToolNameMap.flat(request.tools)
+        let encoder = requestEncoder
+        let prepared = encoder.prepare(request, streaming: true)
         var parser = AgentProviderResponseParser(
-            format: provider.apiFormat, wireNames: toolNames.wireToQualified, buffered: buffered
+            format: provider.apiFormat, wireNames: prepared.toolNames.wireToQualified, buffered: buffered
         )
-        var urlRequest = try buildRequest(request, streaming: true)
+        var urlRequest = try encoder.buildRequest(prepared)
         try await ProviderNetworking.authorize(
             &urlRequest, provider: provider, secret: secret, omittingEmptyCredential: true
         )

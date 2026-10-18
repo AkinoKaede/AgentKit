@@ -45,7 +45,7 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
             generations[server.id] = UUID()
         }
         if let active = flights[server.id] {
-            let token = try await wait(active, serverID: server.id)
+            let token = try await wait(active)
             if challenge == nil { return token }
             if challenge?.status == 401, let token, token != rejectedToken { return token }
             // A refresh cannot satisfy a scope upgrade. Re-evaluate against the grant it just saved.
@@ -68,10 +68,10 @@ public actor MCPOAuthCoordinator: MCPAuthorizationProviding {
         let flight = Flight(id: id, fingerprint: fingerprint, task: task)
         flights[server.id] = flight
         defer { if flights[server.id]?.id == id { flights[server.id] = nil } }
-        return try await wait(flight, serverID: server.id)
+        return try await wait(flight)
     }
 
-    private func wait(_ flight: Flight, serverID: UUID) async throws -> String? {
+    private func wait(_ flight: Flight) async throws -> String? {
         try await withTaskCancellationHandler {
             let result = try await flight.task.value
             try Task.checkCancellation()

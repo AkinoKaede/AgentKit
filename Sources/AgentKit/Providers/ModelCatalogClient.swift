@@ -83,30 +83,12 @@ public nonisolated struct ModelCatalogClient: Sendable {
         provider: ModelProvider,
         secret: String
     ) async throws -> [AIModel] {
-        var models: [AIModel] = []
-        var after: String?
-
-        for _ in 0..<Self.pageLimit {
-            var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            var items = [URLQueryItem(name: "limit", value: "100")]
-            if let after { items.append(URLQueryItem(name: "after_id", value: after)) }
-            components?.queryItems = items
-            guard let paged = components?.url else { throw ModelCatalogError.badURL(url.absoluteString) }
-
-            var request = URLRequest(url: paged)
-            try await ProviderNetworking.authorize(
-                &request, provider: provider, secret: secret,
-                omittingEmptyCredential: true
-            )
-
-            let page = try Self.parseOpenAIPage(try await get(request), provider: provider)
-            models += page.models
-
-            guard page.hasMore, let last = page.lastID else { break }
-            after = last
-        }
-
-        return models
+        try await paginatedModels(
+            at: url, provider: provider, secret: secret,
+            sizeParameter: "limit", cursorParameter: "after_id",
+            parsePage: { try Self.parseOpenAIPage($0, provider: provider) },
+            nextCursor: { $0.hasMore ? $0.lastID : nil }
+        )
     }
 
     // MARK: - Google
@@ -125,13 +107,33 @@ public nonisolated struct ModelCatalogClient: Sendable {
         provider: ModelProvider,
         secret: String
     ) async throws -> [AIModel] {
+        try await paginatedModels(
+            at: url, provider: provider, secret: secret,
+            sizeParameter: "pageSize", cursorParameter: "pageToken",
+            parsePage: { try Self.parseGooglePage($0, provider: provider) },
+            nextCursor: { page in
+                guard let token = page.nextPageToken, !token.isEmpty else { return nil }
+                return token
+            }
+        )
+    }
+
+    private func paginatedModels(
+        at url: URL,
+        provider: ModelProvider,
+        secret: String,
+        sizeParameter: String,
+        cursorParameter: String,
+        parsePage: (Data) throws -> CatalogPage,
+        nextCursor: (CatalogPage) -> String?
+    ) async throws -> [AIModel] {
         var models: [AIModel] = []
-        var pageToken: String?
+        var cursor: String?
 
         for _ in 0..<Self.pageLimit {
             var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-            var items = [URLQueryItem(name: "pageSize", value: "100")]
-            if let pageToken { items.append(URLQueryItem(name: "pageToken", value: pageToken)) }
+            var items = [URLQueryItem(name: sizeParameter, value: "100")]
+            if let cursor { items.append(URLQueryItem(name: cursorParameter, value: cursor)) }
             components?.queryItems = items
             guard let paged = components?.url else { throw ModelCatalogError.badURL(url.absoluteString) }
 
@@ -141,11 +143,10 @@ public nonisolated struct ModelCatalogClient: Sendable {
                 omittingEmptyCredential: true
             )
 
-            let page = try Self.parseGooglePage(try await get(request), provider: provider)
+            let page = try parsePage(try await get(request))
             models += page.models
-
-            guard let next = page.nextPageToken, !next.isEmpty else { break }
-            pageToken = next
+            guard let next = nextCursor(page) else { break }
+            cursor = next
         }
 
         return models
