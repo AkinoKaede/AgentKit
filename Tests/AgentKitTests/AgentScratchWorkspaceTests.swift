@@ -4,7 +4,7 @@ import Testing
 @testable import AgentKit
 
 /// Covers what `scratch_replace`, `scratch_copy` and `scratch_move` add on top of the
-/// containment, quota and matching rules the workspace already had.
+/// containment and matching rules the workspace already had.
 @Suite
 struct AgentScratchWorkspaceTests {
 
@@ -232,10 +232,6 @@ struct AgentScratchWorkspaceTests {
         #expect(directory.files == 2)
         #expect(directory.bytes == 3)
         #expect(try await workspace.read("tree-backup/deep/b.txt").content == "bb")
-        // Three originals plus three copies, and the copies count against the quota
-        // like anything else the workspace holds.
-        #expect(directory.usage.entries == 6)
-        #expect(directory.usage.bytes == 14)
     }
 
     @Test
@@ -243,7 +239,6 @@ struct AgentScratchWorkspaceTests {
         let workspace = Fixture.workspace()
         _ = try await workspace.write("draft.md", data: Data("plan".utf8))
         _ = try await workspace.write("tree/a.txt", data: Data("a".utf8))
-        let before = try await workspace.usage()
 
         let file = try await workspace.move("draft.md", to: "plans/final.md")
         #expect(file.kind == .file)
@@ -252,9 +247,6 @@ struct AgentScratchWorkspaceTests {
 
         _ = try await workspace.move("tree", to: "moved")
         #expect(try await workspace.read("moved/a.txt").content == "a")
-        let after = try await workspace.usage()
-        #expect(after.bytes == before.bytes)
-        #expect(after.entries == before.entries)
         #expect(
             try await workspace.list(nil, recursive: true).map(\.path).sorted() == [
                 "moved", "moved/a.txt", "plans", "plans/final.md",
@@ -317,32 +309,37 @@ struct AgentScratchWorkspaceTests {
         await #expect(throws: (any Error).self) {
             try await workspace.copy("src", to: "\(deep)/src")
         }
-        #expect(try await workspace.usage().entries == 2)
+        #expect(try await workspace.list(nil, recursive: true).filter { $0.kind == .file }.count == 2)
     }
 
     @Test
-    func aCopyPastTheQuotaIsRefusedAndWritesNothing() async throws {
-        let workspace = Fixture.workspace()
-        for index in 0..<(AgentScratchWorkspace.Limits.entries - 2) {
-            _ = try await workspace.write("filler/f\(index).txt", data: Data("x".utf8))
+    func writesAndCopiesCanExceedTheFormerFileCountLimit() async throws {
+        let base = Fixture.base()
+        defer { try? FileManager.default.removeItem(at: base) }
+        let workspace = AgentScratchWorkspace(base: base)
+        for index in 0..<513 {
+            try await workspace.write("tree/f\(index).txt", data: Data("original".utf8))
         }
-        _ = try await workspace.write("tree/a.txt", data: Data("a".utf8))
-        _ = try await workspace.write("tree/b.txt", data: Data("b".utf8))
-        let before = try await workspace.usage()
-        #expect(before.entries == AgentScratchWorkspace.Limits.entries)
+        let copy = try await workspace.copy("tree", to: "copy")
+        #expect(copy.files == 513)
+        #expect(try await workspace.read("copy/f512.txt").content == "original")
+        try await workspace.write("tree/f512.txt", data: Data("changed".utf8))
+        #expect(try await workspace.read("tree/f512.txt").content == "changed")
+        #expect(try await workspace.read("copy/f512.txt").content == "original")
+    }
 
-        await #expect(throws: (any Error).self) {
-            try await workspace.copy("tree", to: "tree-copy")
+    @Test
+    func writesAndCopiesCanExceedTheFormerFileAndWorkspaceByteLimits() async throws {
+        let base = Fixture.base()
+        defer { try? FileManager.default.removeItem(at: base) }
+        let workspace = AgentScratchWorkspace(base: base)
+        let data = Data(repeating: 0xFF, count: 9 * 1_024 * 1_024)
+        for index in 0..<8 {
+            try await workspace.write("f\(index).bin", data: data)
         }
-        #expect(try await workspace.usage() == before)
-        await #expect(throws: (any Error).self) {
-            try await workspace.list("tree-copy", recursive: true)
-        }
-
-        // A move adds no entries, so it is still allowed at the ceiling — otherwise
-        // a full workspace could not even be reorganized.
-        _ = try await workspace.move("tree", to: "tree-moved")
-        #expect(try await workspace.read("tree-moved/a.txt").content == "a")
+        try await workspace.copy("f7.bin", to: "copy.bin")
+        #expect(try await workspace.data(at: "f7.bin").data == data)
+        #expect(try await workspace.data(at: "copy.bin").data == data)
     }
 
     /// The same rule `resolve(_:in:)` enforces on a path, enforced on a subtree:

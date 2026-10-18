@@ -14,8 +14,6 @@
 	<string>L’URL n’utilise ni HTTP ni HTTPS : %@.</string>
 	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
 	<string>%@ est indisponible pendant la planification : rien n’a encore été convenu, il n’y a donc aucun travail à suivre. Terminez le plan et appelez present_plan.</string>
-	<key>%lld / %lld entries</key>
-	<string>Entrées : %1$lld / %2$lld</string>
 	<key>%lld matching lines in %lld files</key>
 	<string>Lignes correspondantes : %1$lld · Fichiers parcourus : %2$lld</string>
 	<key>%lld tasks · %lld completed</key>
@@ -566,8 +564,6 @@
 	<string>Espace de travail</string>
 	<key>Workspace is empty</key>
 	<string>L’espace de travail est vide</string>
-	<key>Workspace usage</key>
-	<string>Utilisation des espaces de travail</string>
 	<key>Write skill file</key>
 	<string>Écrire un fichier de compétence</string>
 	<key>Yes</key>

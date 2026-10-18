@@ -13,7 +13,7 @@ public nonisolated struct ScratchListTool: AgentToolDefinition, AgentToolSchemaB
     public var descriptor: AgentToolDescriptor {
         Self.descriptor(
             "scratch_list",
-            "List the shared device-local scratch workspace and report its quota usage.",
+            "List files and directories in the shared device-local scratch workspace.",
             properties: [
                 "path": Self.string(max: AgentScratchWorkspace.Limits.pathBytes),
                 "recursive": Self.boolean(),
@@ -33,7 +33,6 @@ public nonisolated struct ScratchListTool: AgentToolDefinition, AgentToolSchemaB
             arguments.optionalString("path"),
             recursive: arguments.optionalBool("recursive") ?? false
         )
-        let usage = try await workspace.usage()
         return Self.result(
             invocation,
             .object([
@@ -44,11 +43,7 @@ public nonisolated struct ScratchListTool: AgentToolDefinition, AgentToolSchemaB
                             "bytes": .number(Double(entry.bytes)),
                             "modified_at": entry.modifiedAt.map { .string($0.ISO8601Format()) } ?? .null,
                         ])
-                    }),
-                "total_bytes": .number(Double(usage.bytes)),
-                "byte_quota": .number(Double(usage.byteQuota)),
-                "entry_count": .number(Double(usage.entries)),
-                "entry_quota": .number(Double(usage.entryQuota)),
+                    })
             ]))
     }
 }
@@ -207,8 +202,6 @@ public nonisolated struct ScratchWriteTool: AgentToolDefinition, AgentToolSchema
             .object([
                 "path": .string(written.path), "bytes": .number(Double(written.bytes)),
                 "sha256": .string(written.sha256), "created": .bool(written.didCreate),
-                "total_bytes": .number(Double(written.usage.bytes)),
-                "byte_quota": .number(Double(written.usage.byteQuota)),
             ]))
     }
 }
@@ -289,7 +282,6 @@ public nonisolated struct ScratchReplaceTool: AgentToolDefinition, AgentToolSche
                 "diff": .string(outcome.diff.text), "diff_truncated": .bool(outcome.diff.isTruncated),
                 "bytes": .number(Double(outcome.bytes)), "sha256": .string(outcome.sha256),
                 "line_ending": .string(outcome.lineEnding.rawValue),
-                "total_bytes": .number(Double(outcome.usage.bytes)),
             ]), truncated: outcome.diff.isTruncated)
     }
 }
@@ -349,8 +341,6 @@ nonisolated
                 "from": .string(outcome.from), "to": .string(outcome.to),
                 "kind": .string(outcome.kind.rawValue), "files": .number(Double(outcome.files)),
                 "bytes": .number(Double(outcome.bytes)), "overwritten": .bool(outcome.didOverwrite),
-                "total_bytes": .number(Double(outcome.usage.bytes)),
-                "entry_count": .number(Double(outcome.usage.entries)),
             ]))
     }
 
@@ -385,7 +375,6 @@ nonisolated
                     ))
             }
             F.appendBytes(&items, "Size", object["bytes"], locale: input.locale)
-            F.appendBytes(&items, "Workspace usage", object["total_bytes"], locale: input.locale)
             return items
         }
     }
@@ -521,13 +510,10 @@ public nonisolated struct ScratchDeleteTool: AgentToolDefinition, AgentToolSchem
         let path = try arguments.string("path")
         let kind = ScratchEntryKind(rawValue: try arguments.string("kind")) ?? .file
         try await workspace.delete(path, kind: kind)
-        let usage = try await workspace.usage()
         return Self.result(
             invocation,
             .object([
                 "path": .string(path), "kind": .string(kind.rawValue), "deleted": .bool(true),
-                "total_bytes": .number(Double(usage.bytes)),
-                "entry_count": .number(Double(usage.entries)),
             ]))
     }
 }
@@ -541,18 +527,7 @@ nonisolated
         typealias F = AgentToolDetailFormatting
         return F.objectItems(input) { object in
             let entries = object["entries"]?.arrayValue ?? []
-            let entryCount = object["entry_count"]?.integerValue ?? entries.count
-            let entryQuota = object["entry_quota"]?.integerValue
-            let totalBytes = object["total_bytes"]?.integerValue ?? 0
-            let byteQuota = object["byte_quota"]?.integerValue
-            var summary =
-                entryQuota.map { AgentLocalization.string("\(entryCount) / \($0) entries", locale: input.locale) }
-                ?? AgentLocalization.string("\(entryCount) entries", locale: input.locale)
-            if let byteQuota {
-                summary += " · \(F.byteCount(totalBytes)) / \(F.byteCount(byteQuota))"
-            } else {
-                summary += " · \(F.byteCount(totalBytes))"
-            }
+            let summary = AgentLocalization.string("\(entries.count) entries", locale: input.locale)
             let rows = entries.compactMap { entry -> AgentToolDetail.ListRow? in
                 guard let fields = entry.objectValue else { return nil }
                 let path =
@@ -699,7 +674,6 @@ nonisolated
             items.append(F.field("Result", result, locale: input.locale))
             F.appendBytes(&items, "Size", object["bytes"], locale: input.locale)
             F.appendField(&items, "SHA-256", object["sha256"]?.stringValue, locale: input.locale, monospaced: true)
-            F.appendBytes(&items, "Workspace usage", object["total_bytes"], locale: input.locale)
             return items
         }
     }
@@ -744,7 +718,6 @@ nonisolated
                 locale: input.locale
             )
             F.appendField(&items, "SHA-256", object["sha256"]?.stringValue, locale: input.locale, monospaced: true)
-            F.appendBytes(&items, "Workspace usage", object["total_bytes"], locale: input.locale)
             return items
         }
     }
@@ -802,15 +775,6 @@ nonisolated
                     F.kindLabel($0, locale: input.locale)
                 }, locale: input.locale
             )
-            let count = object["entry_count"]?.integerValue
-            let bytes = object["total_bytes"]?.integerValue
-            if count != nil || bytes != nil {
-                let parts = [
-                    count.map { AgentLocalization.string("\($0) entries", locale: input.locale) },
-                    bytes.map(F.byteCount),
-                ].compactMap { $0 }
-                items.append(F.field("Workspace", parts.joined(separator: " · "), locale: input.locale))
-            }
             return items
         }
     }
@@ -881,7 +845,6 @@ public nonisolated struct ScratchFetchTool: AgentToolDefinition, AgentToolSchema
                 "format": .string(format), "scratch_path": .string(written.path),
                 "bytes": .number(Double(written.bytes)), "sha256": .string(written.sha256),
                 "lines": .number(Double(UnifiedDiff.split(LineEnding.normalizedToLF(selected)).lines.count)),
-                "total_bytes": .number(Double(written.usage.bytes)),
             ]))
     }
 }
@@ -920,7 +883,6 @@ nonisolated
                 items.append(F.field("Lines", String(lines), locale: input.locale))
             }
             F.appendField(&items, "SHA-256", object["sha256"]?.stringValue, locale: input.locale, monospaced: true)
-            F.appendBytes(&items, "Workspace usage", object["total_bytes"], locale: input.locale)
             return items
         }
     }

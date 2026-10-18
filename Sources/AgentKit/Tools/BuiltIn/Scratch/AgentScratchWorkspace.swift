@@ -26,27 +26,6 @@ public nonisolated struct ScratchEntry: Hashable, Sendable {
     public var modifiedAt: Date?
 }
 
-/// How much of the workspace is spent. Returned with every write so the agent can
-/// stay under the ceiling deliberately rather than discover it by failing.
-public nonisolated struct ScratchUsage: Hashable, Sendable {
-    public init(
-        bytes: Int,
-        entries: Int,
-        byteQuota: Int,
-        entryQuota: Int
-    ) {
-        self.bytes = bytes
-        self.entries = entries
-        self.byteQuota = byteQuota
-        self.entryQuota = entryQuota
-    }
-
-    public var bytes: Int
-    public var entries: Int
-    public var byteQuota: Int
-    public var entryQuota: Int
-}
-
 public nonisolated struct ScratchFile: Hashable, Sendable {
     public init(
         path: String,
@@ -182,21 +161,18 @@ public nonisolated struct ScratchWriteOutcome: Hashable, Sendable {
         path: String,
         bytes: Int,
         sha256: String,
-        didCreate: Bool,
-        usage: ScratchUsage
+        didCreate: Bool
     ) {
         self.path = path
         self.bytes = bytes
         self.sha256 = sha256
         self.didCreate = didCreate
-        self.usage = usage
     }
 
     public var path: String
     public var bytes: Int
     public var sha256: String
     public var didCreate: Bool
-    public var usage: ScratchUsage
 }
 
 public nonisolated struct ScratchReplaceOutcome: Hashable, Sendable {
@@ -207,8 +183,7 @@ public nonisolated struct ScratchReplaceOutcome: Hashable, Sendable {
         diff: UnifiedDiff,
         bytes: Int,
         sha256: String,
-        lineEnding: LineEnding,
-        usage: ScratchUsage
+        lineEnding: LineEnding
     ) {
         self.path = path
         self.entriesApplied = entriesApplied
@@ -217,7 +192,6 @@ public nonisolated struct ScratchReplaceOutcome: Hashable, Sendable {
         self.bytes = bytes
         self.sha256 = sha256
         self.lineEnding = lineEnding
-        self.usage = usage
     }
 
     public var path: String
@@ -229,7 +203,6 @@ public nonisolated struct ScratchReplaceOutcome: Hashable, Sendable {
     public var bytes: Int
     public var sha256: String
     public var lineEnding: LineEnding
-    public var usage: ScratchUsage
 }
 
 /// The result of moving bytes from one place in the workspace to another.
@@ -240,8 +213,7 @@ public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
         kind: ScratchEntryKind,
         files: Int,
         bytes: Int,
-        didOverwrite: Bool,
-        usage: ScratchUsage
+        didOverwrite: Bool
     ) {
         self.from = from
         self.to = to
@@ -249,7 +221,6 @@ public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
         self.files = files
         self.bytes = bytes
         self.didOverwrite = didOverwrite
-        self.usage = usage
     }
 
     public var from: String
@@ -260,7 +231,6 @@ public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
     public var files: Int
     public var bytes: Int
     public var didOverwrite: Bool
-    public var usage: ScratchUsage
 }
 
 // MARK: - Workspace
@@ -284,9 +254,6 @@ public nonisolated struct ScratchTransferOutcome: Hashable, Sendable {
 /// inside the scope after symlink resolution.
 public actor AgentScratchWorkspace {
     public nonisolated enum Limits {
-        public static let fileBytes = 8 * 1_024 * 1_024
-        public static let totalBytes = 64 * 1_024 * 1_024
-        public static let entries = 512
         public static let pathBytes = 1_024
         public static let componentBytes = 255
         public static let depth = 8
@@ -339,8 +306,6 @@ public actor AgentScratchWorkspace {
     }
 
     // MARK: Reading
-
-    public func usage() throws -> ScratchUsage { try measure(in: try root()) }
 
     public func list(_ path: String?, recursive: Bool) throws -> [ScratchEntry] {
         let root = try root()
@@ -472,14 +437,13 @@ public actor AgentScratchWorkspace {
         let root = try root()
         let url = try resolve(path, in: root)
         let existing = Self.size(of: url)
-        try checkQuota(in: root, adding: data.count, replacing: existing)
         try FileManager.default.createDirectory(
             at: url.deletingLastPathComponent(), withIntermediateDirectories: true
         )
         try data.write(to: url, options: .atomic)
         return ScratchWriteOutcome(
             path: path, bytes: data.count, sha256: Self.digest(data),
-            didCreate: existing == nil, usage: try measure(in: root)
+            didCreate: existing == nil
         )
     }
 
@@ -552,7 +516,7 @@ public actor AgentScratchWorkspace {
         return ScratchReplaceOutcome(
             path: path, entriesApplied: replacements.count,
             replacementsApplied: located.count, diff: diff, bytes: written.bytes,
-            sha256: written.sha256, lineEnding: ending, usage: written.usage
+            sha256: written.sha256, lineEnding: ending
         )
     }
 
@@ -566,7 +530,6 @@ public actor AgentScratchWorkspace {
         _ from: String, to: String, overwrite: Bool = false
     ) throws -> ScratchTransferOutcome {
         let plan = try transferPlan(from: from, to: to, overwrite: overwrite)
-        try checkQuota(in: plan.root, addingFiles: plan.files, bytes: plan.bytes)
         if plan.replaces { try FileManager.default.removeItem(at: plan.destination) }
         try FileManager.default.createDirectory(
             at: plan.destination.deletingLastPathComponent(), withIntermediateDirectories: true
@@ -574,7 +537,7 @@ public actor AgentScratchWorkspace {
         try FileManager.default.copyItem(at: plan.source, to: plan.destination)
         return ScratchTransferOutcome(
             from: from, to: to, kind: plan.kind, files: plan.files, bytes: plan.bytes,
-            didOverwrite: plan.replaces, usage: try measure(in: plan.root)
+            didOverwrite: plan.replaces
         )
     }
 
@@ -592,7 +555,7 @@ public actor AgentScratchWorkspace {
         try FileManager.default.moveItem(at: plan.source, to: plan.destination)
         return ScratchTransferOutcome(
             from: from, to: to, kind: plan.kind, files: plan.files, bytes: plan.bytes,
-            didOverwrite: plan.replaces, usage: try measure(in: plan.root)
+            didOverwrite: plan.replaces
         )
     }
 
@@ -627,7 +590,6 @@ public actor AgentScratchWorkspace {
 
     /// Everything `copy` and `move` need to know before either touches the disk.
     private struct TransferPlan {
-        var root: URL
         var source: URL
         var destination: URL
         var kind: ScratchEntryKind
@@ -690,7 +652,7 @@ public actor AgentScratchWorkspace {
             replaces = true
         }
         return TransferPlan(
-            root: root, source: source, destination: destination, kind: kind,
+            source: source, destination: destination, kind: kind,
             files: inventory.files, bytes: inventory.bytes, replaces: replaces
         )
     }
@@ -699,8 +661,7 @@ public actor AgentScratchWorkspace {
     ///
     /// `walk` skips a symlink silently, which is right for a listing and wrong here:
     /// `copyItem` would recreate the link, and an alias inside the workspace makes
-    /// two paths the same file — which is exactly what breaks both the quota
-    /// arithmetic and the atomicity `replace(_:in:)` claims.
+    /// two paths the same file, breaking the atomicity `replace(_:in:)` claims.
     private static func inventory(
         of url: URL, kind: ScratchEntryKind, path: String
     ) throws -> (files: Int, bytes: Int, relativePaths: [String]) {
@@ -824,8 +785,7 @@ public actor AgentScratchWorkspace {
     ///
     /// Containment alone would already stop an escape. This is the stricter rule
     /// because an alias *inside* the workspace makes two paths the same file, which
-    /// quietly breaks both the quota arithmetic and the atomicity `replace(_:in:)`
-    /// claims.
+    /// quietly breaks the atomicity `replace(_:in:)` claims.
     private static func assertNoSymlink(in url: URL, below root: URL) throws {
         let rootDepth = root.standardizedFileURL.pathComponents.count
         let components = url.standardizedFileURL.pathComponents
@@ -840,67 +800,6 @@ public actor AgentScratchWorkspace {
         }
     }
 
-    // MARK: - Quota
-
-    private func checkQuota(in root: URL, adding bytes: Int, replacing existing: Int?) throws {
-        guard bytes <= Limits.fileBytes else {
-            throw AgentToolError.scratchQuotaExceeded(
-                "\(bytes) bytes is past the \(Limits.fileBytes)-byte limit for one scratch file."
-            )
-        }
-        let usage = try measure(in: root)
-        let projected = usage.bytes - (existing ?? 0) + bytes
-        guard projected <= Limits.totalBytes else {
-            throw AgentToolError.scratchQuotaExceeded(
-                """
-                The scratch workspace would reach \(projected) of \(Limits.totalBytes) bytes. \
-                Delete what is no longer needed.
-                """
-            )
-        }
-        guard existing != nil || usage.entries < Limits.entries else {
-            throw AgentToolError.scratchQuotaExceeded(
-                "The scratch workspace already holds its limit of \(Limits.entries) files."
-            )
-        }
-    }
-
-    /// The same ceilings, asked about a whole subtree before any of it is copied.
-    private func checkQuota(in root: URL, addingFiles files: Int, bytes: Int) throws {
-        let usage = try measure(in: root)
-        let projected = usage.bytes + bytes
-        guard projected <= Limits.totalBytes else {
-            throw AgentToolError.scratchQuotaExceeded(
-                """
-                The scratch workspace would reach \(projected) of \(Limits.totalBytes) bytes. \
-                Delete what is no longer needed.
-                """
-            )
-        }
-        guard usage.entries + files <= Limits.entries else {
-            throw AgentToolError.scratchQuotaExceeded(
-                """
-                The scratch workspace would hold \(usage.entries + files) files, past its limit \
-                of \(Limits.entries).
-                """
-            )
-        }
-    }
-
-    private func measure(in root: URL) throws -> ScratchUsage {
-        var bytes = 0
-        var entries = 0
-        try walk(root, root: root, recursive: true) { entry in
-            guard entry.kind == .file else { return }
-            bytes += entry.bytes
-            entries += 1
-        }
-        return ScratchUsage(
-            bytes: bytes, entries: entries,
-            byteQuota: Limits.totalBytes, entryQuota: Limits.entries
-        )
-    }
-
     // MARK: - Enumeration
 
     private func walk(
@@ -909,9 +808,7 @@ public actor AgentScratchWorkspace {
         let keys: [URLResourceKey] = [
             .isDirectoryKey, .isRegularFileKey, .fileSizeKey, .contentModificationDateKey,
         ]
-        // Hidden files are *not* skipped. A quota the agent can evade by naming a
-        // file `.big` is not a quota, and a listing that omits what it wrote is a
-        // listing it cannot clean up from.
+        // Include hidden files so a listing can find and clean up everything written here.
         let children = try FileManager.default.contentsOfDirectory(
             at: directory, includingPropertiesForKeys: keys,
             options: [.skipsPackageDescendants]

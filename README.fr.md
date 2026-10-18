@@ -375,7 +375,7 @@ le même coordinateur obtenu avec `AgentScratchWorkspace.shared(applicationName:
 à `AgentLoopConfiguration.outputProjection`. La racine est Application Support / applicationName / Scratch, sans
 identifiant de conversation. Supprimer ou bifurquer une conversation ne supprime ni ne copie les fichiers. L’agent
 doit choisir des chemins relatifs propres à la tâche et vérifier les fichiers avant de les écraser. Les répertoires
-parents sont créés automatiquement ; les contrôles des chemins, des liens symboliques et des quotas restent actifs.
+parents sont créés automatiquement ; les contrôles des chemins et des liens symboliques restent actifs.
 
 `AgentTruncateStrategy` prend en charge `head` (par défaut), `tail`, `middle` et `none`. `AgentTruncateLimits`
 utilise par défaut 64 KiB (65 536 octets UTF-8) et 2 000 lignes logiques. Même une ligne trop longue n’est jamais
@@ -408,11 +408,10 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Les quotas Scratch sont de 8 MiB par fichier, 64 MiB par espace de travail et 512 entrées. Les accumulateurs
-destinés au modèle conservent des données bornées et remplacent atomiquement les instantanés cumulatifs ; ils ne
-sont pas des tampons disque illimités. `snapshot(capturePath:)` permet de sauvegarder un instantané distinct dans
-un chemin choisi par l’outil. Les erreurs de quota ou d’écriture sont signalées dans `capture.error`, sans
-promettre une copie complète sauvegardée.
+Scratch ne fixe aucun quota de taille par fichier, de capacité totale ou de nombre de fichiers. Les accumulateurs
+conservent la sortie complète en mémoire et remplacent atomiquement les instantanés cumulatifs, sans écrire en
+continu sur disque. `snapshot(capturePath:)` permet de sauvegarder un instantané distinct dans un chemin choisi
+par l’outil. Les erreurs d’écriture sont signalées dans `capture.error`, sans promettre une copie complète.
 
 Les marqueurs suivent le style de plages de lignes de Pi. `middle` indique les deux plages conservées ; un total
 inconnu omet `of <total>`, et une ligne trop longue peut produire `[Showing 0 of 1 lines]`. Seule une capture

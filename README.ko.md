@@ -345,7 +345,7 @@ let webTools = AgentBuiltInToolConfiguration(
 
 ## 공유 Scratch와 도구 출력
 
-Scratch는 필수 기능이며 같은 기기의 같은 앱에 속한 모든 대화가 공유합니다. `AgentScratchWorkspace.shared(applicationName:)`가 반환한 동일한 조정자를 도구 설정과 `AgentLoopConfiguration.outputProjection`에 전달하세요. 루트는 Application Support / applicationName / Scratch이며 대화 ID를 붙이지 않습니다. 대화를 삭제하거나 분기해도 파일을 삭제하거나 복사하지 않습니다. AI는 작업별 상대 경로를 선택하고 덮어쓰기 전에 기존 파일을 확인해야 합니다. 상위 디렉터리는 자동으로 생성하며 경로, 심볼릭 링크 검사와 파일/작업 공간 할당량은 유지합니다.
+Scratch는 필수 기능이며 같은 기기의 같은 앱에 속한 모든 대화가 공유합니다. `AgentScratchWorkspace.shared(applicationName:)`가 반환한 동일한 조정자를 도구 설정과 `AgentLoopConfiguration.outputProjection`에 전달하세요. 루트는 Application Support / applicationName / Scratch이며 대화 ID를 붙이지 않습니다. 대화를 삭제하거나 분기해도 파일을 삭제하거나 복사하지 않습니다. AI는 작업별 상대 경로를 선택하고 덮어쓰기 전에 기존 파일을 확인해야 합니다. 상위 디렉터리는 자동으로 생성하며 경로와 심볼릭 링크 검사는 유지합니다.
 
 `AgentTruncateStrategy`는 `head`(기본값), `tail`, `middle`, `none`을 지원합니다. `AgentTruncateLimits`의 기본값은 64 KiB(65,536 UTF-8 바이트)와 논리적 줄 2,000개입니다. 매우 긴 한 줄도 중간에서 자르지 않습니다. 모델 투영은 JSON 이스케이프와 외부 필드의 크기도 계산합니다. 페이지 읽기는 실제 다음 오프셋을 유지하며 accumulator나 추가 저장 파일을 만들지 않습니다.
 
@@ -363,7 +363,7 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Scratch 할당량은 파일당 8 MiB, 작업 공간당 64 MiB, 항목 512개입니다. 모델용 accumulator는 제한된 데이터를 유지하고 누적 스냅샷을 원자적으로 교체하며 무제한 디스크 스풀이 아닙니다. `snapshot(capturePath:)`로 도구가 지정한 경로에 별도 스냅샷을 저장할 수 있습니다. 할당량 초과나 쓰기 실패는 `capture.error`로 보고하며 완전한 사본을 저장했다고 표시하지 않습니다.
+Scratch에는 파일 크기, 작업 공간 용량 또는 파일 수의 고정 할당량이 없습니다. accumulator는 전체 출력을 메모리에 유지하고 누적 스냅샷을 원자적으로 교체하며 디스크 스트리밍 저장소가 아닙니다. `snapshot(capturePath:)`로 도구가 지정한 경로에 별도 스냅샷을 저장할 수 있습니다. 쓰기 실패는 `capture.error`로 보고합니다.
 
 마커는 Pi의 줄 범위 형식을 참고합니다. `middle`은 유지된 두 범위를 나열하고 전체 줄 수를 모르면 `of <total>`을 생략합니다. 너무 긴 한 줄은 `[Showing 0 of 1 lines]`가 될 수 있습니다. 저장에 성공했을 때만 `Full output: <path>`를 추가합니다.
 

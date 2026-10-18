@@ -371,8 +371,8 @@ Scratch ist verpflichtend und wird von allen Unterhaltungen derselben Anwendung 
 Werkzeugkonfiguration und `AgentLoopConfiguration.outputProjection`. Der Stamm ist Application Support /
 applicationName / Scratch, ohne Unterhaltungs-ID. Löschen oder Verzweigen einer Unterhaltung löscht oder kopiert
 keine Dateien. Der Agent muss aufgabenspezifische relative Pfade wählen und vorhandene Dateien vor dem
-Überschreiben prüfen. Fehlende Elternverzeichnisse werden automatisch erstellt; Pfad-, Symlink- und
-Kontingentprüfungen bleiben bestehen.
+Überschreiben prüfen. Fehlende Elternverzeichnisse werden automatisch erstellt; Pfad- und
+Symlinkprüfungen bleiben bestehen.
 
 `AgentTruncateStrategy` unterstützt `head` (Standard), `tail`, `middle` und `none`. `AgentTruncateLimits` verwendet
 standardmäßig 64 KiB (65.536 UTF-8-Bytes) und 2.000 logische Zeilen. Auch übergroße Einzelzeilen werden niemals
@@ -405,11 +405,10 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Scratch erlaubt 8 MiB pro Datei, 64 MiB pro Arbeitsbereich und 512 Einträge. Accumulatoren für das Modell halten
-begrenzte Daten und ersetzen kumulative Schnappschüsse atomar; sie sind keine unbegrenzten Festplattenspools.
-`snapshot(capturePath:)` speichert bei Bedarf einen separaten Schnappschuss unter einem werkzeugeigenen Pfad.
-Kontingent- und Schreibfehler werden als `capture.error` gemeldet, ohne eine vollständige gespeicherte Kopie zu
-versprechen.
+Scratch hat keine festen Grenzen für Dateigröße, Gesamtkapazität oder Dateianzahl. Accumulatoren halten die
+vollständige Ausgabe im Arbeitsspeicher und ersetzen kumulative Schnappschüsse atomar, statt direkt auf die
+Festplatte zu streamen. `snapshot(capturePath:)` speichert separate Schnappschüsse unter werkzeugeigenen Pfaden.
+Schreibfehler werden als `capture.error` gemeldet, ohne eine vollständige gespeicherte Kopie zu versprechen.
 
 Die Marker orientieren sich an Pis Zeilenbereichen. `middle` nennt beide erhaltenen Bereiche, unbekannte
 Gesamtzahlen lassen `of <total>` weg, und eine übergroße Einzelzeile kann `[Showing 0 of 1 lines]` ergeben. Nur

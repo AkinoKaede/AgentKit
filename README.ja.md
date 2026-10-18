@@ -339,7 +339,7 @@ Guardianは分離された`.reviewing`モードで動作し、デフォルトで
 
 ## 共有Scratchとツール出力
 
-Scratchは必須機能で、同じデバイスの同じアプリ内の全会話で共有されます。`AgentScratchWorkspace.shared(applicationName:)`で得た同じコーディネーターをツール設定と`AgentLoopConfiguration.outputProjection`に渡してください。ルートはApplication Support / applicationName / Scratchで、会話IDは追加されません。会話の削除や分岐はファイルを削除・複製しません。AIは作業別の相対パスを選び、上書き前に既存ファイルを確認します。親ディレクトリは自動作成され、パス・シンボリックリンクの検証と容量制限は維持されます。
+Scratchは必須機能で、同じデバイスの同じアプリ内の全会話で共有されます。`AgentScratchWorkspace.shared(applicationName:)`で得た同じコーディネーターをツール設定と`AgentLoopConfiguration.outputProjection`に渡してください。ルートはApplication Support / applicationName / Scratchで、会話IDは追加されません。会話の削除や分岐はファイルを削除・複製しません。AIは作業別の相対パスを選び、上書き前に既存ファイルを確認します。親ディレクトリは自動作成され、パスとシンボリックリンクの検証は維持されます。
 
 `AgentTruncateStrategy`は`head`（既定）、`tail`、`middle`、`none`に対応します。`AgentTruncateLimits`の既定値は64 KiB（65,536 UTF-8バイト）と2,000論理行です。長すぎる単一行も途中では切りません。モデル投影にはJSONエスケープと外側のフィールドの容量も含めます。ページ読み取りは実際の次のオフセットを保ち、accumulatorや追加の保存ファイルを作成しません。
 
@@ -357,7 +357,7 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Scratchの上限は1ファイル8 MiB、ワークスペース全体64 MiB、512項目です。モデル向けaccumulatorは保持データを制限し、累積スナップショットをアトミックに置き換えます。無制限のディスクスプールではありません。`snapshot(capturePath:)`でツール指定のパスに独立したスナップショットを保存できます。容量超過や書き込み失敗は`capture.error`で報告し、完全なコピーを保存したとは表示しません。
+Scratchにはファイルサイズ、ワークスペース容量、ファイル数の固定上限はありません。accumulatorは完全な出力をメモリに保持し、累積スナップショットをアトミックに置き換えます。ディスクへのストリーミング保存ではありません。`snapshot(capturePath:)`でツール指定のパスに独立したスナップショットを保存できます。書き込み失敗は`capture.error`で報告します。
 
 マーカーはPiの行範囲形式を参考にしています。`middle`は保持した2つの範囲を列挙し、総行数が不明なら`of <total>`を省略します。長すぎる単一行では`[Showing 0 of 1 lines]`になる場合があります。保存成功時だけ`Full output: <path>`を追加します。
 

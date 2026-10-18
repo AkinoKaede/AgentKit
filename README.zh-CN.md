@@ -322,7 +322,7 @@ Guardian 在隔离的 `.reviewing` 模式下运行，默认不注册调查工具
 
 ## 共享暂存区与工具输出
 
-Scratch 是强制能力，同一设备上同一应用内的所有对话共享。`AgentScratchWorkspace.shared(applicationName:)` 返回同一个协调器，工具配置与 `AgentLoopConfiguration.outputProjection` 应使用同一实例。根目录为 Application Support / applicationName / Scratch，不再附加会话 ID；删除或分叉对话不会删除或复制文件。AI 需要主动选择任务相关的相对路径，覆盖前检查已有文件。缺失的父目录会自动创建，路径、符号链接校验及文件和工作区配额仍有效。
+Scratch 是强制能力，同一设备上同一应用内的所有对话共享。`AgentScratchWorkspace.shared(applicationName:)` 返回同一个协调器，工具配置与 `AgentLoopConfiguration.outputProjection` 应使用同一实例。根目录为 Application Support / applicationName / Scratch，不再附加会话 ID；删除或分叉对话不会删除或复制文件。AI 需要主动选择任务相关的相对路径，覆盖前检查已有文件。缺失的父目录会自动创建，路径和符号链接校验仍有效。
 
 `AgentTruncateStrategy` 支持 `head`（默认）、`tail`、`middle` 和 `none`。`AgentTruncateLimits` 默认为 64 KiB（65,536 UTF-8 字节）及 2,000 个逻辑行，不截半行；单行超限时也不返回残缺行。模型投影计入 JSON 转义和外层字段的开销。分页读取保留实际的下一偏移量，不创建 accumulator，也不把读取的分页再次落盘。
 
@@ -340,7 +340,7 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Scratch 配额为每文件 8 MiB、每工作区 64 MiB、512 个条目。面向模型的 accumulator 保留有界数据，并原子替换累积快照，不是无限容量的磁盘流。`snapshot(capturePath:)` 可按工具指定的路径保存独立快照。配额或写入失败会报告 `capture.error`，不宣称已保存完整副本。
+Scratch 不设置单文件大小、工作区总容量或文件数量配额。accumulator 在内存中保留完整输出，并原子替换累积快照，不是磁盘流式存储。`snapshot(capturePath:)` 可按工具指定的路径保存独立快照。写入失败会报告 `capture.error`，不宣称已保存完整副本。
 
 Marker 参考 Pi 的行范围格式。`middle` 列出保留的两段范围；总行数未知时省略 `of <total>`；超长单行可能得到 `[Showing 0 of 1 lines]`。仅成功落盘时附加 `Full output: <path>`。
 

@@ -343,7 +343,7 @@ Scratch is mandatory and shared by all conversations in the same application on 
 and `AgentLoopConfiguration.outputProjection`. The root is Application Support / applicationName / Scratch, without
 a conversation-ID suffix. Conversation deletion and forks do not delete or copy files. The agent must choose
 explicit task-specific relative paths and check before overwriting. Missing parent directories are created
-automatically; containment, symlink checks and file/workspace quotas still apply.
+automatically; containment and symlink checks still apply.
 
 `AgentTruncateStrategy` supports `head` (default), `tail`, `middle`, and `none`. `AgentTruncateLimits` defaults to
 64 KiB (65,536 UTF-8 bytes) and 2,000 logical lines. Selection never cuts a line in half, including an oversized
@@ -375,10 +375,10 @@ let snapshot = await accumulator.snapshot()
 // snapshot.output, snapshot.capture?.path, snapshot.capture?.error
 ```
 
-Scratch quotas are 8 MiB per file, 64 MiB per workspace, and 512 entries. Model-audience accumulators retain
-bounded data and atomically replace cumulative snapshots; they are not unlimited disk spools.
-`snapshot(capturePath:)` can save a separate snapshot with a tool-owned path. Quota or write failures report
-`capture.error` and do not claim a complete saved copy.
+Scratch has no fixed file-size, workspace-capacity, or file-count quotas. Accumulators retain complete output
+in memory and atomically replace cumulative snapshots; they do not stream directly to disk.
+`snapshot(capturePath:)` can save a separate snapshot with a tool-owned path. Write failures report
+`capture.error` without claiming a complete saved copy.
 
 Markers follow Pi’s line-range style. `middle` lists both retained ranges, unknown totals omit `of <total>`, and an
 oversized single line can produce `[Showing 0 of 1 lines]`. Only a successful capture adds `Full output: <path>`.

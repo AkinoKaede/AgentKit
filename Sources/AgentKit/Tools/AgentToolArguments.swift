@@ -152,7 +152,6 @@ public nonisolated enum AgentToolError: LocalizedError, Sendable {
     case scratchPathEscapes
     case scratchNotFound(String)
     case scratchNotText(String)
-    case scratchQuotaExceeded(String)
 
     public var errorDescription: String? {
         switch self {
@@ -174,7 +173,6 @@ public nonisolated enum AgentToolError: LocalizedError, Sendable {
             \(path) is not UTF-8 text. It can still be moved as bytes, \
             which does not decode it.
             """
-        case .scratchQuotaExceeded(let message): message
         }
     }
 }

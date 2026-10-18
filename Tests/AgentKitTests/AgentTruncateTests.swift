@@ -153,6 +153,27 @@ struct AgentTruncateTests {
     }
 
     @Test
+    func outputBeyondTheFormerFileLimitIsSavedCompletelyWithABoundedPreview() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let workspace = AgentScratchWorkspace(base: directory)
+        let accumulator = AgentOutputAccumulator(workspace: workspace, path: { "large-output.txt" })
+        let text = String(repeating: String(repeating: "x", count: 1_023) + "\n", count: 8_193)
+        accumulator.append(Data(text.utf8))
+        let first = await accumulator.snapshot()
+        let path = try #require(first.capture?.path)
+        #expect(first.capture?.error == nil)
+        #expect(try await workspace.data(at: path).data == Data(text.utf8))
+        accumulator.append(Data("finished\n".utf8))
+        let last = await accumulator.snapshot()
+        #expect(last.capture?.path == path)
+        #expect(last.output.hasSuffix("finished\n"))
+        #expect(last.output.utf8.count <= AgentTruncateLimits.maximumBytes)
+        #expect(last.isTruncated)
+        #expect(try await workspace.data(at: path).data == Data((text + "finished\n").utf8))
+    }
+
+    @Test
     func externalAudienceNeitherTruncatesNorGeneratesFiles() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -234,7 +255,7 @@ struct AgentTruncateTests {
         #expect(try fields(unrequested)["capture_status"] == .string("not_requested"))
         #expect(try fields(unrequested)["captured_output_path"] == nil)
         #expect(unrequested.truncateMarker == "[Showing lines 1-2000 of 2100]")
-        #expect(try await workspace.usage().entries == 0)
+        #expect(try await workspace.list(nil, recursive: true).isEmpty)
         let accumulator = AgentOutputAccumulator(workspace: workspace, path: { "output/saved.txt" })
         let captured = await accumulator.capturing(raw)
         let saved = await projection.project(captured, invocation: invocation())
@@ -356,7 +377,7 @@ struct AgentTruncateTests {
         #expect(output["capture_status"] == .string("not_requested"))
         #expect(result.truncateMarker == "[Showing lines 10-\(9 + returned)]")
         #expect(output["continuation"] == .string("Continue with offset \(10 + returned)."))
-        #expect(try await workspace.usage().entries == 0)
+        #expect(try await workspace.list(nil, recursive: true).isEmpty)
         let untouched = await AgentToolOutputProjection(workspace: workspace).project(
             page, invocation: invocation(), strategy: .none)
         #expect(untouched.modelContent == page.content)

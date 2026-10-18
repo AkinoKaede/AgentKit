@@ -11899,46 +11899,6 @@
         }
       }
     },
-    "Workspace usage": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "工作区使用情况"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "工作區使用情況"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "ワークスペースの使用状況"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Arbeitsbereichsnutzung"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Utilisation des espaces de travail"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "작업 공간 사용 현황"
-          }
-        }
-      }
-    },
     "Yes": {
       "localizations": {
         "zh-Hans": {
@@ -12376,53 +12336,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "GitHub가 HTTP %lld 코드를 반환했습니다. 스킬이 공개되어 있는지 확인한 다음 나중에 다시 시도하세요."
-          }
-        }
-      }
-    },
-    "%lld / %lld entries": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%1$lld / %2$lld entries"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "条目：%1$lld/%2$lld"
-          }
-        },
-        "zh-Hant": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "項目：%1$lld/%2$lld"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "項目：%1$lld/%2$lld"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einträge: %1$lld / %2$lld"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Entrées : %1$lld / %2$lld"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "항목 %1$lld / %2$lld개"
           }
         }
       }

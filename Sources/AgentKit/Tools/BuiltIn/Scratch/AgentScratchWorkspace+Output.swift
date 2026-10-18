@@ -2,7 +2,7 @@ import Foundation
 
 extension AgentScratchWorkspace {
     /// Replaces a cumulative capture atomically. A late snapshot cannot overwrite
-    /// a newer revision. The same coordinator enforces ordinary workspace quotas.
+    /// a newer revision.
     public func captureOutput(
         _ text: String, id: UUID, revision: Int = 0, path makePath: @Sendable () -> String
     ) -> AgentOutputCaptureInfo {

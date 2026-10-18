@@ -14,8 +14,6 @@
 	<string>%@不是HTTP或HTTPS URL。</string>
 	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
 	<string>%@在规划时不可用：尚未达成任何约定，因此没有需要跟踪的工作。请先完成计划并调用present_plan。</string>
-	<key>%lld / %lld entries</key>
-	<string>条目：%1$lld/%2$lld</string>
 	<key>%lld edits applied</key>
 	<string>%lld应用的编辑</string>
 	<key>%lld entries</key>
@@ -580,8 +578,6 @@
 	<string>工作区</string>
 	<key>Workspace is empty</key>
 	<string>工作区为空</string>
-	<key>Workspace usage</key>
-	<string>工作区使用情况</string>
 	<key>Write skill file</key>
 	<string>写入技能文件</string>
 	<key>Yes</key>

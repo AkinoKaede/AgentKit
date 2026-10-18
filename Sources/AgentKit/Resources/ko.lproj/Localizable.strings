@@ -14,8 +14,6 @@
 	<string>HTTP 또는 HTTPS URL이 아님: %@.</string>
 	<key>%@ is unavailable while planning: nothing has been agreed to yet, so there is no work to track. Finish the plan and call present_plan.</key>
 	<string>계획 중에는 %@ 도구를 사용할 수 없습니다. 아직 합의된 내용이 없어 추적할 작업이 없습니다. 계획을 완성한 다음 present_plan을 호출하세요.</string>
-	<key>%lld / %lld entries</key>
-	<string>항목 %1$lld / %2$lld개</string>
 	<key>%lld edits applied</key>
 	<string>수정 %lld개 적용됨</string>
 	<key>%lld entries</key>
@@ -578,8 +576,6 @@
 	<string>작업 공간</string>
 	<key>Workspace is empty</key>
 	<string>작업 공간이 비어 있음</string>
-	<key>Workspace usage</key>
-	<string>작업 공간 사용 현황</string>
 	<key>Write skill file</key>
 	<string>스킬 파일 쓰기</string>
 	<key>Yes</key>

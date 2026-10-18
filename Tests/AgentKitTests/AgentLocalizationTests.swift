@@ -113,7 +113,7 @@ struct AgentLocalizationTests {
     }
 
     @Test
-    func koreanScratchDetailsReorderArgumentsAndLocalizeQuotaAndLineEndings() {
+    func koreanScratchDetailsReorderArgumentsAndLocalizeCountsAndLineEndings() {
         let locale = Locale(identifier: "ko-KR")
         let search = ScratchSearchTool.present(
             .init(
@@ -128,13 +128,14 @@ struct AgentLocalizationTests {
         #expect(search.contains(.message("바이너리 파일 1개 건너뜀", .secondary)))
         let list = ScratchListTool.present(
             .init(
-                result: .object(["entry_count": .number(2), "entry_quota": .number(100)]),
+                result: .object([
+                    "entries": .array([
+                        .object(["path": .string("a")]), .object(["path": .string("b")]),
+                    ]),
+                    "entry_count": .number(99), "entry_quota": .number(100), "total_bytes": .number(42),
+                ]),
                 arguments: [:], locale: locale))
-        #expect(
-            list.contains { item in
-                if case .message(let text, _) = item { return text.hasPrefix("항목 2 / 100개 · ") }
-                return false
-            })
+        #expect(list.contains(.message(AgentLocalization.string("\(2) entries", locale: locale), .secondary)))
         let diff = ScratchDiffTool.present(
             .init(
                 result: .object([

@@ -1,8 +1,7 @@
 import Foundation
 
-/// Ordered UTF-8 output from synchronous transport callbacks. Memory for a model
-/// capture is bounded by the workspace's file quota, not command duration.
-/// One coalescing writer archives snapshots without blocking the transport.
+/// Ordered UTF-8 output from synchronous transport callbacks.
+/// One coalescing writer archives complete snapshots without blocking the transport.
 public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
     public struct Snapshot: Sendable {
         public var output: String
@@ -24,7 +23,6 @@ public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
     private var totalBytes = 0
     private var totalNewlines = 0
     private var lastByte: UInt8?
-    private var exceededQuota = false
     private var writerRunning = false
     private var revision = 0
     private var savedRevision = -1
@@ -45,12 +43,7 @@ public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
             totalNewlines += data.filter { $0 == 10 }.count
             lastByte = data.last
             revision += 1
-            if audience == .externalClient || full.count + data.count <= AgentScratchWorkspace.Limits.fileBytes {
-                if !exceededQuota { full.append(data) }
-            } else {
-                exceededQuota = true
-                full.removeAll()
-            }
+            full.append(data)
             tail.append(data)
             // Keep a bounded suffix, but never expose the fragment left by its
             // byte boundary. A later newline restores a valid starting line.
@@ -85,7 +78,7 @@ public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
     private var lineCount: Int { totalNewlines + (lastByte != nil && lastByte != 10 ? 1 : 0) }
 
     /// Progress is intentionally cheap; durable snapshots redact the complete
-    /// bounded capture, so credentials split between callbacks are still hidden.
+    /// capture, so credentials split between callbacks are still hidden.
     public var preview: String {
         lock.withLock {
             AgentTruncateResult.apply(
@@ -115,34 +108,29 @@ public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
         envelopeBytes: Int = 0, capturePath: (@Sendable () -> String)? = nil
     ) async -> Snapshot {
         let state = lock.withLock {
-            (full, tailText, revision, needsCapture, exceededQuota, totalBytes, lineCount)
+            (full: full, revision: revision, needsCapture: needsCapture)
         }
         if audience == .externalClient {
-            return Snapshot(output: Self.decoded(state.0), isTruncated: false, revision: state.2)
+            return Snapshot(output: Self.decoded(state.full), isTruncated: false, revision: state.revision)
         }
-        let text = AgentSensitiveDataRedactor.visibleText(
-            state.4 ? state.1 : Self.decoded(state.0))
+        let text = AgentSensitiveDataRedactor.visibleText(Self.decoded(state.full))
         var capture: AgentOutputCaptureInfo?
-        if state.4 {
-            capture = AgentOutputCaptureInfo(
-                bytes: state.5, lines: state.6,
-                error: "Output exceeds the scratch file quota; no complete saved copy is available.")
-        } else if state.3
+        if state.needsCapture
             || AgentJSONValue.string(text).encodedString.utf8.count + envelopeBytes > AgentTruncateLimits.maximumBytes
         {
             capture = await workspace.captureOutput(
-                text, id: capturePath == nil ? id : UUID(), revision: state.2, path: capturePath ?? makePath)
+                text, id: capturePath == nil ? id : UUID(), revision: state.revision, path: capturePath ?? makePath)
         }
         lock.withLock {
-            if state.2 >= savedRevision {
-                savedRevision = state.2
+            if state.revision >= savedRevision {
+                savedRevision = state.revision
             }
         }
         let selected = AgentTruncateResult.apply(text, strategy: .tail)
-        let totalLines = state.4 ? state.6 : selected.totalLines
         return Snapshot(
-            output: selected.content, capture: capture, isTruncated: state.4 || selected.isTruncated,
-            revision: state.2, totalLines: totalLines, lineOffset: max(0, totalLines - selected.returnedLines))
+            output: selected.content, capture: capture, isTruncated: selected.isTruncated,
+            revision: state.revision, totalLines: selected.totalLines,
+            lineOffset: max(0, selected.totalLines - selected.returnedLines))
     }
 
     /// Non-streaming tools opt in using the same collector. Only the received
