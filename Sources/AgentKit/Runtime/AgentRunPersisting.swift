@@ -249,15 +249,100 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
     private var titles: [UUID: String] = [:]
     private var storedToolCards: [UUID: [StoredAgentToolCard]] = [:]
     private var deletedConversationIDs = Set<UUID>()
+    private var deletedRunIDs = Set<UUID>()
     private var metadata: [UUID: StoredAgentConversationMetadata] = [:]
     private var compactions: [UUID: [AgentCompactionRecord]] = [:]
     public func save(_ snapshot: AgentRunSnapshot) {
-        guard !deletedConversationIDs.contains(snapshot.conversationID) else { return }
+        guard !deletedConversationIDs.contains(snapshot.conversationID),
+            !deletedRunIDs.contains(snapshot.id)
+        else { return }
         var stored = snapshot
         stored.messages.removeAll(where: \.isCompaction)
         snapshots[stored.id] = stored
     }
-    public func record(_ event: AgentEvent, runID: UUID) {}
+    public func record(_ event: AgentEvent, runID: UUID) {
+        guard let run = snapshots[runID], !deletedRunIDs.contains(runID),
+            !deletedConversationIDs.contains(run.conversationID), event.associatedRunID == runID
+        else { return }
+        let invocation: AgentToolInvocation
+        let descriptor: AgentToolDescriptor?
+        let state: String
+        var result: AgentToolResult?
+        var review: GuardianDecision?
+        switch event {
+        case .toolProposed(let value, let tool):
+            invocation = value
+            descriptor = tool
+            state = "proposed"
+        case .toolStarted(let value):
+            invocation = value
+            descriptor = nil
+            state = "started"
+        case .toolFinished(let value, let output):
+            invocation = value
+            descriptor = nil
+            state = "finished"
+            result = output
+        case .approvalRequested(let request), .reviewStarted(let request), .reviewFailed(let request, _, _):
+            invocation = request.invocation
+            descriptor = request.descriptor
+            state = "proposed"
+        case .reviewFinished(let request, let decision):
+            invocation = request.invocation
+            descriptor = request.descriptor
+            state = "proposed"
+            review = decision
+        default:
+            return
+        }
+        var cards = storedToolCards[run.conversationID] ?? []
+        if let index = cards.firstIndex(where: {
+            $0.invocation.runID == runID && $0.invocation.id == invocation.id
+        }) {
+            cards[index].invocation = invocation
+            if let descriptor { cards[index].descriptor = descriptor }
+            // Replayed proposals/reviews must not regress a completed card.
+            let states = ["proposed", "started", "finished"]
+            if (states.firstIndex(of: state) ?? 0) >= (states.firstIndex(of: cards[index].state) ?? 0) {
+                cards[index].state = state
+            }
+            if let result { cards[index].result = result }
+            if let review { cards[index].review = review }
+        } else if let descriptor {
+            cards.append(
+                StoredAgentToolCard(
+                    invocation: invocation, descriptor: descriptor, state: state, result: result, review: review))
+        }
+        // A start/finish alone cannot supply a truthful descriptor. Normal event
+        // delivery proposes first; imported cards already carry their descriptor.
+        storedToolCards[run.conversationID] = cards
+    }
+
+    private static func runPrecedes(_ lhs: AgentRunSnapshot, _ rhs: AgentRunSnapshot) -> Bool {
+        if lhs.startedAt != rhs.startedAt { return lhs.startedAt < rhs.startedAt }
+        return lhs.id.uuidString < rhs.id.uuidString
+    }
+
+    private static func mergeMessages(
+        _ ordered: [AgentRunSnapshot]
+    ) -> (messages: [AgentTranscriptMessage], owners: [UUID: UUID]) {
+        var messages: [AgentTranscriptMessage] = []
+        var positions: [UUID: Int] = [:]
+        var owners: [UUID: UUID] = [:]
+        for run in ordered {
+            for message in run.messages {
+                if let index = positions[message.id] {
+                    // Snapshots contain complete payloads, including intentional clears.
+                    messages[index] = message
+                } else {
+                    positions[message.id] = messages.count
+                    owners[message.id] = run.id
+                    messages.append(message)
+                }
+            }
+        }
+        return (messages, owners)
+    }
     public func persistCompaction(
         _ record: AgentCompactionRecord, conversationID: UUID
     ) throws {
@@ -278,23 +363,16 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
     }
     public func loadConversations() -> [StoredAgentConversation] {
         Dictionary(grouping: snapshots.values, by: \.conversationID).map { id, runs in
-            let ordered = runs.sorted { $0.startedAt < $1.startedAt }
-            var seen = Set<UUID>()
-            let storedMessages = ordered.flatMap(\.messages).filter { seen.insert($0.id).inserted }
+            let ordered = runs.sorted(by: Self.runPrecedes)
+            let merged = Self.mergeMessages(ordered)
             let projection = AgentCompactionProjection.restore(
-                messages: storedMessages, records: compactions[id] ?? []
+                messages: merged.messages, records: compactions[id] ?? []
             )
-            var messageRunIDs: [UUID: UUID] = [:]
-            for run in ordered {
-                for message in run.messages where messageRunIDs[message.id] == nil {
-                    messageRunIDs[message.id] = run.id
-                }
-            }
             return StoredAgentConversation(
                 id: id, messages: projection.messages,
                 modelTranscript: projection.modelTranscript,
                 compactions: projection.records,
-                messageRunIDs: messageRunIDs,
+                messageRunIDs: merged.owners,
                 runs: ordered.map {
                     AgentRunSummary(
                         id: $0.id, state: $0.state, startedAt: $0.startedAt,
@@ -341,12 +419,9 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
         replacingWith message: AgentTranscriptMessage
     ) throws {
         let ordered = snapshots.values.filter { $0.conversationID == id }
-            .sorted {
-                if $0.startedAt != $1.startedAt { return $0.startedAt < $1.startedAt }
-                return $0.id.uuidString < $1.id.uuidString
-            }
-        var seen = Set<UUID>()
-        let conversationMessages = ordered.flatMap(\.messages).filter { seen.insert($0.id).inserted }
+            .sorted(by: Self.runPrecedes)
+        let merged = Self.mergeMessages(ordered)
+        let conversationMessages = merged.messages
         guard let boundary = conversationMessages.firstIndex(where: { $0.id == messageID }),
             conversationMessages[boundary].origin == nil
         else { throw AgentConversationPersistenceError.messageNotFound }
@@ -382,14 +457,19 @@ public actor InMemoryAgentRunRepository: AgentRunPersisting {
             throw AgentConversationPersistenceError.editWouldRemoveTools
         }
         let targetRun = ordered[targetRunIndex]
-        guard let targetMessageIndex = targetRun.messages.firstIndex(where: { $0.id == messageID }) else {
-            throw AgentConversationPersistenceError.messageNotFound
-        }
-        let keptTargetMessages = Array(targetRun.messages[..<targetMessageIndex])
+        let keptTargetMessages = kept.filter { merged.owners[$0.id] == targetRunID }
         let removesTargetRun = keptTargetMessages.isEmpty
         let runIDsToDelete = laterRunIDs.union(removesTargetRun ? [targetRunID] : [])
+        deletedRunIDs.formUnion(runIDsToDelete)
         snapshots = snapshots.filter {
             $0.value.conversationID != id || !runIDsToDelete.contains($0.value.id)
+        }
+        // Materialize the merged payload in its original owner before discarding
+        // later snapshots that may be the only source of its newest contents.
+        for run in ordered where !runIDsToDelete.contains(run.id) {
+            var retained = run
+            retained.messages = kept.filter { merged.owners[$0.id] == run.id }
+            snapshots[run.id] = retained
         }
         if !removesTargetRun {
             var retained = targetRun
