@@ -26,18 +26,18 @@ public nonisolated struct AgentToolOutputProjection: Sendable {
             invocation.call.name != "request_user_secret", !result.isProviderNative
         else { return result }
         var projected = result
-        let originalPayload = result.untrustedPayload ?? result.content
-        // Redact decoded fields, not JSON syntax: inserting quotes into an
-        // escaped string can invalidate the envelope and erase its line structure.
-        let value = (try? AgentJSONValue.decode(Data(originalPayload.utf8)))
-            .map(AgentSensitiveDataRedactor.redactedJSON)
-        let payload = value?.encodedString ?? AgentSensitiveDataRedactor.visibleText(originalPayload)
-        let clean =
-            result.untrustedPayload == nil
-            ? payload
-            : AgentToolResult.untrustedDataOpeningMarker + payload + AgentToolResult.untrustedDataClosingMarker
-        let object = value?.objectValue
-        let readable = object?["output"]?.stringValue ?? Self.archiveText(payload)
+        let redacted = AgentSensitiveDataRedactor.redactedToolPayload(
+            result.content, isUntrusted: result.metadata["untrusted"]?.boolValue == true)
+        let clean = redacted.text
+        let object = redacted.value?.objectValue
+        // A malformed source may become valid JSON after visible-text redaction.
+        // Retain its historical archive rendering, without reparsing valid inputs.
+        let archiveValue =
+            redacted.value
+            ?? AgentToolResult.decodeStructuredPayload(redacted.payload, isUntrusted: false)
+        let readable =
+            object?["output"]?.stringValue ?? archiveValue.map(AgentToolResult.archiveText)
+            ?? redacted.payload
         let limits = AgentTruncateLimits(bytes: maximumBytes, lines: maximumLines)
         if strategy == .none || result.metadata["skill_instructions"]?.boolValue == true {
             projected.modelContent = clean
@@ -184,21 +184,5 @@ public nonisolated struct AgentToolOutputProjection: Sendable {
     /// raw budget may jump straight to zero even when many complete lines fit.
     func smallerBudget(_ budget: Int, encodedBytes: Int) -> Int {
         max(0, min(budget - 1, Int(Double(budget) * Double(maximumBytes) / Double(encodedBytes))))
-    }
-
-    /// JSON string fields become actual lines, allowing captured output to be paged.
-    static func archiveText(_ payload: String) -> String {
-        guard let value = try? AgentJSONValue.decode(Data(payload.utf8)) else { return payload }
-        func render(_ value: AgentJSONValue) -> String {
-            switch value {
-            case .string(let text): return text
-            case .object(let fields):
-                return fields.keys.sorted().map { "\($0):\n\(render(fields[$0]!))" }.joined(separator: "\n\n")
-            case .array(let values):
-                return values.enumerated().map { "[\($0.offset)]\n\(render($0.element))" }.joined(separator: "\n\n")
-            default: return value.encodedString
-            }
-        }
-        return render(value)
     }
 }

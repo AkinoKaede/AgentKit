@@ -7,6 +7,7 @@ nonisolated extension SkillReadFileTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
+        guard !input.isFailure else { return F.genericItems(input.result, locale: input.locale) }
         guard let object = input.result.objectValue,
             object["files"]?.arrayValue != nil || object["binary"]?.boolValue == true
                 || object["content"]?.stringValue != nil || object["instructions"]?.stringValue != nil
@@ -50,6 +51,7 @@ nonisolated extension SkillReadFileTool {
 nonisolated extension SkillsListTool {
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
+        guard !input.isFailure else { return F.genericItems(input.result, locale: input.locale) }
         guard let skills = input.result.objectValue?["skills"]?.arrayValue,
             skills.allSatisfy({ $0.objectValue?["name"]?.stringValue != nil })
         else { return F.genericItems(input.result, locale: input.locale) }

@@ -307,11 +307,7 @@ public actor AgentRuntime {
                 }
                 for (call, result) in zip(turn.message.toolCalls, results) {
                     snapshot.messages.append(
-                        AgentTranscriptMessage(
-                            id: AgentTranscriptMessage.toolResultID(runID: runID, callID: result.callID),
-                            role: .tool, text: result.content, toolCallID: result.callID,
-                            toolName: call.name, isError: result.isError, modelText: result.modelContent
-                        ))
+                        AgentTranscriptMessage.toolResult(result, runID: runID, toolName: call.name))
                     await evidenceLog.append(
                         GuardianEvidence.answers(call: call, resultText: result.content)
                     )

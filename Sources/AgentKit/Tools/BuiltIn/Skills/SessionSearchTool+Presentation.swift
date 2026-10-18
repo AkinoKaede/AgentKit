@@ -7,6 +7,7 @@ nonisolated extension SessionSearchTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
+        guard !input.isFailure else { return F.genericItems(input.result, locale: input.locale) }
         let queryItems: [AgentToolDetail.Item]
         if let query = F.nonempty(input.arguments["query"]?.stringValue) {
             queryItems = AgentKnowledgeToolDetail.fields(["query": .string(query)], locale: input.locale)

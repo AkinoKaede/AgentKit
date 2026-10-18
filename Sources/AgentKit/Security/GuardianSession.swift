@@ -186,14 +186,7 @@ private actor GuardianSession {
             toolCount += acceptedCalls.count
             for (call, result) in zip(turn.message.toolCalls, results) {
                 messages.append(
-                    AgentTranscriptMessage(
-                        id: AgentTranscriptMessage.toolResultID(
-                            runID: runID, callID: result.callID
-                        ),
-                        role: .tool, text: result.content,
-                        toolCallID: result.callID, toolName: call.name,
-                        isError: result.isError, modelText: result.modelContent
-                    )
+                    AgentTranscriptMessage.toolResult(result, runID: runID, toolName: call.name)
                 )
             }
         }

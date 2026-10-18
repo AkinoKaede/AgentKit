@@ -586,6 +586,26 @@ public nonisolated struct AgentToolResult: Hashable, Sendable, Codable {
         )
     }
 
+    /// Decodes raw or explicitly untrusted framed JSON without repairing malformed data.
+    /// Callers with result metadata must pass its `untrusted` flag; persisted text
+    /// callers may recognize the complete framing directly.
+    public static func decodeStructuredPayload(_ text: String, isUntrusted: Bool = true) -> AgentJSONValue? {
+        let result = Self(callID: "", content: text, metadata: ["untrusted": .bool(isUntrusted)])
+        return try? AgentJSONValue.decode(Data((result.untrustedPayload ?? text).utf8))
+    }
+
+    /// JSON string fields become actual lines, allowing captured output to be paged.
+    static func archiveText(_ value: AgentJSONValue) -> String {
+        switch value {
+        case .string(let text): return text
+        case .object(let fields):
+            return fields.keys.sorted().map { "\($0):\n\(archiveText(fields[$0]!))" }.joined(separator: "\n\n")
+        case .array(let values):
+            return values.enumerated().map { "[\($0.offset)]\n\(archiveText($0.element))" }.joined(separator: "\n\n")
+        default: return value.encodedString
+        }
+    }
+
     /// Whether this is a *record* of something that already happened rather
     /// than a result the model is still owed.
     ///
@@ -960,6 +980,19 @@ public nonisolated struct AgentTranscriptMessage: Identifiable, Hashable, Sendab
         self.modelText = modelText
         self.origin = origin
         self.createdAt = createdAt
+    }
+
+    /// Constructs the same result turn for runtime, live events, and crash recovery.
+    /// Callers retain responsibility for excluding provider-native observations.
+    public static func toolResult(
+        _ result: AgentToolResult, runID: UUID, toolName: String?, createdAt: Date = .now
+    ) -> Self {
+        Self(
+            id: toolResultID(runID: runID, callID: result.callID),
+            role: .tool, text: result.content, toolCallID: result.callID,
+            toolName: toolName, isError: result.isError, modelText: result.modelContent,
+            createdAt: createdAt
+        )
     }
 
     public var id: UUID = UUID()

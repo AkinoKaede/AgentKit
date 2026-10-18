@@ -149,8 +149,10 @@ public nonisolated final class AgentOutputAccumulator: @unchecked Sendable {
     /// result is archived; this never fetches additional pages from a source.
     public func capturing(_ result: AgentToolResult) async -> AgentToolResult {
         guard audience == .model else { return result }
-        let payload = result.untrustedPayload ?? result.content
-        let text = AgentToolOutputProjection.archiveText(payload)
+        let text =
+            AgentToolResult.decodeStructuredPayload(
+                result.content, isUntrusted: result.metadata["untrusted"]?.boolValue == true
+            ).map(AgentToolResult.archiveText) ?? result.untrustedPayload ?? result.content
         append(Data(text.utf8))
         let snapshot = await snapshot(envelopeBytes: max(0, result.content.utf8.count - text.utf8.count))
         var result = result

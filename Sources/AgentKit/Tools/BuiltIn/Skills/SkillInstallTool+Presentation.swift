@@ -18,7 +18,7 @@ nonisolated extension SkillInstallTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
-        guard let object = input.result.objectValue, object["saved"]?.boolValue == true else {
+        guard !input.isFailure, let object = input.result.objectValue, object["saved"]?.boolValue == true else {
             return F.genericItems(input.result, locale: input.locale)
         }
         var items: [AgentToolDetail.Item] = [.message(F.localized("Skill installed", locale: input.locale), .success)]

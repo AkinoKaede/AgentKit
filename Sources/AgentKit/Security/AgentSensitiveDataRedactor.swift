@@ -56,6 +56,30 @@ public nonisolated enum AgentSensitiveDataRedactor {
         }
     }
 
+    /// Redacts decoded fields before encoding, preserving valid JSON and its framing.
+    /// Malformed or plain text retains the existing visible-text fallback.
+    public static func toolResultText(_ text: String, isUntrusted: Bool = true) -> String {
+        let redacted = redactedToolPayload(text, isUntrusted: isUntrusted)
+        return redacted.value == nil ? visibleText(text) : redacted.text
+    }
+
+    /// Shares the decoded value with projection so it need not parse the redacted JSON again.
+    static func redactedToolPayload(
+        _ text: String, isUntrusted: Bool
+    ) -> (text: String, payload: String, value: AgentJSONValue?) {
+        let result = AgentToolResult(callID: "", content: text, metadata: ["untrusted": .bool(isUntrusted)])
+        let untrustedPayload = result.untrustedPayload
+        let value = AgentToolResult.decodeStructuredPayload(
+            untrustedPayload ?? text, isUntrusted: false
+        ).map(redactedJSON)
+        let payload = value?.encodedString ?? visibleText(untrustedPayload ?? text)
+        let framed =
+            untrustedPayload == nil
+            ? payload
+            : AgentToolResult.untrustedDataOpeningMarker + payload + AgentToolResult.untrustedDataClosingMarker
+        return (framed, payload, value)
+    }
+
     public static func isSensitiveHeader(_ name: String) -> Bool {
         isSensitiveKey(name.replacingOccurrences(of: "-", with: "_"))
     }
@@ -110,11 +134,7 @@ public nonisolated enum AgentSecretLifecycle {
                 message.toolName == "request_user_secret"
                     || message.toolCallID.map(secretRequestCallIDs.contains) == true
             {
-                let result = AgentToolResult(
-                    callID: message.toolCallID ?? "", content: message.text,
-                    metadata: ["untrusted": .bool(true)])
-                let payload = result.untrustedPayload ?? message.text
-                let value = try? AgentJSONValue.decode(Data(payload.utf8))
+                let value = AgentToolResult.decodeStructuredPayload(message.text)
                 if !isAvailable(value?.objectValue?[handleArgumentKey], in: availableHandles) {
                     message.text = expiredResultContent
                     message.modelText = nil

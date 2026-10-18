@@ -17,7 +17,10 @@ nonisolated extension MemorySearchTool {
     }
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
-        presentArguments(.init(arguments: input.arguments, locale: input.locale))
+        guard !input.isFailure else {
+            return AgentToolDetailFormatting.genericItems(input.result, locale: input.locale)
+        }
+        return presentArguments(.init(arguments: input.arguments, locale: input.locale))
             + AgentToolDetailFormatting.genericItems(input.result, locale: input.locale)
     }
 }

@@ -245,6 +245,44 @@ import Testing
         #expect(text(items).contains("original"))
     }
 
+    @Test func registeredOperationsDistinguishBrowsingReadingAndSearching() {
+        let sessions = SessionSearchTool.presenter
+        #expect(sessions.resolveOperation(arguments: [:])?.action == .list)
+        #expect(sessions.resolveOperation(arguments: ["conversation_id": .string("id")])?.action == .read)
+        let search = sessions.resolveOperation(arguments: [
+            "conversation_id": .string("id"), "query": .string("deploy"),
+        ])
+        #expect(search?.action == .search)
+        #expect(search?.argument == "deploy")
+        #expect(search?.searchScope == .chats)
+        let skills = SkillReadFileTool.presenter
+        #expect(skills.resolveOperation(arguments: ["name": .string("guide")])?.argument == "guide / SKILL.md")
+        let listing = skills.resolveOperation(arguments: ["name": .string("guide"), "path": .string(".")])
+        #expect(listing?.action == .list)
+        #expect(listing?.argument == "guide")
+        #expect(MemoryTool.presenter.resolveOperation(arguments: ["operations": .array([])])?.action == .read)
+        #expect(MemoryTool.presenter.resolveOperation(arguments: [:])?.action == .update)
+    }
+
+    @Test func failedExecutionCannotTurnSuccessShapedPayloadsIntoSuccessMessages() {
+        for presenter in [SkillManageTool.presenter, SkillInstallTool.presenter, MemoryTool.presenter] {
+            let items = presenter.present(
+                .init(
+                    result: .object([
+                        "saved": .bool(true), "memory": .string("retained"), "error": .string("Interrupted"),
+                    ]),
+                    arguments: ["operations": .array([.object(["action": .string("add")])])],
+                    locale: locale, isFailure: true))
+            #expect(text(items).contains("Interrupted"))
+            #expect(!text(items).contains("Memory operations processed"))
+            #expect(
+                !items.contains {
+                    if case .message(_, .success) = $0 { return true }
+                    return false
+                })
+        }
+    }
+
     private func input(_ result: AgentJSONValue, args: [String: AgentJSONValue] = [:]) -> AgentToolDetailInput {
         .init(result: result, arguments: args, locale: locale)
     }

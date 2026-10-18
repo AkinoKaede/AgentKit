@@ -7,6 +7,7 @@ nonisolated extension MemoryTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
+        guard !input.isFailure else { return F.genericItems(input.result, locale: input.locale) }
         if let memory = input.result.objectValue?["memory"]?.stringValue {
             var items: [AgentToolDetail.Item] = []
             if input.arguments["operations"]?.arrayValue?.isEmpty == false {

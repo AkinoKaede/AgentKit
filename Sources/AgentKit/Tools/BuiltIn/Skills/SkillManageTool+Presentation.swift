@@ -7,7 +7,7 @@ nonisolated extension SkillManageTool {
 
     public static func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {
         typealias F = AgentToolDetailFormatting
-        guard let object = input.result.objectValue, object["saved"]?.boolValue == true else {
+        guard !input.isFailure, let object = input.result.objectValue, object["saved"]?.boolValue == true else {
             return F.genericItems(input.result, locale: input.locale)
         }
         return [.message(F.localized("Skill changes saved", locale: input.locale), .success)]

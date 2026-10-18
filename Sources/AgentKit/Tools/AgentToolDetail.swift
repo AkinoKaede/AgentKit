@@ -159,16 +159,20 @@ public nonisolated struct AgentToolDetailInput: Sendable {
     public init(
         result: AgentJSONValue,
         arguments: [String: AgentJSONValue],
-        locale: Locale
+        locale: Locale,
+        isFailure: Bool = false
     ) {
         self.result = result
         self.arguments = arguments
         self.locale = locale
+        self.isFailure = isFailure
     }
 
     public var result: AgentJSONValue
     public var arguments: [String: AgentJSONValue]
     public var locale: Locale
+    /// Includes denied or interrupted execution even when historical payload fields look successful.
+    public var isFailure: Bool
 }
 
 /// The arguments a person reviews before allowing a tool to run.
@@ -197,13 +201,15 @@ public nonisolated struct AgentToolDetailPresenter: Sendable {
     public let layout: AgentToolDetailLayout
     private let projection: @Sendable (AgentToolDetailInput) -> [AgentToolDetail.Item]
     private let argumentProjection: (@Sendable (AgentToolArgumentDetailInput) -> [AgentToolDetail.Item])?
+    private let operation: (@Sendable ([String: AgentJSONValue]) -> AgentToolOperation?)?
 
     public init(
         id: String,
         layout: AgentToolDetailLayout = .init(),
         present: @escaping @Sendable (AgentToolDetailInput) -> [AgentToolDetail.Item],
         presentArguments:
-            (@Sendable (AgentToolArgumentDetailInput) -> [AgentToolDetail.Item])? = nil
+            (@Sendable (AgentToolArgumentDetailInput) -> [AgentToolDetail.Item])? = nil,
+        operation: (@Sendable ([String: AgentJSONValue]) -> AgentToolOperation?)? = nil
     ) {
         // Namespaced, not `builtin.`-prefixed. The ID is persisted with the card
         // and looked up years later against a registry the host composed from
@@ -219,6 +225,11 @@ public nonisolated struct AgentToolDetailPresenter: Sendable {
         self.layout = layout
         projection = present
         argumentProjection = presentArguments
+        self.operation = operation
+    }
+
+    public func resolveOperation(arguments: [String: AgentJSONValue]) -> AgentToolOperation? {
+        operation?(arguments)
     }
 
     public func present(_ input: AgentToolDetailInput) -> [AgentToolDetail.Item] {

@@ -19,7 +19,8 @@ public nonisolated protocol AgentSkillPackageResolving: Sendable {
 /// Construct per run. Reviewed bytes live only in this tool's bounded, in-memory staging area.
 public nonisolated struct SkillInstallTool: AgentToolDefinition, AgentToolSchemaBuilding {
     public static let presenter = AgentToolDetailPresenter(
-        id: "builtin.skill_install", layout: .compact, present: present, presentArguments: presentArguments)
+        id: "builtin.skill_install", layout: .compact, present: present, presentArguments: presentArguments,
+        operation: operation)
     private let library: any AgentSkillLibraryManaging
     private let resolver: any AgentSkillPackageResolving
     private let staging = SkillInstallStaging()

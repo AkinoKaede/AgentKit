@@ -16,6 +16,84 @@ struct AgentTruncateTests {
         return try #require(AgentJSONValue.decode(Data(payload.utf8)).objectValue)
     }
 
+    @Test(arguments: [false, true])
+    func structuralRedactionPreservesFramingAndNestedFields(framed: Bool) throws {
+        let payload = AgentJSONValue.object([
+            "headers": .array([
+                .object(["name": .string("Authorization"), "value": .string("Bearer private-header")]),
+                .object(["name": .string("Content-Type"), "value": .string("text/plain")]),
+            ]),
+            "output": .string("token=\"private-value\"\nfinished\n"),
+            "secret_handle": .null,
+            "password": .string(""),
+        ]).encodedString
+        let source =
+            framed
+            ? AgentToolResult.untrustedDataOpeningMarker + payload
+                + AgentToolResult.untrustedDataClosingMarker : payload
+        let redacted = AgentSensitiveDataRedactor.toolResultText(source)
+        let fields = try #require(AgentToolResult.decodeStructuredPayload(redacted)?.objectValue)
+        #expect(redacted.hasPrefix(AgentToolResult.untrustedDataOpeningMarker) == framed)
+        #expect(redacted.hasSuffix(AgentToolResult.untrustedDataClosingMarker) == framed)
+        #expect(fields["headers"]?.arrayValue?.first?.objectValue?["value"] == .string("[REDACTED]"))
+        #expect(fields["headers"]?.arrayValue?.last?.objectValue?["value"] == .string("text/plain"))
+        #expect(fields["output"] == .string("token=\"[REDACTED]\"\nfinished\n"))
+        #expect(fields["secret_handle"] == .null)
+        #expect(fields["password"] == .string(""))
+        #expect(!redacted.contains("private-"))
+    }
+
+    @Test
+    func structuredPayloadRequiresCompleteOptedInFramingAndNeverRepairsMalformedText() {
+        let payload = #"{"output":"ready"}"#
+        let framed = AgentToolResult.untrustedDataOpeningMarker + payload + AgentToolResult.untrustedDataClosingMarker
+        #expect(AgentToolResult.decodeStructuredPayload(framed)?.objectValue?["output"] == .string("ready"))
+        #expect(AgentToolResult.decodeStructuredPayload(framed, isUntrusted: false) == nil)
+        #expect(AgentToolResult.decodeStructuredPayload(payload, isUntrusted: false)?.objectValue != nil)
+        for malformed in [
+            "password=private-value", AgentToolResult.untrustedDataOpeningMarker + payload,
+            AgentToolResult.untrustedDataOpeningMarker + "{\"token\":\"private-value"
+                + AgentToolResult.untrustedDataClosingMarker,
+        ] {
+            #expect(AgentToolResult.decodeStructuredPayload(malformed) == nil)
+            #expect(
+                AgentSensitiveDataRedactor.toolResultText(malformed)
+                    == AgentSensitiveDataRedactor.visibleText(malformed))
+        }
+    }
+
+    @Test
+    func nestedStructuredCaptureRetainsSortedReadableLinesBelowRuntime() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let workspace = AgentScratchWorkspace(base: directory)
+        let accumulator = AgentOutputAccumulator(workspace: workspace, path: { "nested.txt" })
+        let lines = String(repeating: "log\n", count: 2_100)
+        let raw = AgentToolResult(
+            callID: "call",
+            content: AgentToolOutputProjection.frame([
+                "z": .number(7), "a": .array([.string(lines), .object(["ok": .bool(true)])]),
+            ]), metadata: ["untrusted": .bool(true)])
+        let captured = await accumulator.capturing(raw)
+        let path = try #require(captured.outputCapture?.path)
+        let saved = try await workspace.data(at: path)
+        #expect(String(decoding: saved.data, as: UTF8.self) == "a:\n[0]\n\(lines)\n\n[1]\nok:\ntrue\n\nz:\n7")
+        #expect(captured.content == raw.content)
+        #expect(captured.modelContent == nil)
+    }
+
+    @Test
+    func malformedSourceKeepsHistoricalReadableFallbackAfterRedaction() async throws {
+        let raw = AgentToolResult(
+            callID: "call", content: #"{"token":unquoted,"output":"first\nsecond\n"}"#,
+            isTruncated: true)
+        let projected = await AgentToolOutputProjection().project(raw, invocation: invocation())
+        let output = try fields(projected)
+        #expect(output["preview"] == .string("output:\nfirst\nsecond\n\n\ntoken:\n[REDACTED]"))
+        #expect(output["source_truncated"] == .bool(true))
+        #expect(projected.content == raw.content)
+    }
+
     @Test
     func strategiesKeepWholeLinesIncludingCRLFAndFinalPrompt() {
         let source = "first\r\nsecond\r\nprompt>"
