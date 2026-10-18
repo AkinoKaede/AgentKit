@@ -53,8 +53,8 @@ public nonisolated struct AgentToolScheduler: Sendable {
             plan.append(await executor.plan(call, sourceMessageID: sourceMessageID))
         }
         guard plan.count == calls.count else {
-            // Whatever was already planned still runs to completion — it may
-            // have started before the cancellation — and the rest are refused.
+            // Already-proposed calls still need terminal results, but execution
+            // checks cancellation before dispatch. The rest are refused outright.
             return await sequential(plan)
                 + cancelled(Array(calls[plan.count...]), sourceMessageID: sourceMessageID)
         }
@@ -91,9 +91,8 @@ public nonisolated struct AgentToolScheduler: Sendable {
     private func cancelled(
         _ calls: [AgentToolCall], sourceMessageID: UUID?
     ) -> [AgentToolResult] {
-        let reason = String(localized: "The run was cancelled before this tool ran.", bundle: .module)
-        return calls.map {
-            executor.fail($0, reason: reason, sourceMessageID: sourceMessageID)
+        calls.map {
+            executor.fail($0, reason: AgentInterruptedToolCall.notStartedReason, sourceMessageID: sourceMessageID)
         }
     }
 
@@ -110,22 +109,25 @@ public nonisolated struct AgentToolScheduler: Sendable {
         await withTaskGroup(of: (Int, AgentToolResult).self) { group in
             var completed: [Int: AgentToolResult] = [:]
             var next = 0
-            while next < min(maximumConcurrency, plan.count) {
+            let limit = max(1, maximumConcurrency)
+            while !Task.isCancelled, next < min(limit, plan.count) {
                 let index = next
                 group.addTask { [executor] in (index, await executor.execute(plan[index])) }
                 next += 1
             }
             while let (index, result) = await group.next() {
                 completed[index] = result
-                guard next < plan.count else { continue }
+                guard !Task.isCancelled, next < plan.count else { continue }
                 let scheduled = next
                 group.addTask { [executor] in (scheduled, await executor.execute(plan[scheduled])) }
                 next += 1
             }
-            // Rebuilt from the plan rather than from completion order, and with
-            // a stated fallback rather than a `compactMap` that would quietly
-            // return fewer results than there were calls.
-            return plan.indices.map { completed[$0] ?? plan[$0].result }
+            // Cancellation stops replenishing the group. The executor settles
+            // every remaining proposal without dispatching its tool.
+            for index in next..<plan.count {
+                completed[index] = await executor.execute(plan[index])
+            }
+            return plan.indices.map { completed[$0]! }
         }
     }
 }

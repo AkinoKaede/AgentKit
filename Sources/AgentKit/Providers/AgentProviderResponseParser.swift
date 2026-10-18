@@ -37,9 +37,7 @@ nonisolated struct AgentProviderResponseParser {
         }
         // Gateways commonly omit the SSE event field and use the JSON type.
         let eventType = AgentProviderResponseDecoder.streamEventType(event, root: root)
-        if eventType == "error" || eventType == "response.failed" {
-            throw Self.streamFailure(in: root)
-        }
+        if let failure = Self.explicitFailure(in: root, eventType: eventType) { throw failure }
         let events: [AgentModelStreamEvent]
         switch format {
         case .responses:
@@ -93,10 +91,13 @@ nonisolated struct AgentProviderResponseParser {
         }
     }
 
-    private static func explicitFailure(in root: [String: Any]) -> AgentProviderStreamFailure? {
+    private static func explicitFailure(
+        in root: [String: Any], eventType: String? = nil
+    ) -> AgentProviderStreamFailure? {
         let response = root["response"] as? [String: Any]
         guard
-            root["type"] as? String == "error"
+            eventType == "error" || eventType == "response.failed"
+                || root["type"] as? String == "error"
                 || root["type"] as? String == "response.failed"
                 || response?["status"] as? String == "failed"
                 || root["error"] != nil

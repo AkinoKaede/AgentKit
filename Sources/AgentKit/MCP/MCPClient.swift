@@ -249,8 +249,14 @@ public nonisolated struct MCPClient: Sendable {
             context.version = version
             try await notify(.initialized, context: context)
             return (context, initialized.serverInfo?.name ?? server.name)
-        } catch MCPError.http(let status) where [400, 404, 405].contains(status) {
-            throw MCPError.wrongTransport(status: status)
+        } catch {
+            // Until negotiation succeeds, this scope owns any session assigned by
+            // initialize, including one whose response or notification is invalid.
+            await endSession(context)
+            if case MCPError.http(let status) = error, [400, 404, 405].contains(status) {
+                throw MCPError.wrongTransport(status: status)
+            }
+            throw error
         }
     }
 
@@ -348,9 +354,10 @@ public nonisolated struct MCPClient: Sendable {
     /// the server chooses, interleaved with notifications addressed to nobody.
     /// So the stream is drained by one task into `LegacySSESession`, which hands
     /// each message to whichever request is waiting for that id.
-    private func discoverSSE(
-        at url: URL, server: MCPServer, bearerToken: String?
-    ) async throws -> MCPDiscovery {
+    private func withLegacySession<Result>(
+        at url: URL, server: MCPServer, bearerToken: String?,
+        operation: (RequestContext, LegacySSESession, String) async throws -> Result
+    ) async throws -> Result {
         var context = RequestContext(
             url: url,
             version: Self.legacyVersion,
@@ -381,95 +388,64 @@ public nonisolated struct MCPClient: Sendable {
         await events.start(SSEStream.events(from: bytes))
         // The stream is a resource, not a value: leaving it open would hold a
         // connection for the life of the process.
-        defer { Task { await events.cancel() } }
-
-        // The first thing the server says is where to POST. Usually a relative
-        // path, which is why it is resolved against the stream's own URL.
-        let endpoint = try await events.endpointURL()
-        guard let postURL = URL(string: endpoint, relativeTo: url) else {
-            throw MCPError.noEndpointEvent
-        }
-        guard Self.sameOrigin(url, postURL.absoluteURL) else { throw MCPOAuthError.unsafeRedirect }
-        context.url = postURL.absoluteURL
-
-        let initialize: InitializeResult = try await exchange(
-            .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
-            id: 1, context: context, events: events)
-        guard initialize.protocolVersion == Self.legacyVersion else {
-            throw MCPError.malformedResponse("initialize: unsupported legacy version")
-        }
-        context.version = Self.legacyVersion
-
-        try await notify(.initialized, context: context)
-
-        var tools: [MCPTool] = []
-        var cursor: String?
-        var id = 2
-        for _ in 0..<Self.pageLimit {
-            let page: ToolsListResult = try await exchange(
-                .toolsList(cursor: cursor), id: id, context: context, events: events)
-            tools += (page.tools ?? []).compactMap { row in
-                let tool = row.tool()
-                if context.version == Self.preferredVersion,
-                    Self.parameterHeaders(schema: tool.inputSchema, arguments: .object([:])) == nil
-                {
-                    return nil
-                }
-                return tool
+        do {
+            // The first thing the server says is where to POST. Usually a relative
+            // path, which is why it is resolved against the stream's own URL.
+            let endpoint = try await events.endpointURL()
+            guard let postURL = URL(string: endpoint, relativeTo: url) else {
+                throw MCPError.noEndpointEvent
             }
-            guard let next = page.nextCursor, !next.isEmpty else { break }
-            cursor = next
-            id += 1
-        }
+            guard Self.sameOrigin(url, postURL.absoluteURL) else { throw MCPOAuthError.unsafeRedirect }
+            context.url = postURL.absoluteURL
 
-        return MCPDiscovery(
-            protocolVersion: context.version,
-            serverName: initialize.serverInfo?.name ?? server.name,
-            tools: tools
-        )
+            let initialize: InitializeResult = try await exchange(
+                .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
+                id: 1, context: context, events: events)
+            guard initialize.protocolVersion == Self.legacyVersion else {
+                throw MCPError.malformedResponse("initialize: unsupported legacy version")
+            }
+            context.version = Self.legacyVersion
+
+            try await notify(.initialized, context: context)
+
+            let result = try await operation(context, events, initialize.serverInfo?.name ?? server.name)
+            await events.cancel()
+            return result
+        } catch {
+            await events.cancel()
+            throw error
+        }
+    }
+
+    private func discoverSSE(
+        at url: URL, server: MCPServer, bearerToken: String?
+    ) async throws -> MCPDiscovery {
+        try await withLegacySession(at: url, server: server, bearerToken: bearerToken) { context, events, name in
+            var tools: [MCPTool] = []
+            var cursor: String?
+            var id = 2
+            for _ in 0..<Self.pageLimit {
+                let page: ToolsListResult = try await exchange(
+                    .toolsList(cursor: cursor), id: id, context: context, events: events)
+                tools += (page.tools ?? []).map { $0.tool() }
+                guard let next = page.nextCursor, !next.isEmpty else { break }
+                cursor = next
+                id += 1
+            }
+            return MCPDiscovery(protocolVersion: context.version, serverName: name, tools: tools)
+        }
     }
 
     private func callSSE(
         at url: URL, server: MCPServer, name: String, arguments: AgentJSONValue,
         bearerToken: String?
     ) async throws -> MCPCallResult {
-        var context = RequestContext(
-            url: url, version: Self.legacyVersion, sessionID: nil,
-            server: server, bearerToken: bearerToken
-        )
-        var streamRequest = URLRequest(url: url)
-        streamRequest.setValue("text/event-stream", forHTTPHeaderField: "Accept")
-        context.apply(to: &streamRequest)
-        let (stream, raw) = try await authorized(streamRequest, context: context) { request in
-            try await session.bytes(for: request, delegate: MCPRedirectGuard.shared)
+        try await withLegacySession(at: url, server: server, bearerToken: bearerToken) { context, events, _ in
+            let called: ToolsCallResult = try await exchange(
+                .toolsCall(name: name, arguments: arguments), id: 2,
+                context: context, events: events)
+            return MCPCallResult(value: called.value, isError: called.isError ?? false)
         }
-        guard let http = raw as? HTTPURLResponse else { throw MCPError.notHTTP }
-        guard (200..<300).contains(http.statusCode) else {
-            throw MCPError.http(status: http.statusCode)
-        }
-        let events = LegacySSESession()
-        await events.start(SSEStream.events(from: stream))
-        defer { Task { await events.cancel() } }
-        let endpoint = try await events.endpointURL()
-        guard let postURL = URL(string: endpoint, relativeTo: url) else {
-            throw MCPError.noEndpointEvent
-        }
-        guard Self.sameOrigin(url, postURL.absoluteURL) else { throw MCPOAuthError.unsafeRedirect }
-        context.url = postURL.absoluteURL
-        let initialize: InitializeResult = try await exchange(
-            .initialize(version: Self.legacyVersion, clientInfo: clientInfo),
-            id: 1, context: context, events: events
-        )
-        guard initialize.protocolVersion == Self.legacyVersion else {
-            throw MCPError.malformedResponse("initialize: unsupported legacy version")
-        }
-        context.version = Self.legacyVersion
-        try await notify(.initialized, context: context)
-        let called: ToolsCallResult = try await exchange(
-            .toolsCall(name: name, arguments: arguments), id: 2,
-            context: context, events: events
-        )
-        return MCPCallResult(value: called.value, isError: called.isError ?? false)
     }
 
     /// POST a request, then wait for its answer to come back on the stream.

@@ -72,7 +72,7 @@ public nonisolated enum AgentPlannedToolCall: Sendable {
 public nonisolated final class AgentToolProgressGate: @unchecked Sendable {
     public init() {}
 
-    private let lock = NSLock()
+    private let lock = NSRecursiveLock()
     private var isOpen = true
 
     public func close() { lock.withLock { isOpen = false } }
@@ -81,8 +81,10 @@ public nonisolated final class AgentToolProgressGate: @unchecked Sendable {
         -> @Sendable (AgentToolResult) -> Void
     {
         { [self] partial in
-            guard lock.withLock({ isOpen }) else { return }
-            report(partial)
+            lock.withLock {
+                guard isOpen else { return }
+                report(partial)
+            }
         }
     }
 }
@@ -97,6 +99,10 @@ public nonisolated final class AgentToolProgressGate: @unchecked Sendable {
 /// `AgentUnansweredToolCallRepair`, which says the same thing about a process
 /// that died.
 public nonisolated enum AgentInterruptedToolCall {
+    static let notStartedReason = String(
+        localized: "The run was cancelled before this tool ran.", bundle: .module
+    )
+
     public static let reason = String(
         localized: """
             The app stopped waiting for this tool before it finished. Whether the action \
@@ -124,6 +130,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
     public var outputProjection = AgentToolOutputProjection()
     public var isToolAvailable: @Sendable (String) async -> Bool = { _ in true }
     public var authorizationEvidence: @Sendable () async -> [GuardianEvidence] = { [] }
+    var resultDidFinish: @Sendable (AgentToolCall, AgentToolResult) async -> Void = { _, _ in }
     public let runID: UUID
     public let conversationID: UUID?
     public let permissionMode: AgentPermissionMode
@@ -243,6 +250,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         // A rejected call's card was raised and finished during planning;
         // re-emitting here would draw it twice.
         guard case .ready(let ready) = planned else { return planned.result }
+        guard !Task.isCancelled else { return await cancelBeforeStarting(ready) }
 
         let hookDecision = await hooks.willExecute(
             AgentToolCallContext(
@@ -257,6 +265,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
                 ))
         }
 
+        guard !Task.isCancelled else { return await cancelBeforeStarting(ready) }
         let request = AgentApprovalRequest(
             invocation: ready.invocation,
             descriptor: ready.descriptor,
@@ -275,39 +284,40 @@ public nonisolated struct AgentToolExecutor: Sendable {
                         ? [AgentToolResult.approvalPolicyDeniedKey: .bool(true)] : [:]
                 ))
         case .allow:
+            guard !Task.isCancelled else { return await cancelBeforeStarting(ready) }
             channel.emit(.toolStarted(ready.invocation))
             let gate = AgentToolProgressGate()
-            defer { gate.close() }
+            let result: AgentToolResult
             do {
-                let result = try await ready.tool.execute(
+                result = try await ready.tool.execute(
                     ready.invocation, context: context(for: ready, gate: gate)
                 )
-                return await finish(ready, result)
             } catch is CancellationError {
-                // Not `localizedDescription`, which for this error is
-                // "The operation couldn't be completed. (Swift.CancellationError
-                // error 1.)" — a sentence about Swift, addressed to a model that
-                // needs a sentence about the host. And not "it did not run"
-                // either: cancelling a call abandons the channel without
-                // undoing what was dispatched, so the outcome is
-                // genuinely unknown. Same wording, for the same reason, as
-                // `AgentUnansweredToolCallRepair`.
-                return await finish(
-                    ready,
-                    AgentToolResult(
-                        callID: ready.invocation.call.id,
-                        content: AgentInterruptedToolCall.reason, isError: true,
-                        metadata: ["interrupted": .bool(true)]
-                    ))
+                // Dispatch already happened; cancellation cannot undo its effects.
+                result = AgentToolResult(
+                    callID: ready.invocation.call.id,
+                    content: AgentInterruptedToolCall.reason, isError: true,
+                    metadata: ["interrupted": .bool(true)]
+                )
             } catch {
-                return await finish(
-                    ready,
-                    AgentToolResult(
-                        callID: ready.invocation.call.id,
-                        content: error.localizedDescription, isError: true
-                    ))
+                result = AgentToolResult(
+                    callID: ready.invocation.call.id,
+                    content: error.localizedDescription, isError: true
+                )
             }
+            gate.close()
+            return await finish(ready, result)
         }
+    }
+
+    private func cancelBeforeStarting(_ ready: AgentPlannedToolCall.Ready) async -> AgentToolResult {
+        await finish(
+            ready,
+            AgentToolResult(
+                callID: ready.invocation.call.id,
+                content: AgentInterruptedToolCall.notStartedReason, isError: true
+            )
+        )
     }
 
     /// Refuses a call outright, with a card, without planning or running it.
@@ -373,6 +383,7 @@ public nonisolated struct AgentToolExecutor: Sendable {
         final = await outputProjection.project(
             final, invocation: ready.invocation, strategy: ready.tool.truncateStrategy)
         final.toolPresentation = ready.descriptor.presentation
+        await resultDidFinish(ready.invocation.call, final)
         channel.emit(.toolFinished(ready.invocation, final))
         return final
     }

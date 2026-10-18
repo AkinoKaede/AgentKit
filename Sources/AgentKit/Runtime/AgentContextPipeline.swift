@@ -61,9 +61,7 @@ public nonisolated struct AgentContextPipeline: Sendable {
         toolResultLimit: Int = AgentToolResultTrimming.defaultLimit
     ) -> AgentContextPipeline {
         AgentContextPipeline([
-            AgentUnansweredToolCallRepair(),
-            AgentToolResultOrdering(),
-            AgentOrphanedToolResultRepair(),
+            AgentToolExchangeRepair(),
             AgentContextSnapshotCapture(
                 snapshot: AgentTurnContextSnapshot(
                     sessionContext: sessionContext?.text,
@@ -73,6 +71,96 @@ public nonisolated struct AgentContextPipeline: Sendable {
             ),
             AgentContextSnapshotReplay(),
         ])
+    }
+}
+
+// MARK: - Exchange repair
+
+/// Normalizes each assistant's tool exchange before replay.
+///
+/// An exchange ends at the next assistant message. Results recorded after an
+/// intervening user message are moved beside their call, but never borrowed from
+/// another assistant turn. Explicit IDs take precedence over legacy name-only
+/// results; each call receives one result, in call order. Unmatched name-only
+/// messages are retained because an absent ID does not establish an orphan.
+/// Messages carrying opaque provider items are also retained even when no local
+/// call matches: this transform cannot interpret provider-native grammar.
+/// Opaque provider items on retained messages are never interpreted or rewritten.
+public nonisolated struct AgentToolExchangeRepair: AgentContextTransforming {
+    public init() {}
+
+    public func transform(_ context: AgentModelContext) -> AgentModelContext {
+        var result = context
+        result.messages = Self.apply(result.messages)
+        return result
+    }
+
+    public static func apply(_ messages: [AgentTranscriptMessage]) -> [AgentTranscriptMessage] {
+        var repaired: [AgentTranscriptMessage] = []
+        repaired.reserveCapacity(messages.count)
+        var index = messages.startIndex
+        while index < messages.endIndex {
+            var message = messages[index]
+            index += 1
+            guard message.role == .assistant, !message.toolCalls.isEmpty else {
+                if message.role != .tool || callID(message) == nil || !message.providerItems.isEmpty {
+                    repaired.append(message)
+                }
+                continue
+            }
+
+            // Repeated IDs denote the same call, not another execution. Empty
+            // legacy IDs still need occurrence-based matching by tool name.
+            var seen: Set<String> = []
+            message.toolCalls = message.toolCalls.filter { $0.id.isEmpty || seen.insert($0.id).inserted }
+            repaired.append(message)
+            let start = index
+            while index < messages.endIndex, messages[index].role != .assistant {
+                index += 1
+            }
+            let candidates = (start..<index).filter { messages[$0].role == .tool }
+            var selected: [Int: Int] = [:]
+            var consumed: Set<Int> = []
+            // Resolve explicit identities first so a name-only result cannot
+            // steal the slot from an unambiguous result later in the exchange.
+            for (position, call) in message.toolCalls.enumerated() where !call.id.isEmpty {
+                if let match = candidates.first(where: { callID(messages[$0]) == call.id }) {
+                    selected[position] = match
+                    consumed.insert(match)
+                }
+            }
+            for (position, call) in message.toolCalls.enumerated() where selected[position] == nil {
+                if let match = candidates.first(where: {
+                    !consumed.contains($0) && callID(messages[$0]) == nil && messages[$0].toolName == call.name
+                }) {
+                    selected[position] = match
+                    consumed.insert(match)
+                }
+            }
+            for (position, call) in message.toolCalls.enumerated() {
+                if let match = selected[position] {
+                    repaired.append(messages[match])
+                } else {
+                    repaired.append(
+                        AgentTranscriptMessage(
+                            role: .tool, text: AgentUnansweredToolCallRepair.interrupted,
+                            toolCallID: call.id, toolName: call.name, isError: true
+                        ))
+                }
+            }
+            for remaining in start..<index where !consumed.contains(remaining) {
+                let item = messages[remaining]
+                if item.role != .tool || callID(item) == nil || !item.providerItems.isEmpty {
+                    repaired.append(item)
+                }
+            }
+        }
+        return repaired
+    }
+
+    private static func callID(_ message: AgentTranscriptMessage) -> String? {
+        guard let id = message.toolCallID, !id.isEmpty else { return nil }
+        return id
     }
 }
 
@@ -144,11 +232,9 @@ public nonisolated struct AgentToolResultOrdering: AgentContextTransforming {
 /// other two reject the equivalent — so a single orphan makes a conversation
 /// permanently unusable rather than degrading it.
 ///
-/// `AgentRuntime` also applies this to incoming history when it seeds a run's
-/// snapshot, which is what makes it a repair and not just a guard: filtering
-/// there stops a stored orphan from being written forward into the next run.
-/// Here it is the boundary's own guarantee, for a transcript assembled by
-/// anyone.
+/// Retained as a standalone compatibility transform. Runtime history and the
+/// default pipeline use `AgentToolExchangeRepair` instead, which also enforces
+/// local exchange boundaries, result ordering, and missing-result repair.
 ///
 /// Messages with no call id at all are kept. Google addresses a tool result by
 /// name rather than by id, so absence here is not evidence of an orphan.
@@ -236,7 +322,7 @@ public nonisolated struct AgentUnansweredToolCallRepair: AgentContextTransformin
         return repaired
     }
 
-    private static let interrupted = String(
+    fileprivate static let interrupted = String(
         localized: """
             The app stopped before this tool call's result was recorded. Whether the action \
             completed is unknown; check the current state before doing it again.

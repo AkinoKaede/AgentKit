@@ -258,11 +258,21 @@ struct AgentProviderCompletionTests {
         }
     }
 
-    @Test
-    func preservesLengthStopReason() async throws {
-        let endpoint = CompletionEndpoint(try Self.chat("partial summary", reason: "length"))
+    @Test(arguments: [ModelAPIFormat.chatCompletions, .messages])
+    func preservesLengthStopReason(_ format: ModelAPIFormat) async throws {
+        let body: String
+        if format == .messages {
+            body = Self.sse(
+                #"{"type":"content_block_delta","index":0,"delta":{"type":"text_delta","text":"partial summary"}}"#,
+                #"{"type":"message_delta","delta":{"stop_reason":"max_tokens"}}"#,
+                #"{"type":"message_stop"}"#
+            )
+        } else {
+            body = try Self.chat("partial summary", reason: "length")
+        }
+        let endpoint = CompletionEndpoint(body)
         defer { endpoint.session.invalidateAndCancel() }
-        let result = try await endpoint.client().collectText(Self.request)
+        let result = try await endpoint.client(format).collectText(Self.request)
         #expect(result.stopReason == .length)
     }
 

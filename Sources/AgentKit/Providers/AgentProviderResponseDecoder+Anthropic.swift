@@ -48,7 +48,10 @@ nonisolated extension AgentProviderResponseDecoder {
             }
         }
         if let usage = anthropicUsage(root["usage"]) { events.append(usage) }
-        events.append(.finished(events.containsToolCall ? .toolCalls : .completed))
+        let reason =
+            anthropicStopReason(root["stop_reason"] as? String)
+            ?? (events.containsToolCall ? .toolCalls : .completed)
+        events.append(.finished(reason))
         return events
     }
 
@@ -71,6 +74,10 @@ nonisolated extension AgentProviderResponseDecoder {
             return anthropicUsage(message?["usage"]).map { [$0] } ?? []
         }
         if type == "message_delta" {
+            let delta = root["delta"] as? [String: Any]
+            if let reason = anthropicStopReason(delta?["stop_reason"] as? String) {
+                state.stopReason = reason
+            }
             return anthropicUsage(root["usage"]).map { [$0] } ?? []
         }
 
@@ -168,8 +175,18 @@ nonisolated extension AgentProviderResponseDecoder {
             return []
         }
 
-        if type == "message_stop" { return [.finished(.completed)] }
+        // Retain the reason from message_delta without ending the transport before message_stop.
+        if type == "message_stop" { return [.finished(state.stopReason ?? .completed)] }
         return []
+    }
+
+    private static func anthropicStopReason(_ reason: String?) -> AgentStopReason? {
+        switch reason {
+        case "max_tokens": .length
+        case "tool_use": .toolCalls
+        case "end_turn", "stop_sequence": .completed
+        default: nil
+        }
     }
 
     private static func anthropicQuery(_ rawInput: String) -> String {
@@ -226,6 +243,7 @@ public nonisolated struct AnthropicStreamState: Sendable {
         var input: String = ""
     }
 
+    fileprivate var stopReason: AgentStopReason?
     fileprivate var callIDs: [Int: String] = [:]
     fileprivate var thinkingBlocks: [Int: ThinkingBlock] = [:]
     fileprivate var serverBlocks: [Int: ServerBlock] = [:]

@@ -61,7 +61,7 @@ public actor AgentRuntime {
     private let interjection = AgentInterjectionSignal()
     /// Whether a message queued *now* would still be delivered.
     ///
-    /// Not the same question as "is there a run task". `complete` awaits its
+    /// Not the same question as "is there a run task". `finish` awaits its
     /// final persist before it ends the run, and an actor is reentrant at every
     /// await — so a message accepted during that window would land in a queue
     /// nobody drains again. Cleared as the *first* statement of every path that
@@ -175,11 +175,9 @@ public actor AgentRuntime {
             // snapshot is persisted, so a call left unanswered by a process
             // that died — or a result left behind by one — is fixed once here
             // rather than re-derived on every future turn of the conversation.
-            messages: AgentOrphanedToolResultRepair.apply(
-                AgentUnansweredToolCallRepair.apply(
-                    AgentSecretLifecycle.sanitizeHistoricalMessages(
-                        request.priorMessages, availableHandles: await secretBroker.availableHandleIDs)
-                )
+            messages: AgentToolExchangeRepair.apply(
+                AgentSecretLifecycle.sanitizeHistoricalMessages(
+                    request.priorMessages, availableHandles: await secretBroker.availableHandleIDs)
             )
         )
         let runID = snapshot.id
@@ -231,18 +229,22 @@ public actor AgentRuntime {
             pacing: configuration.streamPacing,
             retryPolicy: configuration.modelRetryPolicy
         )
+        var executor = AgentToolExecutor(
+            tools: availableTools, approval: approval, hooks: hooks, channel: channel,
+            secretBroker: secretBroker, userInteraction: userInteraction,
+            services: services,
+            runID: runID, conversationID: request.conversationID, permissionMode: request.permissionMode,
+            userIntent: request.prompt,
+            interjection: { [interjection] in await interjection.wait() },
+            outputProjection: configuration.outputProjection,
+            isToolAvailable: { [weak self] name in await self?.isToolAvailable(name) ?? false },
+            authorizationEvidence: { await evidenceLog.snapshot() }
+        )
+        executor.resultDidFinish = { call, result in
+            await evidenceLog.append(GuardianEvidence.answers(call: call, resultText: result.content))
+        }
         let scheduler = AgentToolScheduler(
-            executor: AgentToolExecutor(
-                tools: availableTools, approval: approval, hooks: hooks, channel: channel,
-                secretBroker: secretBroker, userInteraction: userInteraction,
-                services: services,
-                runID: runID, conversationID: request.conversationID, permissionMode: request.permissionMode,
-                userIntent: request.prompt,
-                interjection: { [interjection] in await interjection.wait() },
-                outputProjection: configuration.outputProjection,
-                isToolAvailable: { [weak self] name in await self?.isToolAvailable(name) ?? false },
-                authorizationEvidence: { await evidenceLog.snapshot() }
-            ),
+            executor: executor,
             mode: configuration.toolExecution,
             maximumConcurrency: configuration.maximumToolConcurrency
         )
@@ -282,7 +284,7 @@ public actor AgentRuntime {
                     // never shown. Pi keeps its inner loop alive while messages
                     // are pending for exactly this reason; the next iteration
                     // delivers them and asks again.
-                    if steering.isEmpty { return await complete(snapshot, runID: runID) }
+                    if steering.isEmpty { return await finish(snapshot, state: .completed) }
                     continue
                 }
 
@@ -308,9 +310,6 @@ public actor AgentRuntime {
                 for (call, result) in zip(turn.message.toolCalls, results) {
                     snapshot.messages.append(
                         AgentTranscriptMessage.toolResult(result, runID: runID, toolName: call.name))
-                    await evidenceLog.append(
-                        GuardianEvidence.answers(call: call, resultText: result.content)
-                    )
                 }
                 await persist(snapshot)
                 if let refusal { throw refusal }
@@ -323,38 +322,14 @@ public actor AgentRuntime {
                         index: index, message: turn.message, results: results
                     ))
                 {
-                    return await complete(snapshot, runID: runID)
+                    return await finish(snapshot, state: .completed)
                 }
             }
         } catch is CancellationError {
-            acceptsSteering = false
-            snapshot.state = .cancelled
-            snapshot.finishedAt = .now
-            channel.emit(
-                .runFinished(
-                    AgentRunSummary(
-                        id: runID, state: .cancelled, startedAt: snapshot.startedAt,
-                        finishedAt: snapshot.finishedAt
-                    )))
-            channel.emit(.runState(.cancelled))
-            await persist(snapshot)
+            await finish(snapshot, state: .cancelled)
         } catch {
-            acceptsSteering = false
-            snapshot.state = .failed
-            snapshot.failure = error.localizedDescription
-            snapshot.finishedAt = .now
-            channel.emit(.failed(error.localizedDescription))
-            channel.emit(
-                .runFinished(
-                    AgentRunSummary(
-                        id: runID, state: .failed, startedAt: snapshot.startedAt,
-                        finishedAt: snapshot.finishedAt,
-                        failure: snapshot.failure
-                    )))
-            channel.emit(.runState(.failed))
-            await persist(snapshot)
+            await finish(snapshot, state: .failed, failure: error.localizedDescription)
         }
-        finish()
     }
 
     /// Empties the queue into the turn that is about to start, and says so.
@@ -381,29 +356,29 @@ public actor AgentRuntime {
         activeContextSnapshot?.toolAvailability?[name] ?? true
     }
 
-    private func complete(_ snapshot: AgentRunSnapshot, runID: UUID) async {
+    private func finish(
+        _ snapshot: AgentRunSnapshot, state: AgentRunState, failure: String? = nil
+    ) async {
         acceptsSteering = false
         var finished = snapshot
-        finished.state = .completed
+        finished.state = state
+        finished.failure = failure
         finished.finishedAt = .now
+        if let failure { channel.emit(.failed(failure)) }
         channel.emit(
             .runFinished(
                 AgentRunSummary(
-                    id: runID, state: .completed, startedAt: finished.startedAt,
-                    finishedAt: finished.finishedAt
+                    id: finished.id, state: state, startedAt: finished.startedAt,
+                    finishedAt: finished.finishedAt, failure: failure
                 )))
-        channel.emit(.runState(.completed))
+        channel.emit(.runState(state))
         await persist(finished)
-        finish()
+        runTask = nil
+        channel.finish()
     }
 
     private func persist(_ snapshot: AgentRunSnapshot) async {
         try? await repository.save(snapshot)
-    }
-
-    private func finish() {
-        runTask = nil
-        channel.finish()
     }
 }
 

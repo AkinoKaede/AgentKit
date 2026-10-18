@@ -51,8 +51,13 @@ private actor GuardianSession {
 
     private var history: [AgentTranscriptMessage] = []
     private var deliveredEvidence: [GuardianEvidence] = []
+    private struct Waiter {
+        let id: UUID
+        let continuation: CheckedContinuation<Void, any Error>
+    }
+
     private var busy = false
-    private var waiters: [CheckedContinuation<Void, Never>] = []
+    private var waiters: [Waiter] = []
 
     func review(
         _ request: AgentApprovalRequest,
@@ -61,18 +66,11 @@ private actor GuardianSession {
         services: AgentToolServices,
         systemPrompt: String
     ) async throws -> GuardianDecision {
-        await acquire()
+        try await acquire()
         defer { release() }
+        try Task.checkCancellation()
 
-        let evidence =
-            request.authorizationEvidence.isEmpty
-            ? [
-                GuardianEvidence(
-                    id: "intent:\(request.invocation.runID.uuidString)",
-                    source: .directUser, text: request.userIntent
-                )
-            ]
-            : request.authorizationEvidence
+        let evidence = request.authorizationEvidence
         let delta = selectEvidence(evidence)
         let prompt = GuardianPolicy.reviewPrompt(request, evidence: bounded(delta))
         var lastError: (any Error)?
@@ -241,12 +239,31 @@ private actor GuardianSession {
         return []
     }
 
-    private func acquire() async {
+    private func acquire() async throws {
+        try Task.checkCancellation()
         guard busy else {
             busy = true
             return
         }
-        await withCheckedContinuation { waiters.append($0) }
+        let id = UUID()
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                // Registration does not suspend the actor. Cancellation before registration
+                // is caught here; cancellation after it removes the registered waiter.
+                guard !Task.isCancelled else {
+                    continuation.resume(throwing: CancellationError())
+                    return
+                }
+                waiters.append(Waiter(id: id, continuation: continuation))
+            }
+        } onCancel: {
+            Task { await self.cancelWaiter(id) }
+        }
+    }
+
+    private func cancelWaiter(_ id: UUID) {
+        guard let index = waiters.firstIndex(where: { $0.id == id }) else { return }
+        waiters.remove(at: index).continuation.resume(throwing: CancellationError())
     }
 
     private func release() {
@@ -254,7 +271,9 @@ private actor GuardianSession {
             busy = false
             return
         }
-        waiters.removeFirst().resume()
+        // Removal transfers ownership exactly once. A cancellation racing this
+        // handoff is checked by review(), which then releases its acquired slot.
+        waiters.removeFirst().continuation.resume()
     }
 }
 

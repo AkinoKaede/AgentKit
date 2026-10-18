@@ -93,6 +93,104 @@ struct AgentProviderResponseParserTests {
         }
     }
 
+    @Test(arguments: [
+        #"{"error":{"code":"rate_limit_exceeded","message":"retry later"}}"#,
+        #"{"type":"error","error":{"type":"rate_limit_exceeded","message":"retry later"}}"#,
+        #"{"type":"response.failed","response":{"error":{"code":"rate_limit_exceeded","message":"retry later"}}}"#,
+        #"{"response":{"status":"failed","error":{"code":"rate_limit_exceeded","message":"retry later"}}}"#,
+    ])
+    func explicitFailuresAgreeAcrossJSONAndSSE(_ payload: String) throws {
+        for encoding in ["json", "sse", "mislabeled-sse"] {
+            var parser = parser(.responses)
+            do {
+                switch encoding {
+                case "json": _ = try parser.parseResponse(Data(payload.utf8))
+                case "sse": _ = try parser.consume(SSEEvent(data: payload))
+                default: _ = try parser.parseResponse(Data("data: \(payload)\n\n".utf8))
+                }
+                Issue.record("Expected the provider failure to propagate for \(encoding)")
+            } catch let error as AgentProviderStreamFailure {
+                #expect(error.code == "rate_limit_exceeded")
+                #expect(error.message == "retry later")
+                #expect(error.isRetryable)
+            }
+            #expect(!parser.isTerminated)
+        }
+    }
+
+    @Test(arguments: ["error", "response.failed"])
+    func namedSSEFailuresDoNotRequireAJSONType(_ eventType: String) throws {
+        var parser = parser(.responses)
+        do {
+            _ = try parser.consume(
+                SSEEvent(event: eventType, data: #"{"code":"invalid_request_error","message":"invalid request"}"#))
+            Issue.record("Expected the named SSE failure to propagate")
+        } catch let error as AgentProviderStreamFailure {
+            #expect(error.code == "invalid_request_error")
+            #expect(error.message == "invalid request")
+            #expect(!error.isRetryable)
+        }
+    }
+
+    @Test(arguments: ["max_tokens", "tool_use", "end_turn", "stop_sequence"])
+    func anthropicStopReasonsAgreeAcrossJSONAndSSE(_ reason: String) throws {
+        let expected: AgentStopReason =
+            switch reason {
+            case "max_tokens": .length
+            case "tool_use": .toolCalls
+            default: .completed
+            }
+        var json = parser(.messages)
+        let completed = try json.parseResponse(
+            Data(#"{"type":"message","content":[],"stop_reason":"\#(reason)"}"#.utf8))
+        guard case .finished(let jsonReason) = completed.last else {
+            Issue.record("Expected completed message stop reason")
+            return
+        }
+        #expect(jsonReason == expected)
+
+        var streamed = parser(.messages)
+        let delta = try streamed.consume(
+            SSEEvent(
+                data:
+                    #"{"type":"message_delta","delta":{"stop_reason":"\#(reason)"},"usage":{"output_tokens":7}}"#))
+        #expect(!streamed.isTerminated)
+        guard case .usage(let usage) = delta.first else {
+            Issue.record("Expected usage from message_delta")
+            return
+        }
+        #expect(usage.outputTokens == 7)
+        // A usage-only delta must not clear the previously recorded reason.
+        _ = try streamed.consume(SSEEvent(data: #"{"type":"message_delta","usage":{"output_tokens":8}}"#))
+        let stopped = try streamed.consume(SSEEvent(data: #"{"type":"message_stop"}"#))
+        guard case .finished(let streamReason) = stopped.last else {
+            Issue.record("Expected message_stop to finish the response")
+            return
+        }
+        #expect(streamReason == expected)
+        #expect(streamed.shouldStop)
+    }
+
+    @Test
+    func anthropicMissingStopReasonPreservesCompatibilityFallbacks() throws {
+        var json = parser(.messages)
+        let completed = try json.parseResponse(
+            Data(#"{"type":"message","content":[{"type":"tool_use","id":"call-1","name":"lookup","input":{}}]}"#.utf8))
+        guard case .finished(let jsonReason) = completed.last else {
+            Issue.record("Expected completed message fallback")
+            return
+        }
+        #expect(jsonReason == .toolCalls)
+
+        var streamed = parser(.messages)
+        let stopped = try streamed.consume(SSEEvent(data: #"{"type":"message_stop"}"#))
+        guard case .finished(let streamReason) = stopped.last else {
+            Issue.record("Expected stream fallback")
+            return
+        }
+        #expect(streamReason == .completed)
+    }
+
     private func parser(_ format: ModelAPIFormat) -> AgentProviderResponseParser {
         AgentProviderResponseParser(format: format, wireNames: ["wire_lookup": "tools.lookup"], buffered: true)
     }

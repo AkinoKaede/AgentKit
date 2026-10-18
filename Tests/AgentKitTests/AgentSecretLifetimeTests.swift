@@ -11,20 +11,39 @@ struct AgentSecretLifetimeTests {
         var source = Data("retained".utf8)
         let handle = try await broker.issue(AgentSecret(consumingUTF8: &source))
         let model = SecretLifetimeModel(state: state)
+        let repository = InMemoryAgentRunRepository()
         let runtime = AgentRuntime(
             model: model, tools: [],
             approval: AgentApprovalBroker(reviewer: nil, manualApproval: { _ in .allow }),
-            secretBroker: broker)
-        var finished: AgentRunState?
+            repository: repository, secretBroker: broker)
+        var summaries: [AgentRunSummary] = []
+        var terminalEvents: [String] = []
         for await event in await runtime.start(
             .init(conversationID: UUID(), prompt: "Continue", permissionMode: .fullAccess))
         {
             if state == .cancelled, case .messageDelta = event {
                 await runtime.cancel()
             }
-            if case .runFinished(let summary) = event { finished = summary.state }
+            switch event {
+            case .failed: terminalEvents.append("failed")
+            case .runFinished(let summary):
+                summaries.append(summary)
+                terminalEvents.append("finished")
+            case .runState(let value) where value == state:
+                terminalEvents.append("state")
+            default: break
+            }
         }
-        #expect(finished == state)
+        #expect(summaries.count == 1)
+        let summary = try #require(summaries.first)
+        #expect(summary.state == state)
+        #expect(terminalEvents == (state == .failed ? ["failed", "finished", "state"] : ["finished", "state"]))
+        let saved = try #require(await repository.snapshot(summary.id))
+        #expect(saved.state == state)
+        #expect(saved.finishedAt == summary.finishedAt)
+        #expect(saved.finishedAt != nil)
+        #expect((saved.failure != nil) == (state == .failed))
+        #expect(await runtime.steer(.init(role: .user, text: "too late")) == false)
         let secret = try await broker.consume(handle)
         defer { secret.clear() }
         #expect(try secret.withUnsafeBytes { Array($0) } == Array("retained".utf8))

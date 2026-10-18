@@ -17,7 +17,12 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
             state.requests.append(request)
             return state.mode
         }
-        if mode == "sse", request.httpMethod == "GET" {
+        let isSSE = mode.hasPrefix("sse")
+        if mode == "sse-open-failure", request.httpMethod == "GET" {
+            client?.urlProtocol(self, didFailWithError: URLError(.cannotConnectToHost))
+            return
+        }
+        if isSSE, request.httpMethod == "GET" {
             Self.eventStream.withLock { $0 = StreamReference(value: self) }
             let response = HTTPURLResponse(
                 url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1",
@@ -42,7 +47,9 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
         var status = 200
         var result: [String: Any] = ["resultType": "complete"]
         var error: [String: Any]?
-        if mode == "sse", request.url?.path == "/mcp" {
+        if request.httpMethod == "DELETE" {
+            status = 500  // Teardown failure must not replace the operation result.
+        } else if isSSE, request.url?.path == "/mcp" {
             status = 405
         } else if method == "server/discover", ["versions", "no-common"].contains(mode) {
             status = 400
@@ -53,6 +60,8 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
         } else if mode == "auth" {
             status = 401
         } else if method == "server/discover" && ["legacy", "march", "march-batch", "march-sse-batch"].contains(mode) {
+            status = 400
+        } else if method == "server/discover" && mode.hasPrefix("session-") {
             status = 400
         } else if method == "server/discover" && mode == "legacy-json" {
             status = 400
@@ -65,7 +74,16 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
         } else if method == "initialize" {
             result["protocolVersion"] =
                 mode.hasPrefix("march")
-                ? "2025-03-26" : (mode == "versions" ? "2025-06-18" : (mode == "sse" ? "2024-11-05" : "2025-11-25"))
+                ? "2025-03-26" : (mode == "versions" ? "2025-06-18" : (isSSE ? "2024-11-05" : "2025-11-25"))
+            if mode == "session-invalid" || mode == "sse-invalid" {
+                result["protocolVersion"] = "unsupported"
+            }
+        } else if method == "notifications/initialized" && mode == "session-notify-failure" {
+            status = 500
+        } else if method == "tools/list" && mode == "session-list-failure" {
+            status = 500
+        } else if method == "tools/call" && mode == "session-call-failure" {
+            status = 500
         } else if method == "tools/list" {
             result["tools"] = [["name": "hello", "inputSchema": ["type": "object"]]]
         } else if method == "tools/call" {
@@ -74,7 +92,7 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
         }
         var envelope: [String: Any] = ["jsonrpc": "2.0", "id": object["id"] ?? 1]
         if let error { envelope["error"] = error } else { envelope["result"] = result }
-        if mode == "sse", request.url?.path == "/messages" {
+        if isSSE, request.url?.path == "/messages" {
             status = 202
             if object["id"] != nil, let stream = Self.eventStream.withLock({ $0 })?.value {
                 let bytes = try! JSONSerialization.data(withJSONObject: envelope)
@@ -98,9 +116,13 @@ private final class MCPFixtureProtocol: URLProtocol, @unchecked Sendable {
             client?.urlProtocolDidFinishLoading(self)
             return
         }
+        var headers = ["Content-Type": "application/json"]
+        if mode.hasPrefix("session-"), method == "initialize" {
+            headers["Mcp-Session-Id"] = "fixture-session"
+        }
         let response = HTTPURLResponse(
             url: request.url!, statusCode: status, httpVersion: "HTTP/1.1",
-            headerFields: ["Content-Type": "application/json"])!
+            headerFields: headers)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(
             self,
@@ -178,6 +200,72 @@ struct MCPNegotiationTests {
                 "server/discover", "tools/list", "tools/call",
             ])
     }
+    @Test(arguments: ["session-invalid", "session-notify-failure", "session-list-failure"])
+    func failedDiscoveryReleasesAssignedSession(_ mode: String) async throws {
+        let expected: MCPError =
+            mode == "session-invalid"
+            ? .malformedResponse("initialize: unsupported protocol version") : .http(status: 500)
+        await #expect(throws: expected) { try await client(mode).discover(server, bearerToken: nil) }
+        let requests = MCPFixtureProtocol.state.withLock { $0.requests }
+        let deletes = requests.filter { $0.httpMethod == "DELETE" }
+        #expect(deletes.count == 1)
+        #expect(deletes.first?.value(forHTTPHeaderField: "Mcp-Session-Id") == "fixture-session")
+    }
+
+    @Test(arguments: ["session-success", "session-call-failure"])
+    func callReleasesAssignedSessionWithoutReplay(_ mode: String) async throws {
+        let client = client(mode)
+        if mode == "session-call-failure" {
+            await #expect(throws: MCPError.self) {
+                try await client.call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+            }
+        } else {
+            _ = try await client.call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+        }
+        let requests = MCPFixtureProtocol.state.withLock { $0.requests }
+        #expect(requests.filter { $0.httpMethod == "DELETE" }.count == 1)
+        // Probe, initialize, initialized, one call, teardown: failures must not replay.
+        #expect(requests.count == 5)
+    }
+
+    @Test func legacyCallUsesInitializedSession() async throws {
+        _ = try await client("sse").call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+        let requests = MCPFixtureProtocol.state.withLock { $0.requests }
+        #expect(requests.map { $0.httpMethod } == ["POST", "POST", "GET", "POST", "POST", "POST"])
+        #expect(requests.suffix(3).allSatisfy { $0.url?.path == "/messages" })
+    }
+
+    @Test(arguments: [false, true])
+    func legacyInvalidInitializationPreventsOperations(_ calling: Bool) async throws {
+        let client = client("sse-invalid")
+        await #expect(throws: MCPError.malformedResponse("initialize: unsupported legacy version")) {
+            if calling {
+                _ = try await client.call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+            } else {
+                _ = try await client.discover(server, bearerToken: nil)
+            }
+        }
+        let requests = MCPFixtureProtocol.state.withLock { $0.requests }
+        #expect(requests.map { $0.httpMethod } == ["POST", "POST", "GET", "POST"])
+    }
+
+    @Test(arguments: [false, true])
+    func legacyOpeningErrorsUseTransportErrorForBothOperations(_ calling: Bool) async throws {
+        var server = server
+        server.transport = .sse
+        let client = client("sse-open-failure")
+        do {
+            if calling {
+                _ = try await client.call(server, tool: "hello", arguments: .object([:]), bearerToken: nil)
+            } else {
+                _ = try await client.discover(server, bearerToken: nil)
+            }
+            Issue.record("Expected a transport error")
+        } catch MCPError.transport {
+            // Both legacy entry points normalize URLSession errors identically.
+        }
+    }
+
     @Test func literalDataIsNotMistakenForSchemaAnnotations() {
         let literal: AgentJSONValue = .object(["x-mcp-header": .string("literal-data")])
         let schema: AgentJSONValue = .object([
