@@ -17,7 +17,7 @@ AgentKitがモデルとツールの実行ループ、承認、会話状態を管
 パッケージの依存関係を追加します。
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "3.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "3.0.1")
 ```
 
 次に、ターゲットにコアのプロダクトを追加します。
