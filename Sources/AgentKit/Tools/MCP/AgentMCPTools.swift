@@ -35,7 +35,7 @@ public nonisolated struct MCPAgentTool: AgentTool {
                         namespace: server.effectiveNamespaceID, function: name
                     )),
                 output: .json,
-                actionKind: .run
+                actionKind: .call
             )
         )
     }

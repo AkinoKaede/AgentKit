@@ -162,6 +162,7 @@ public nonisolated struct AgentToolDescriptor: Identifiable, Hashable, Sendable,
             public init(_ rawValue: String) { self.rawValue = rawValue }
 
             public static let ask = Self("ask")
+            public static let call = Self("call")
             public static let changePermissions = Self("changePermissions")
             public static let compare = Self("compare")
             public static let copy = Self("copy")
