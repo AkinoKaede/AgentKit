@@ -212,8 +212,8 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
     public static func parse(
         _ text: String, fallbackName: String = ""
     ) throws -> AgentSkillDocument {
-        let (fields, body, hadFrontmatter) = split(text)
-        guard hadFrontmatter else { throw AgentSkillImportError.missingFrontmatter }
+        guard let frontmatter = frame(text) else { throw AgentSkillImportError.missingFrontmatter }
+        let fields = frontmatterFields(frontmatter.lines)
 
         var warnings: [String] = []
         // Missing description is the one hard failure, matching pi: a skill the
@@ -251,11 +251,11 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
         }
 
         var document = AgentSkillDocument(
-            name: name, description: description, body: body,
+            name: name, description: description, body: frontmatter.body,
             additionalFields: fields.filter { present.contains($0.key) },
             warnings: warnings
         )
-        document.package.frontmatter = auxiliaryFrontmatter(text)
+        document.package.frontmatter = auxiliaryFrontmatter(frontmatter.lines)
         return document
     }
 
@@ -266,14 +266,12 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
             + (extra.isEmpty ? "" : extra + "\n") + "---\n\n" + skill.body
     }
 
-    private static func auxiliaryFrontmatter(_ text: String) -> String {
-        let lines = text.replacingOccurrences(of: "\r\n", with: "\n")
-            .trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: "\n")
-        guard lines.first == "---", let end = lines.dropFirst().firstIndex(of: "---") else { return "" }
+    private static func auxiliaryFrontmatter(_ lines: ArraySlice<Substring>) -> String {
         var keep = true
-        return lines[1..<end].filter { line in
+        return lines.filter { line in
             if let first = line.first, !first.isWhitespace, !line.hasPrefix("#"), let colon = line.firstIndex(of: ":") {
-                keep = !["name", "description"].contains(String(line[..<colon]).lowercased())
+                let key = line[..<colon].trimmingCharacters(in: .whitespaces).lowercased()
+                keep = !["name", "description"].contains(key)
             }
             return keep
         }.joined(separator: "\n")
@@ -298,29 +296,23 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
     /// format's whole field set is scalar `key: value`, so a dependency would
     /// buy nothing but the ability to accept documents no other agent writes.
     /// Anything structured is skipped with the rest of what we ignore.
-    private static func split(
-        _ text: String
-    ) -> (fields: [String: String], body: String, hadFrontmatter: Bool) {
+    private static func frame(_ text: String) -> (lines: ArraySlice<Substring>, body: String)? {
         let normalized = text.replacingOccurrences(of: "\r\n", with: "\n")
-        var lines = normalized.split(separator: "\n", omittingEmptySubsequences: false)
         // A leading blank line before the fence is common enough in hand-written
         // files to be worth tolerating.
-        while let first = lines.first, first.trimmingCharacters(in: .whitespaces).isEmpty {
-            lines.removeFirst()
-        }
-        guard lines.first?.trimmingCharacters(in: .whitespaces) == "---" else {
-            return ([:], normalized, false)
-        }
-        guard
-            let end = lines.dropFirst().firstIndex(where: {
-                $0.trimmingCharacters(in: .whitespaces) == "---"
-            })
-        else {
-            return ([:], normalized, false)
-        }
+        let lines = normalized.split(separator: "\n", omittingEmptySubsequences: false)
+            .drop(while: { $0.trimmingCharacters(in: .whitespaces).isEmpty })
+        guard lines.first?.trimmingCharacters(in: .whitespaces) == "---",
+            let end = lines.dropFirst().firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "---" })
+        else { return nil }
+        let body = lines[lines.index(after: end)...].joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return (lines[lines.index(after: lines.startIndex)..<end], body)
+    }
 
+    private static func frontmatterFields(_ lines: ArraySlice<Substring>) -> [String: String] {
         var fields: [String: String] = [:]
-        for line in lines[1..<end] {
+        for line in lines {
             guard line.first?.isWhitespace == false, let separator = line.firstIndex(of: ":") else { continue }
             let key = line[..<separator].trimmingCharacters(in: .whitespaces).lowercased()
             guard !key.isEmpty, !key.hasPrefix("#") else { continue }
@@ -332,16 +324,13 @@ public nonisolated struct AgentSkillDocument: Hashable, Sendable {
         }
         // YAML block descriptions are common in portable skills.
         if let value = fields["description"], ["|", ">", "|-", ">-"].contains(value),
-            let start = lines[1..<end].firstIndex(where: { $0.hasPrefix("description:") })
+            let start = lines.firstIndex(where: { $0.hasPrefix("description:") })
         {
-            let continuation = lines[(start + 1)..<end].prefix { $0.isEmpty || $0.first?.isWhitespace == true }
+            let continuation = lines[(start + 1)...].prefix { $0.isEmpty || $0.first?.isWhitespace == true }
             fields["description"] = continuation.map { $0.trimmingCharacters(in: .whitespaces) }
                 .joined(separator: value.hasPrefix(">") ? " " : "\n")
         }
-        let body = lines[lines.index(after: end)...]
-            .joined(separator: "\n")
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        return (fields, body, true)
+        return fields
     }
 
     private static func unquoted(_ value: String) -> String {

@@ -40,6 +40,45 @@ import Testing
         #expect(AgentSkillDocument.render(decoded).contains("  owner: team"))
         #expect(decoded.package?.files["assets/image.bin"] == Data([0, 255]))
     }
+    @Test(arguments: ["\n", "\r\n"], ["---", " \t--- \t"])
+    func skillFrontmatterKeepsMetadataAcrossAcceptedFences(_ newline: String, _ fence: String) throws {
+        let source = [
+            "", " ", fence, "name : example", "description : Original summary",
+            "metadata:", "  # Keep this comment", "  owner: team", "  description: nested value",
+            "allowed-tools: read", fence, "", "# Body", "Instructions",
+        ].joined(separator: newline)
+        let document = try AgentSkillDocument.parse(source)
+        let edited = AgentSkill(
+            name: "renamed", summary: "Updated summary", body: document.body, package: document.package)
+        let rendered = AgentSkillDocument.render(edited)
+        let reopened = try AgentSkillDocument.parse(rendered)
+
+        #expect(reopened.name == "renamed")
+        #expect(reopened.description == "Updated summary")
+        #expect(reopened.body == "# Body\nInstructions")
+        #expect(reopened.package.frontmatter.contains("  owner: team"))
+        #expect(reopened.package.frontmatter.contains("  description: nested value"))
+        #expect(reopened.package.frontmatter.contains("  # Keep this comment"))
+        #expect(reopened.additionalFields["allowed-tools"] == "read")
+        #expect(!reopened.warnings.isEmpty)
+        #expect(!rendered.contains("name : example"))
+        #expect(!rendered.contains("description : Original summary"))
+    }
+
+    @Test(arguments: [">-", "|-"])
+    func skillFrontmatterPreservesBlockDescriptionsAndInertFields(_ marker: String) throws {
+        let document = try AgentSkillDocument.parse(
+            "\n --- \nname: example\ndescription: \(marker)\n  First line\n  second line\nmetadata:\n  owner: team\n --- \nBody"
+        )
+        #expect(document.description == (marker == ">-" ? "First line second line" : "First line\nsecond line"))
+        #expect(document.package.frontmatter == "metadata:\n  owner: team")
+    }
+
+    @Test(arguments: ["name: example\ndescription: Test", "---\nname: example\ndescription: Test"])
+    func skillFrontmatterStillRequiresBothFences(_ source: String) {
+        #expect(throws: AgentSkillImportError.missingFrontmatter) { try AgentSkillDocument.parse(source) }
+    }
+
     @Test func skillPatchRequiresUniqueTextAndPreservesOtherFiles() throws {
         let original = AgentSkill(
             name: "example", summary: "Example", body: "Original",
