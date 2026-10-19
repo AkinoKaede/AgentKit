@@ -364,7 +364,10 @@ public nonisolated enum AgentSkillImportError: LocalizedError, Sendable, Hashabl
         case .notReadable:
             String(localized: "This file is not readable text.", bundle: .module)
         case .tooLarge:
-            String(localized: "A skill may be at most \(AgentSkill.maximumBodyBytes / 1_024) KB.", bundle: .module)
+            String(
+                localized:
+                    "A skill may be at most \(AgentByteCountFormatter.string(fromByteCount: Int64(AgentSkill.maximumBodyBytes))).",
+                bundle: .module)
         case .noSkillFile:
             String(localized: "This folder has no SKILL.md.", bundle: .module)
         }

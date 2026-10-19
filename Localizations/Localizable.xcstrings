@@ -4195,42 +4195,42 @@
         }
       }
     },
-    "A skill may be at most %lld KB.": {
+    "A skill may be at most %@.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "技能最大为%lld KB。"
+            "value": "技能最大为%@。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "技能最大為%lld KB。"
+            "value": "技能最大為%@。"
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "スキルのサイズは%lld KB以下にしてください。"
+            "value": "スキルのサイズは%@以下にしてください。"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ein Skill darf höchstens %lld KB groß sein."
+            "value": "Ein Skill darf höchstens %@ groß sein."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "La taille d’une compétence ne doit pas dépasser %lld Ko."
+            "value": "La taille d’une compétence ne doit pas dépasser %@."
           }
         },
         "ko": {
           "stringUnit": {
             "state": "translated",
-            "value": "스킬 크기는 최대 %lld KB여야 합니다."
+            "value": "스킬 크기는 최대 %@여야 합니다."
           }
         }
       }

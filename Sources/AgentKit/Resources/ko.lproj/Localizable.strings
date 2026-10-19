@@ -28,8 +28,8 @@
 	<string>대체 %lld개 적용됨</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>작업 %1$lld개 · %2$lld개 완료</string>
-	<key>A skill may be at most %lld KB.</key>
-	<string>스킬 크기는 최대 %lld KB여야 합니다.</string>
+	<key>A skill may be at most %@.</key>
+	<string>스킬 크기는 최대 %@여야 합니다.</string>
 	<key>A skill name may be at most %lld characters.</key>
 	<string>스킬 이름은 최대 %lld자여야 합니다.</string>
 	<key>A skill name may not begin or end with a hyphen.</key>

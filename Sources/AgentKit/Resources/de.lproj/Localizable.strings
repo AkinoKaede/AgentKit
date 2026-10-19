@@ -18,8 +18,8 @@
 	<string>Übereinstimmende Zeilen: %1$lld · Durchsuchte Dateien: %2$lld</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>Aufgaben: %1$lld · Abgeschlossen: %2$lld</string>
-	<key>A skill may be at most %lld KB.</key>
-	<string>Ein Skill darf höchstens %lld KB groß sein.</string>
+	<key>A skill may be at most %@.</key>
+	<string>Ein Skill darf höchstens %@ groß sein.</string>
 	<key>A skill name may be at most %lld characters.</key>
 	<string>Ein Skill-Name darf höchstens %lld Zeichen lang sein.</string>
 	<key>A skill name may not begin or end with a hyphen.</key>

@@ -30,8 +30,8 @@
 	<string>已应用%lld处替换</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>%1$lld个任务·已完成%2$lld个</string>
-	<key>A skill may be at most %lld KB.</key>
-	<string>技能最大为%lld KB。</string>
+	<key>A skill may be at most %@.</key>
+	<string>技能最大为%@。</string>
 	<key>A skill name may be at most %lld characters.</key>
 	<string>技能名称最多%lld个字符。</string>
 	<key>A skill name may not begin or end with a hyphen.</key>

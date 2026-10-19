@@ -18,8 +18,8 @@
 	<string>Lignes correspondantes : %1$lld · Fichiers parcourus : %2$lld</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>Tâches : %1$lld · Terminées : %2$lld</string>
-	<key>A skill may be at most %lld KB.</key>
-	<string>La taille d’une compétence ne doit pas dépasser %lld Ko.</string>
+	<key>A skill may be at most %@.</key>
+	<string>La taille d’une compétence ne doit pas dépasser %@.</string>
 	<key>A skill name may be at most %lld characters.</key>
 	<string>Le nom d’une compétence ne doit pas dépasser %lld caractères.</string>
 	<key>A skill name may not begin or end with a hyphen.</key>

@@ -76,6 +76,23 @@ import Testing
         #expect(await network.requests.isEmpty)
     }
 
+    @Test func sizeLimitErrorUsesSharedByteCountFormatting() throws {
+        let size = AgentByteCountFormatter.string(fromByteCount: Int64(AgentSkill.maximumBodyBytes))
+        let message = try #require(AgentSkillImportError.tooLarge.errorDescription)
+        #expect(message.contains(size))
+    }
+
+    @Test func bodySizeLimitUsesUTF8BytesAndIncludesTheBoundary() throws {
+        let body = String(repeating: "é", count: AgentSkill.maximumBodyBytes / 2)
+        let skill = AgentSkill(name: "example", summary: "Example procedure", body: body)
+        try skill.validateForInstallation()
+
+        let oversized = AgentSkill(name: skill.name, summary: skill.summary, body: body + "a")
+        #expect(throws: AgentToolError.self) {
+            try oversized.validateForInstallation()
+        }
+    }
+
     @Test func readOnlySkillsRejectEveryMutationAndShadowing() throws {
         let skill = AgentSkill(name: "skill-creator", summary: "Create", body: "Instructions")
         for action in [

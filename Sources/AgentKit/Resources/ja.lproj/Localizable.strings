@@ -30,8 +30,8 @@
 	<string>%lldか所を置換しました</string>
 	<key>%lld tasks · %lld completed</key>
 	<string>%1$lld件のタスク · %2$lld件完了</string>
-	<key>A skill may be at most %lld KB.</key>
-	<string>スキルのサイズは%lld KB以下にしてください。</string>
+	<key>A skill may be at most %@.</key>
+	<string>スキルのサイズは%@以下にしてください。</string>
 	<key>A skill name may be at most %lld characters.</key>
 	<string>スキル名は%lld文字以内にしてください。</string>
 	<key>A skill name may not begin or end with a hyphen.</key>
