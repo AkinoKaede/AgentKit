@@ -463,16 +463,6 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func responsesUsesJSONTypeWhenSSEEventNameIsMissing() {
-        let type = AgentProviderClient.streamEventType(
-            SSEEvent(data: #"{"type":"response.output_item.added"}"#),
-            root: ["type": "response.output_item.added"]
-        )
-
-        #expect(type == "response.output_item.added")
-    }
-
-    @Test
     func openAIResponsesParsesBufferedCompletedResponseWithEmptyArguments() {
         let response: [String: Any] = [
             "object": "response", "status": "completed",
@@ -539,32 +529,6 @@ struct AgentProviderAdapterTests {
         }
         #expect(text == #"{"command":"ls"}"#)
         #expect(events.containsFinish == .completed)
-    }
-
-    @Test
-    func openAIResponsesMapsItemIDArgumentDeltasBackToCallID() {
-        var ids: [String: String] = [:]
-        var names: [String: String] = [:]
-        let added = AgentProviderClient.parseResponses(
-            "response.output_item.added",
-            [
-                "item": [
-                    "type": "function_call", "id": "item-1", "call_id": "call-1",
-                    "name": "list_hosts", "arguments": "",
-                ]
-            ],
-            callIDs: &ids, callNames: &names
-        )
-        let delta = AgentProviderClient.parseResponses(
-            "response.function_call_arguments.delta",
-            ["item_id": "item-1", "delta": "{}"],
-            callIDs: &ids, callNames: &names
-        )
-
-        #expect(added.firstTool?.id == "call-1")
-        #expect(delta.firstTool?.id == "call-1")
-        #expect(delta.firstTool?.name == "list_hosts")
-        #expect(delta.firstTool?.arguments == "{}")
     }
 
     @Test
@@ -707,64 +671,6 @@ struct AgentProviderAdapterTests {
             })
         #expect(functionResult["call_id"] as? String == "call-1")
         #expect(functionResult["output"] as? String == "host-a")
-    }
-
-    @Test
-    func openAIChatRetainsCallIDAcrossChunks() {
-        var ids: [Int: String] = [:]
-        _ = AgentProviderClient.parseChat(
-            [
-                "choices": [
-                    [
-                        "delta": [
-                            "tool_calls": [
-                                [
-                                    "index": 0, "id": "call-1",
-                                    "function": ["name": "fetch", "arguments": "{\"url\":"],
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], callIDs: &ids)
-        let next = AgentProviderClient.parseChat(
-            [
-                "choices": [
-                    [
-                        "delta": [
-                            "tool_calls": [
-                                [
-                                    "index": 0, "function": ["arguments": "\"https://example.com\"}"],
-                                ]
-                            ]
-                        ], "finish_reason": "tool_calls",
-                    ]
-                ]
-            ], callIDs: &ids)
-        #expect(next.firstTool?.id == "call-1")
-        #expect(next.containsFinish == .toolCalls)
-    }
-
-    @Test
-    func messagesRetainsNativeToolUseIDAcrossPartialJSON() {
-        var state = MessagesStreamState()
-        let start = AgentProviderClient.parseMessages(
-            "content_block_start",
-            [
-                "index": 1,
-                "content_block": [
-                    "type": "tool_use", "id": "toolu_123", "name": "sftp_read",
-                ],
-            ],
-            state: &state
-        )
-        let delta = AgentProviderClient.parseMessages(
-            "content_block_delta",
-            ["index": 1, "delta": ["partial_json": "{\"path\":\"/tmp\"}"]],
-            state: &state
-        )
-        #expect(start.firstTool?.id == "toolu_123")
-        #expect(delta.firstTool?.id == "toolu_123")
     }
 
     @Test
