@@ -8,7 +8,7 @@ nonisolated struct AgentProviderResponseParser {
     let buffered: Bool
 
     private var chatCallIDs: [Int: String] = [:]
-    private var anthropicState = AnthropicStreamState()
+    private var messagesState = MessagesStreamState()
     private var responseCallIDs: [String: String] = [:]
     private var responseCallNames: [String: String] = [:]
     private var reachedEndMarker = false
@@ -50,11 +50,11 @@ nonisolated struct AgentProviderResponseParser {
         case .chatCompletions:
             events = AgentProviderResponseDecoder.parseChat(root, callIDs: &chatCallIDs, wireNames: wireNames)
         case .messages:
-            events = AgentProviderResponseDecoder.parseAnthropic(
-                eventType, root, state: &anthropicState, wireNames: wireNames
+            events = AgentProviderResponseDecoder.parseMessages(
+                eventType, root, state: &messagesState, wireNames: wireNames
             )
         case .generateContent:
-            events = AgentProviderResponseDecoder.parseGoogle(root, wireNames: wireNames)
+            events = AgentProviderResponseDecoder.parseGenerateContent(root, wireNames: wireNames)
         }
         recordTermination(in: events)
         return events
@@ -69,8 +69,9 @@ nonisolated struct AgentProviderResponseParser {
             switch format {
             case .responses: events = AgentProviderResponseDecoder.parseCompletedResponses(root)
             case .chatCompletions: events = AgentProviderResponseDecoder.parseChat(root, wireNames: wireNames)
-            case .messages: events = AgentProviderResponseDecoder.parseCompletedAnthropic(root, wireNames: wireNames)
-            case .generateContent: events = AgentProviderResponseDecoder.parseGoogle(root, wireNames: wireNames)
+            case .messages: events = AgentProviderResponseDecoder.parseCompletedMessages(root, wireNames: wireNames)
+            case .generateContent:
+                events = AgentProviderResponseDecoder.parseGenerateContent(root, wireNames: wireNames)
             }
             recordTermination(in: events)
             return events

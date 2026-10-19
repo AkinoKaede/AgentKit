@@ -1,7 +1,7 @@
 import Foundation
 
 nonisolated extension AgentProviderResponseDecoder {
-    static func parseCompletedAnthropic(
+    static func parseCompletedMessages(
         _ root: [String: Any], wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
         guard root["type"] as? String == "message" else { return [] }
@@ -41,50 +41,50 @@ nonisolated extension AgentProviderResponseDecoder {
                 events.append(
                     .webSearch(
                         AgentWebSearchActivity(
-                            query: query ?? "", sources: anthropicSources(block["content"])
+                            query: query ?? "", sources: messagesSources(block["content"])
                         )))
             default:
                 continue
             }
         }
-        if let usage = anthropicUsage(root["usage"]) { events.append(usage) }
+        if let usage = messagesUsage(root["usage"]) { events.append(usage) }
         let reason =
-            anthropicStopReason(root["stop_reason"] as? String)
+            messagesStopReason(root["stop_reason"] as? String)
             ?? (events.containsToolCall ? .toolCalls : .completed)
         events.append(.finished(reason))
         return events
     }
 
-    static func parseAnthropic(_ type: String, _ root: [String: Any]) -> [AgentModelStreamEvent] {
-        var state = AnthropicStreamState()
-        return parseAnthropic(type, root, state: &state, wireNames: [:])
+    static func parseMessages(_ type: String, _ root: [String: Any]) -> [AgentModelStreamEvent] {
+        var state = MessagesStreamState()
+        return parseMessages(type, root, state: &state, wireNames: [:])
     }
 
-    static func parseAnthropic(
-        _ type: String, _ root: [String: Any], state: inout AnthropicStreamState,
+    static func parseMessages(
+        _ type: String, _ root: [String: Any], state: inout MessagesStreamState,
         wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
         let index = root["index"] as? Int ?? 0
 
-        // Anthropic splits one turn's count across two events: input arrives
+        // Messages splits one turn's count across two events: input arrives
         // with `message_start`, output grows on each `message_delta`. Both are
         // cumulative, which is what `AgentTokenUsage.merging` is built for.
         if type == "message_start" {
             let message = root["message"] as? [String: Any]
-            return anthropicUsage(message?["usage"]).map { [$0] } ?? []
+            return messagesUsage(message?["usage"]).map { [$0] } ?? []
         }
         if type == "message_delta" {
             let delta = root["delta"] as? [String: Any]
-            if let reason = anthropicStopReason(delta?["stop_reason"] as? String) {
+            if let reason = messagesStopReason(delta?["stop_reason"] as? String) {
                 state.stopReason = reason
             }
-            return anthropicUsage(root["usage"]).map { [$0] } ?? []
+            return messagesUsage(root["usage"]).map { [$0] } ?? []
         }
 
         if type == "content_block_start", let block = root["content_block"] as? [String: Any] {
             switch block["type"] as? String {
             case "thinking":
-                state.thinkingBlocks[index] = AnthropicStreamState.ThinkingBlock(
+                state.thinkingBlocks[index] = MessagesStreamState.ThinkingBlock(
                     text: block["thinking"] as? String ?? "",
                     signature: block["signature"] as? String ?? ""
                 )
@@ -109,13 +109,13 @@ nonisolated extension AgentProviderResponseDecoder {
                 // those deltas fall through to the tool-call branch below
                 // manufactures a call with an empty name — which `AgentRuntime`
                 // rejects with `invalidToolCall`, failing the entire turn.
-                state.serverBlocks[index] = AnthropicStreamState.ServerBlock(
+                state.serverBlocks[index] = MessagesStreamState.ServerBlock(
                     id: block["id"] as? String ?? "", name: block["name"] as? String ?? ""
                 )
                 return []
             case "web_search_tool_result":
-                state.serverBlocks[index] = AnthropicStreamState.ServerBlock()
-                // Anthropic sends the query and its hits as two sibling blocks.
+                state.serverBlocks[index] = MessagesStreamState.ServerBlock()
+                // Messages sends the query and its hits as two sibling blocks.
                 // The query was parked at the previous block's stop so one card
                 // can carry both.
                 let query = (block["tool_use_id"] as? String)
@@ -123,7 +123,7 @@ nonisolated extension AgentProviderResponseDecoder {
                 return [
                     .webSearch(
                         AgentWebSearchActivity(
-                            query: query ?? "", sources: anthropicSources(block["content"])
+                            query: query ?? "", sources: messagesSources(block["content"])
                         ))
                 ]
             default:
@@ -171,7 +171,7 @@ nonisolated extension AgentProviderResponseDecoder {
         if type == "content_block_stop",
             let block = state.serverBlocks.removeValue(forKey: index), !block.id.isEmpty
         {
-            state.pendingQueries[block.id] = anthropicQuery(block.input)
+            state.pendingQueries[block.id] = messagesQuery(block.input)
             return []
         }
 
@@ -180,7 +180,7 @@ nonisolated extension AgentProviderResponseDecoder {
         return []
     }
 
-    private static func anthropicStopReason(_ reason: String?) -> AgentStopReason? {
+    private static func messagesStopReason(_ reason: String?) -> AgentStopReason? {
         switch reason {
         case "max_tokens": .length
         case "tool_use": .toolCalls
@@ -189,7 +189,7 @@ nonisolated extension AgentProviderResponseDecoder {
         }
     }
 
-    private static func anthropicQuery(_ rawInput: String) -> String {
+    private static func messagesQuery(_ rawInput: String) -> String {
         guard let data = rawInput.data(using: .utf8),
             let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         else { return "" }
@@ -199,7 +199,7 @@ nonisolated extension AgentProviderResponseDecoder {
     /// Tolerates the error shape. A failed search replaces the array of hits
     /// with a single `web_search_tool_result_error` object, so the cast is what
     /// turns "the search failed" into an empty source list rather than a crash.
-    private static func anthropicSources(_ content: Any?) -> [AgentWebSearchActivity.Source] {
+    private static func messagesSources(_ content: Any?) -> [AgentWebSearchActivity.Source] {
         (content as? [[String: Any]] ?? []).compactMap { row in
             guard let url = row["url"] as? String, !url.isEmpty else { return nil }
             return AgentWebSearchActivity.Source(
@@ -210,7 +210,7 @@ nonisolated extension AgentProviderResponseDecoder {
 
     /// Unlike OpenAI and Gemini, input_tokens excludes cache reads and writes.
     /// Add the three disjoint counts so cached prompts do not look nearly empty.
-    private static func anthropicUsage(_ usage: Any?) -> AgentModelStreamEvent? {
+    private static func messagesUsage(_ usage: Any?) -> AgentModelStreamEvent? {
         guard let usage = usage as? [String: Any] else { return nil }
         let read = count(usage["cache_read_input_tokens"])
         return .usage(
@@ -224,14 +224,14 @@ nonisolated extension AgentProviderResponseDecoder {
     }
 }
 
-/// Per-stream Anthropic block bookkeeping.
+/// Per-stream Messages block bookkeeping.
 ///
-/// Anthropic streams two kinds of block through the same delta events: the
+/// Messages streams two kinds of block through the same delta events: the
 /// model's own `tool_use`, which the runtime must execute, and the provider's
 /// `server_tool_use`, which it must not. Knowing which index is which is the
 /// only way to tell them apart mid-stream, and getting it wrong is not a
-/// cosmetic error — see `parseAnthropic`.
-public nonisolated struct AnthropicStreamState: Sendable {
+/// cosmetic error — see `parseMessages`.
+public nonisolated struct MessagesStreamState: Sendable {
     fileprivate struct ThinkingBlock: Sendable {
         var text = ""
         var signature = ""

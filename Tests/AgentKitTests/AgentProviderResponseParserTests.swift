@@ -133,7 +133,7 @@ struct AgentProviderResponseParserTests {
     }
 
     @Test(arguments: ["max_tokens", "tool_use", "end_turn", "stop_sequence"])
-    func anthropicStopReasonsAgreeAcrossJSONAndSSE(_ reason: String) throws {
+    func messagesStopReasonsAgreeAcrossJSONAndSSE(_ reason: String) throws {
         let expected: AgentStopReason =
             switch reason {
             case "max_tokens": .length
@@ -172,7 +172,7 @@ struct AgentProviderResponseParserTests {
     }
 
     @Test
-    func anthropicMissingStopReasonPreservesCompatibilityFallbacks() throws {
+    func messagesMissingStopReasonPreservesCompatibilityFallbacks() throws {
         var json = parser(.messages)
         let completed = try json.parseResponse(
             Data(#"{"type":"message","content":[{"type":"tool_use","id":"call-1","name":"lookup","input":{}}]}"#.utf8))

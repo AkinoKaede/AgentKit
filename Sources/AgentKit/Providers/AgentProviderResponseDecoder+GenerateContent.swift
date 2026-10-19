@@ -1,19 +1,19 @@
 import Foundation
 
 nonisolated extension AgentProviderResponseDecoder {
-    static func parseGoogle(
+    static func parseGenerateContent(
         _ root: [String: Any], wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
         // Read before the `candidates` guard for the same reason as Chat
-        // Completions: Gemini repeats `usageMetadata` on chunks that carry no
+        // Completions: GenerateContent repeats `usageMetadata` on chunks that carry no
         // candidate at all, and those are frequently the last ones.
-        var events: [AgentModelStreamEvent] = googleUsage(root).map { [$0] } ?? []
+        var events: [AgentModelStreamEvent] = generateContentUsage(root).map { [$0] } ?? []
         guard let candidate = (root["candidates"] as? [[String: Any]])?.first else { return events }
         // Grounding hangs off the candidate, beside `content`, not inside
         // `parts` — and it is read before the guard below, because a chunk can
         // carry the metadata for a search without carrying any content.
         if let grounding = candidate["groundingMetadata"] as? [String: Any] {
-            events.append(.webSearch(googleGrounding(grounding)))
+            events.append(.webSearch(generateContentGrounding(grounding)))
         }
         guard let content = candidate["content"] as? [String: Any] else {
             if candidate["finishReason"] != nil { events.append(.finished(.completed)) }
@@ -47,12 +47,12 @@ nonisolated extension AgentProviderResponseDecoder {
         return events
     }
 
-    /// Gemini reports every query of the turn in one `webSearchQueries` array
+    /// GenerateContent reports every query of the turn in one `webSearchQueries` array
     /// and its sources in `groundingChunks`, with no mapping between them. The
     /// queries are joined rather than split into a card each, because inventing
     /// a source-to-query assignment the payload does not state would be worse
     /// than showing them together.
-    private static func googleGrounding(
+    private static func generateContentGrounding(
         _ metadata: [String: Any]
     ) -> AgentWebSearchActivity {
         let queries = (metadata["webSearchQueries"] as? [String] ?? [])
@@ -71,7 +71,7 @@ nonisolated extension AgentProviderResponseDecoder {
         )
     }
 
-    private static func googleUsage(_ root: [String: Any]) -> AgentModelStreamEvent? {
+    private static func generateContentUsage(_ root: [String: Any]) -> AgentModelStreamEvent? {
         guard let usage = root["usageMetadata"] as? [String: Any] else { return nil }
         return .usage(
             AgentTokenUsage(

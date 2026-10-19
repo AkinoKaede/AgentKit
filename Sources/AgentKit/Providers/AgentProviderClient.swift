@@ -246,27 +246,27 @@ nonisolated extension AgentProviderClient {
         AgentProviderResponseDecoder.parseChat(root, callIDs: &callIDs, wireNames: wireNames)
     }
 
-    public static func parseCompletedAnthropic(
+    public static func parseCompletedMessages(
         _ root: [String: Any], wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
-        AgentProviderResponseDecoder.parseCompletedAnthropic(root, wireNames: wireNames)
+        AgentProviderResponseDecoder.parseCompletedMessages(root, wireNames: wireNames)
     }
 
-    public static func parseAnthropic(_ type: String, _ root: [String: Any]) -> [AgentModelStreamEvent] {
-        AgentProviderResponseDecoder.parseAnthropic(type, root)
+    public static func parseMessages(_ type: String, _ root: [String: Any]) -> [AgentModelStreamEvent] {
+        AgentProviderResponseDecoder.parseMessages(type, root)
     }
 
-    public static func parseAnthropic(
-        _ type: String, _ root: [String: Any], state: inout AnthropicStreamState,
+    public static func parseMessages(
+        _ type: String, _ root: [String: Any], state: inout MessagesStreamState,
         wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
-        AgentProviderResponseDecoder.parseAnthropic(type, root, state: &state, wireNames: wireNames)
+        AgentProviderResponseDecoder.parseMessages(type, root, state: &state, wireNames: wireNames)
     }
 
-    public static func parseGoogle(
+    public static func parseGenerateContent(
         _ root: [String: Any], wireNames: [String: String] = [:]
     ) -> [AgentModelStreamEvent] {
-        AgentProviderResponseDecoder.parseGoogle(root, wireNames: wireNames)
+        AgentProviderResponseDecoder.parseGenerateContent(root, wireNames: wireNames)
     }
 }
 

@@ -374,7 +374,7 @@ struct AgentProviderAdapterTests {
                 ], wireNames: names
             ).firstTool?.name == tool.qualifiedName)
         #expect(
-            AgentProviderClient.parseCompletedAnthropic(
+            AgentProviderClient.parseCompletedMessages(
                 [
                     "type": "message",
                     "content": [
@@ -385,7 +385,7 @@ struct AgentProviderAdapterTests {
                 ], wireNames: names
             ).firstTool?.name == tool.qualifiedName)
         #expect(
-            AgentProviderClient.parseGoogle(
+            AgentProviderClient.parseGenerateContent(
                 [
                     "candidates": [
                         [
@@ -746,9 +746,9 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func anthropicRetainsNativeToolUseIDAcrossPartialJSON() {
-        var state = AnthropicStreamState()
-        let start = AgentProviderClient.parseAnthropic(
+    func messagesRetainsNativeToolUseIDAcrossPartialJSON() {
+        var state = MessagesStreamState()
+        let start = AgentProviderClient.parseMessages(
             "content_block_start",
             [
                 "index": 1,
@@ -758,7 +758,7 @@ struct AgentProviderAdapterTests {
             ],
             state: &state
         )
-        let delta = AgentProviderClient.parseAnthropic(
+        let delta = AgentProviderClient.parseMessages(
             "content_block_delta",
             ["index": 1, "delta": ["partial_json": "{\"path\":\"/tmp\"}"]],
             state: &state
@@ -768,14 +768,14 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func anthropicThinkingStreamsAndReplaysItsSignature() throws {
-        var state = AnthropicStreamState()
-        var events = AgentProviderClient.parseAnthropic(
+    func messagesThinkingStreamsAndReplaysItsSignature() throws {
+        var state = MessagesStreamState()
+        var events = AgentProviderClient.parseMessages(
             "content_block_start",
             ["index": 0, "content_block": ["type": "thinking", "thinking": ""]],
             state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_delta",
             [
                 "index": 0,
@@ -784,7 +784,7 @@ struct AgentProviderAdapterTests {
                 ],
             ], state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_delta",
             [
                 "index": 0,
@@ -793,7 +793,7 @@ struct AgentProviderAdapterTests {
                 ],
             ], state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_stop", ["index": 0], state: &state
         )
 
@@ -822,8 +822,8 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func anthropicBufferedThinkingIsNotAnswerText() {
-        let events = AgentProviderClient.parseCompletedAnthropic([
+    func messagesBufferedThinkingIsNotAnswerText() {
+        let events = AgentProviderClient.parseCompletedMessages([
             "type": "message",
             "content": [
                 [
@@ -840,8 +840,8 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func geminiParsesFunctionCallAndFinish() {
-        let events = AgentProviderClient.parseGoogle([
+    func generateContentParsesFunctionCallAndFinish() {
+        let events = AgentProviderClient.parseGenerateContent([
             "candidates": [
                 [
                     "content": [
@@ -860,8 +860,8 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func googleThoughtTextIsReasoningAndFunctionSignatureReplays() throws {
-        let events = AgentProviderClient.parseGoogle([
+    func generateContentThoughtTextIsReasoningAndFunctionSignatureReplays() throws {
+        let events = AgentProviderClient.parseGenerateContent([
             "candidates": [
                 [
                     "content": [
@@ -991,11 +991,11 @@ struct AgentProviderAdapterTests {
     /// `AgentRuntime` rejects with `invalidToolCall` — so a single native
     /// search would fail the entire assistant turn.
     @Test
-    func anthropicServerToolBlocksNeverBecomeToolCalls() {
-        var state = AnthropicStreamState()
+    func messagesServerToolBlocksNeverBecomeToolCalls() {
+        var state = MessagesStreamState()
         var events: [AgentModelStreamEvent] = []
 
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_start",
             [
                 "index": 0,
@@ -1006,13 +1006,13 @@ struct AgentProviderAdapterTests {
             state: &state
         )
         for chunk in [#"{"query""#, #": "swift 6""#, "}"] {
-            events += AgentProviderClient.parseAnthropic(
+            events += AgentProviderClient.parseMessages(
                 "content_block_delta",
                 ["index": 0, "delta": ["type": "input_json_delta", "partial_json": chunk]],
                 state: &state
             )
         }
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_stop", ["index": 0], state: &state
         )
 
@@ -1021,11 +1021,11 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func anthropicPairsItsSearchQueryWithItsResults() throws {
-        var state = AnthropicStreamState()
+    func messagesPairsItsSearchQueryWithItsResults() throws {
+        var state = MessagesStreamState()
         var events: [AgentModelStreamEvent] = []
 
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_start",
             [
                 "index": 0,
@@ -1035,7 +1035,7 @@ struct AgentProviderAdapterTests {
             ],
             state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_delta",
             [
                 "index": 0,
@@ -1043,10 +1043,10 @@ struct AgentProviderAdapterTests {
             ],
             state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_stop", ["index": 0], state: &state
         )
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_start",
             [
                 "index": 1,
@@ -1060,7 +1060,7 @@ struct AgentProviderAdapterTests {
             state: &state
         )
         // The model's own text still streams normally afterwards.
-        events += AgentProviderClient.parseAnthropic(
+        events += AgentProviderClient.parseMessages(
             "content_block_delta",
             ["index": 2, "delta": ["type": "text_delta", "text": "Swift 6 ships"]],
             state: &state
@@ -1075,9 +1075,9 @@ struct AgentProviderAdapterTests {
 
     /// A failed search replaces the array of hits with a single error object.
     @Test
-    func anthropicSearchErrorYieldsNoSources() throws {
-        var state = AnthropicStreamState()
-        let events = AgentProviderClient.parseAnthropic(
+    func messagesSearchErrorYieldsNoSources() throws {
+        var state = MessagesStreamState()
+        let events = AgentProviderClient.parseMessages(
             "content_block_start",
             [
                 "index": 0,
@@ -1147,8 +1147,8 @@ struct AgentProviderAdapterTests {
     }
 
     @Test
-    func googleGroundingMetadataBecomesOneSearchCard() throws {
-        let events = AgentProviderClient.parseGoogle([
+    func generateContentGroundingMetadataBecomesOneSearchCard() throws {
+        let events = AgentProviderClient.parseGenerateContent([
             "candidates": [
                 [
                     "content": ["parts": [["text": "Swift 6 shipped."]]],
@@ -1173,8 +1173,8 @@ struct AgentProviderAdapterTests {
 
     /// Gemini can report grounding on a chunk that carries no `content` at all.
     @Test
-    func googleGroundingIsReadFromAContentlessChunk() throws {
-        let events = AgentProviderClient.parseGoogle([
+    func generateContentGroundingIsReadFromAContentlessChunk() throws {
+        let events = AgentProviderClient.parseGenerateContent([
             "candidates": [
                 [
                     "groundingMetadata": ["webSearchQueries": ["swift 6"]]
