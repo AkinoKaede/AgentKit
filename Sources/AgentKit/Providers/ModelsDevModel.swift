@@ -138,17 +138,17 @@ public nonisolated struct ModelsDevLimits: ModelsDevObject {
     }
 
     public var context: Int? {
-        get { fields["context"]?.integerValue }
+        get { integer("context") }
         set { fields["context"] = newValue.map { .number(Double($0)) } }
     }
 
     public var input: Int? {
-        get { fields["input"]?.integerValue }
+        get { integer("input") }
         set { fields["input"] = newValue.map { .number(Double($0)) } }
     }
 
     public var output: Int? {
-        get { fields["output"]?.integerValue }
+        get { integer("output") }
         set { fields["output"] = newValue.map { .number(Double($0)) } }
     }
 }
@@ -194,12 +194,12 @@ public nonisolated struct ModelsDevReasoningOption: ModelsDevObject {
     }
 
     public var min: Int? {
-        get { fields["min"]?.integerValue }
+        get { integer("min") }
         set { fields["min"] = newValue.map { .number(Double($0)) } }
     }
 
     public var max: Int? {
-        get { fields["max"]?.integerValue }
+        get { integer("max") }
         set { fields["max"] = newValue.map { .number(Double($0)) } }
     }
 
@@ -271,5 +271,15 @@ public nonisolated struct ModelsDevProvider: ModelsDevObject {
             }
         }
         set { fields["models"] = .object(newValue.mapValues { .object($0.fields) }) }
+    }
+}
+
+extension ModelsDevObject {
+    fileprivate func integer(_ key: String) -> Int? {
+        guard let value = fields[key]?.numberValue,
+            value.isFinite, value.rounded() == value,
+            value >= Double(Int.min), value < Double(Int.max)
+        else { return nil }
+        return Int(value)
     }
 }

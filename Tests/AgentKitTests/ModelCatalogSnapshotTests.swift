@@ -7,6 +7,33 @@ import Testing
 @Suite
 struct ModelCatalogSnapshotTests {
     @Test
+    func obsoleteArraySnapshotsAndOverridesAreNotAccepted() throws {
+        let legacy = try JSONSerialization.data(withJSONObject: [
+            "package": "pi", "version": "1", "commit": "fixture", "models": [legacyRow("obsolete")],
+        ])
+        let catalog = ModelCapabilityResolver.BundledModelCatalog.load(data: legacy)
+        #expect(catalog.metadata == nil)
+        #expect(catalog.recordsByID.isEmpty)
+        let overrides = try JSONSerialization.data(withJSONObject: ["models": [legacyRow("obsolete")]])
+        let result = ModelCapabilityResolver.BundledModelCatalog.load(
+            data: try snapshot([row("current")]), overridesData: overrides)
+        #expect(result.recordsByID["current"]?.count == 1)
+        #expect(result.recordsByID["obsolete"] == nil)
+    }
+
+    @Test
+    func outOfRangeNativeLimitsAreUnknownRatherThanTrapping() {
+        let limits = ModelsDevLimits(fields: [
+            "context": .number(Double.greatestFiniteMagnitude),
+            "input": .number(Double(Int.max)),
+            "output": .number(1.5),
+        ])
+        #expect(limits.context == nil)
+        #expect(limits.input == nil)
+        #expect(limits.output == nil)
+    }
+
+    @Test
     func nativeListingFlagsAndLimitsBeatFamilyInferenceWithoutDroppingMetadata() throws {
         let data = Data(
             #"""
@@ -165,16 +192,17 @@ struct ModelCatalogSnapshotTests {
 
     @Test
     func overridesReplaceBothIndexesAndWorkWithoutBaseSnapshot() throws {
-        var override = legacyRow("shared")
-        override["contextWindow"] = 456
-        override["showInAssistant"] = false
-        let overrides = try JSONSerialization.data(withJSONObject: ["models": [override]])
+        var override = row("shared")
+        override["limit"] = ["context": 456]
+        let overrides = try snapshot([override])
+        let policy = Data(#"{"hiddenFromAssistant":[{"provider":"openai","modelID":"shared"}]}"#.utf8)
         for data in [try snapshot([row("shared")]), Data("broken".utf8)] {
             let catalog = ModelCapabilityResolver.BundledModelCatalog.load(data: data, overridesData: overrides)
             let direct = ModelProvider(name: "Direct", inferenceURL: "https://api.openai.com/v1/responses")
             for provider in [direct, ModelProvider(name: "Gateway")] {
                 let resolution = ModelCapabilityResolver.resolve(
-                    model: AIModel(id: "shared"), provider: provider, catalogData: data, overridesData: overrides
+                    model: AIModel(id: "shared"), provider: provider, catalogData: data, overridesData: overrides,
+                    policyData: policy
                 )
                 #expect(resolution.model.contextLength == 456)
                 #expect(!resolution.model.isShownInAssistant)
@@ -220,7 +248,7 @@ struct ModelCatalogSnapshotTests {
     }
 
     @Test(arguments: ["new", "legacy", "missing", "malformed"])
-    func bundleResourceSelectionPrefersNewNameAndSupportsLegacy(mode: String) throws {
+    func bundleResourceSelectionLoadsOnlyNativeCatalog(mode: String) throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         let bundleURL = directory.appendingPathComponent("Catalog.bundle")
@@ -249,11 +277,6 @@ struct ModelCatalogSnapshotTests {
         case "new":
             #expect(loaded.recordsByID["new"]?.count == 1)
             #expect(loaded.recordsByID["legacy"] == nil)
-        case "legacy":
-            #expect(loaded.recordsByID["legacy"]?.count == 1)
-            #expect(loaded.metadata?.package == "pi-test")
-            #expect(loaded.metadata?.version == "1.0")
-            #expect(loaded.metadata?.commit == "legacy")
         default:
             #expect(loaded.recordsByID.isEmpty)
             #expect(loaded.metadata == nil)

@@ -68,19 +68,16 @@ struct ModelCapabilityResolverTests {
     private var catalogData: Data {
         Data(
             #"""
-            {
-                "package": "pi-test", "version": "1.0.2", "commit": "fixture",
-                "models": [
-                    {"provider":"openai","id":"catalog-chat","name":"Chat","type":"chat",
-                     "reasoning":true,"input":["text"],"output":["text"],"contextWindow":128000,"maxOutputTokens":8192,
-                     "effortWireValues":{"max":"max"}},
-                    {"provider":"openai","id":"catalog-image","name":"Image","type":"image",
-                     "reasoning":null,"input":["text","image"],"output":["image"],"contextWindow":null,
-                     "maxOutputTokens":null,"effortWireValues":{}},
-                    {"provider":"openai","id":"catalog-classifier","name":"Classifier","type":"classifier",
-                     "input":["text"],"output":["text"],"contextWindow":32000,"effortWireValues":{}}
-                ]
-            }
+            {"openai":{"models":{
+                "catalog-chat":{"name":"Chat","reasoning":true,"tool_call":true,
+                    "modalities":{"input":["text"],"output":["text"]},
+                    "limit":{"context":128000,"output":8192},
+                    "reasoning_options":[{"type":"effort","values":["none","minimal","low","medium","high","max"]}]},
+                "catalog-image":{"name":"Image","type":"image",
+                    "modalities":{"input":["text","image"],"output":["image"]}},
+                "catalog-classifier":{"name":"Classifier","type":"decision",
+                    "modalities":{"input":["text"],"output":["text"]},"limit":{"context":32000}}
+            }}}
             """#.utf8
         )
     }

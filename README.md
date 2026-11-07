@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.1.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.1.1")
 ```
 
 Then add the core product to your target:
@@ -315,8 +315,8 @@ the configured endpoint, not models.dev at runtime.
 
 `catalogMetadata.source` and `sha256` identify the snapshot actually loaded;
 `package` is `models.dev`, `version` is its SHA-256, and `commit` is empty because
-the API does not claim a Git revision. Legacy `PiModelCatalog.json` and old overrides
-remain readable when migrating existing hosts. New snapshots take precedence.
+the API does not claim a Git revision. Only the native models.dev dictionary format is accepted for catalogs and overrides;
+obsolete Pi resources and array-shaped snapshots are not loaded.
 
 Live and buffered responses share per-request parsing and SSE framing. To replace the provider
 layer entirely, implement `AgentModelStreaming`; `AgentModelCompleting` supports tool-free features

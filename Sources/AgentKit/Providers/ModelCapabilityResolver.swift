@@ -336,16 +336,7 @@ public nonisolated enum ModelCapabilityResolver {
             let declaredSet = Set(declared.compactMap(ReasoningEffort.init(catalogName:)))
             supported = ReasoningEffort.allCases.filter(declaredSet.contains)
         } else {
-            let unsupported = Set(
-                (record.unsupportedEfforts ?? []).compactMap(ReasoningEffort.init(catalogName:))
-            )
-            supported = ReasoningEffort.allCases.filter { effort in
-                if unsupported.contains(effort) { return false }
-                if effort == .xHigh || effort == .max {
-                    return record.effortWireValues[effort.catalogName] != nil
-                }
-                return true
-            }
+            supported = [.off, .minimal, .low, .medium, .high]
         }
         if supported.isEmpty { supported = [.off] }
 
@@ -385,9 +376,7 @@ public nonisolated enum ModelCapabilityResolver {
                         ?? $0.url(forResource: name, withExtension: "json", subdirectory: "Resources")
                 }.first
             }
-            // Prefer the new resource across all bundles. A malformed new snapshot
-            // must not silently resurrect a stale Pi snapshot.
-            let catalogURL = resourceURL("ModelCatalog") ?? resourceURL("PiModelCatalog")
+            let catalogURL = resourceURL("ModelCatalog")
             let overridesURL = resourceURL("ModelCatalogOverrides")
             let policyURL = resourceURL("ModelCatalogPolicy")
             return load(
@@ -414,12 +403,6 @@ public nonisolated enum ModelCapabilityResolver {
                     package: "models.dev", version: digest, commit: "", modelCount: records.count,
                     source: "https://models.dev/api.json", sha256: digest
                 )
-            } else if let legacy = try? decoder.decode(LegacyCatalogPayload.self, from: data) {
-                records = legacy.models
-                metadata = CatalogMetadata(
-                    package: legacy.package, version: legacy.version, commit: legacy.commit,
-                    modelCount: records.count, source: legacy.source
-                )
             } else {
                 records = []
                 metadata = nil
@@ -442,12 +425,8 @@ public nonisolated enum ModelCapabilityResolver {
             }
 
             if let overridesData {
-                let native = load(data: overridesData)
-                let records =
-                    native.metadata != nil
-                    ? Array(native.recordsByKey.values)
-                    : (try? decoder.decode(CatalogOverridesPayload.self, from: overridesData).models) ?? []
-                for record in records {
+                let overrides = load(data: overridesData)
+                for record in overrides.recordsByKey.values {
                     upsert(record)
                 }
             }
@@ -557,23 +536,11 @@ public nonisolated enum ModelCapabilityResolver {
         }
     }
 
-    private struct LegacyCatalogPayload: Decodable, Sendable {
-        var package: String
-        var version: String
-        var commit: String
-        var source: String?
-        var models: [CatalogRecord]
-    }
-
-    private struct CatalogOverridesPayload: Decodable, Sendable {
-        var models: [CatalogRecord]
-    }
-
     private struct CatalogPolicyPayload: Decodable {
         var hiddenFromAssistant: [CatalogSource]
     }
 
-    struct CatalogRecord: Decodable, Sendable {
+    struct CatalogRecord: Sendable {
         var provider: String
         var id: String
         var name: String
@@ -588,7 +555,6 @@ public nonisolated enum ModelCapabilityResolver {
         var maxOutputTokens: Int?
         var showInAssistant: Bool?
         var supportedEfforts: [String]?
-        var unsupportedEfforts: [String]?
         var effortWireValues: [String: String] = [:]
 
         var kind: AIModel.Kind {
