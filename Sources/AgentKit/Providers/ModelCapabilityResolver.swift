@@ -171,7 +171,11 @@ public nonisolated enum ModelCapabilityResolver {
         }
         return Resolution(
             model: resolvedModel,
-            reasoning: reasoning(model: resolvedModel, provider: provider, record: record),
+            reasoning: reasoning(
+                model: resolvedModel, provider: provider,
+                record: resolvedModel.specification.reasoningOptions != nil
+                    ? resolvedModel.specification.catalogRecord(provider: resolvedModel.ownedBy, id: resolvedModel.id)
+                    : record),
             catalogSource: record.map { CatalogSource(provider: $0.provider, modelID: $0.id) }
         )
     }
@@ -226,15 +230,10 @@ public nonisolated enum ModelCapabilityResolver {
         if result.ownedBy.isEmpty { result.ownedBy = record.provider }
         if !reported.contains(.kind) { result.kind = record.kind }
         if !reported.contains(.input) {
-            let modalities = Set(record.input.compactMap(AIModel.Modality.init(rawValue:)))
-            result.input = modalities.isEmpty ? [.text] : modalities
+            result.specification.modalities.input = record.input
         }
         if !reported.contains(.output) {
-            let modalities = Set(
-                record.output
-                    .compactMap(AIModel.Modality.init(rawValue:))
-            )
-            result.output = modalities.isEmpty ? [.text] : modalities
+            result.specification.modalities.output = record.output
         }
         if !reported.contains(.abilities) {
             if let abilities = record.abilities {

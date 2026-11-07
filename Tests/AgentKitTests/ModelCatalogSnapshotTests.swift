@@ -138,6 +138,39 @@ struct ModelCatalogSnapshotTests {
     }
 
     @Test
+    func nativeModalitiesRemainLosslessDuringCatalogResolution() throws {
+        var record = row("future-modalities")
+        record["modalities"] = ["input": ["text", "spatial"], "output": []]
+        let resolution = ModelCapabilityResolver.resolve(
+            model: AIModel(id: "future-modalities"), provider: ModelProvider(name: "Gateway"),
+            catalogData: try snapshot([record]))
+        #expect(resolution.model.specification.modalities.input == ["text", "spatial"])
+        #expect(resolution.model.specification.modalities.output == [])
+        #expect(resolution.model.input == [.text])
+        #expect(resolution.model.output.isEmpty)
+    }
+
+    @Test
+    func reportedReasoningOptionsWinDuringInitialResolutionEvenWithoutACatalogMatch() throws {
+        var record = row("reasoner")
+        record["reasoning"] = true
+        record["reasoning_options"] = [["type": "effort", "values": ["high"]]]
+        var model = AIModel(id: "reasoner", abilities: [.reasoning])
+        model.specification.reasoningOptions = [
+            ModelsDevReasoningOption(fields: ["type": .string("effort"), "values": .array([.string("low")])])
+        ]
+        for data in [try snapshot([record]), Data()] {
+            let resolution = ModelCapabilityResolver.resolve(
+                model: model, provider: ModelProvider(name: "Gateway"), reported: [.reasoning], catalogData: data)
+            #expect(resolution.supported == [.low])
+            #expect(resolution.wireValue(for: .low) == "low")
+            #expect(
+                ModelCapabilityResolver.reasoning(model: resolution.model, provider: ModelProvider(name: "Gateway"))
+                    == resolution.reasoning)
+        }
+    }
+
+    @Test
     func declaredEffortsPreserveWireValuesAndExcludeUnlistedLevels() throws {
         var record = row("reasoner")
         record["reasoning"] = true
