@@ -318,18 +318,59 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
 
     /// What a request body carries, and what a `AIModelRef` points at. Two
     /// models on one provider cannot share one.
-    public var id: String
+    /// Effective model specifications use the models.dev structure. Host-only
+    /// settings (visibility, origin, custom reasoning and search) stay separate.
+    public var specification = ModelsDevModel()
+
+    public var id: String {
+        get { specification.id ?? "" }
+        set { specification.id = newValue }
+    }
     /// Blank falls back to `id` — see `label`.
-    public var displayName: String = ""
+    public var displayName: String {
+        get { specification.name ?? "" }
+        set { specification.name = newValue }
+    }
     /// `owned_by`. The only field the barest rows carry beyond the id, which
     /// makes it the only thing available to group them by.
     public var ownedBy: String = ""
-    public var kind: Kind = .chat
-    public var input: Set<Modality> = [.text]
-    public var output: Set<Modality> = [.text]
-    public var abilities: Set<Ability> = []
-    public var contextLength: Int?
-    public var maxOutputTokens: Int?
+    public var kind: Kind {
+        get { Kind(modelsDevType: specification.type) }
+        set { specification.type = newValue.modelsDevType }
+    }
+    public var input: Set<Modality> {
+        get { Set((specification.modalities.input ?? ["text"]).compactMap(Modality.init(rawValue:))) }
+        set { specification.modalities.input = newValue.map(\.rawValue).sorted() }
+    }
+    public var output: Set<Modality> {
+        get { Set((specification.modalities.output ?? ["text"]).compactMap(Modality.init(rawValue:))) }
+        set { specification.modalities.output = newValue.map(\.rawValue).sorted() }
+    }
+    public var abilities: Set<Ability> {
+        get {
+            var result: Set<Ability> = []
+            if specification.toolCall == true { result.insert(.toolCall) }
+            if specification.reasoning == true { result.insert(.reasoning) }
+            if specification.structuredOutput == true { result.insert(.structuredOutput) }
+            if hasNativeWebSearch { result.insert(.webSearch) }
+            return result
+        }
+        set {
+            specification.toolCall = newValue.contains(.toolCall)
+            specification.reasoning = newValue.contains(.reasoning)
+            specification.structuredOutput = newValue.contains(.structuredOutput)
+            hasNativeWebSearch = newValue.contains(.webSearch)
+        }
+    }
+    public var hasNativeWebSearch = false
+    public var contextLength: Int? {
+        get { specification.limit.context }
+        set { specification.limit.context = newValue }
+    }
+    public var maxOutputTokens: Int? {
+        get { specification.limit.output }
+        set { specification.limit.output = newValue }
+    }
     /// The vendor brand string a gateway may send (`"Claude"`, `"DeepSeek"`).
     /// Used for the row glyph and nothing else — it is a hint, not an identity.
     public var iconHint: String = ""
@@ -364,10 +405,33 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
     /// What a model is for. Unrecognised endpoint types default to chat.
     public nonisolated enum Kind: String, Codable, Sendable, CaseIterable, Identifiable {
         case chat, embedding, rerank, classifier
+        case speech, transcription, realtime
+        case other = "unsupported"
         case imageGeneration = "image_generation"
         case videoGeneration = "video_generation"
 
         public nonisolated var id: String { rawValue }
+
+        public init(modelsDevType: String?) {
+            switch modelsDevType {
+            case nil, "chat": self = .chat
+            case "image": self = .imageGeneration
+            case "video": self = .videoGeneration
+            case "reranking": self = .rerank
+            case "decision": self = .classifier
+            default: self = Kind(rawValue: modelsDevType ?? "") ?? .other
+            }
+        }
+
+        public var modelsDevType: String {
+            switch self {
+            case .imageGeneration: "image"
+            case .videoGeneration: "video"
+            case .rerank: "reranking"
+            case .classifier: "decision"
+            default: rawValue
+            }
+        }
 
         public var displayName: String {
             switch self {
@@ -377,6 +441,10 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
             case .classifier: String(localized: "Classification", bundle: .module)
             case .imageGeneration: String(localized: "Image Generation", bundle: .module)
             case .videoGeneration: String(localized: "Video Generation", bundle: .module)
+            case .speech: "speech"
+            case .transcription: "transcription"
+            case .realtime: "realtime"
+            case .other: "other"
             }
         }
 
@@ -390,7 +458,8 @@ public nonisolated struct AIModel: Identifiable, Hashable, Sendable {
         /// identifies the object, so it must not prevent capability inference.
         init?(reportedType: String?) {
             guard let reportedType else { return nil }
-            self.init(rawValue: reportedType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased())
+            let value = reportedType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            self.init(rawValue: value)
         }
     }
 

@@ -17,7 +17,7 @@ Requires **macOS 15+ or iOS 18+**, with a **Swift 6.2+** toolchain.
 Add the package dependency:
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.1.0")
 ```
 
 Then add the core product to your target:
@@ -295,6 +295,28 @@ location. Compatible gateways use the same formats, not separate provider implem
   empty authentication headers are omitted. Vertex service-account authentication still requires credentials.
 - **Capabilities are explicit.** Use `AIModel.abilities` and `ModelCapabilityResolver` to describe
   tool calling, reasoning, structured output, and native search when a model listing omits them.
+
+### Model specifications
+
+`AIModel.specification` is a `ModelsDevModel`: a Codable models.dev model object with
+native `modalities`, `limit` (context/input/output), `cost`, `reasoning_options`, and
+capability flags. Unknown fields, pricing tiers, and experimental modes round-trip
+unchanged. Swift accessors use camelCase (for example `toolCall` and `reasoningOptions`);
+JSON retains upstream names. Existing `AIModel` properties remain write-through
+compatibility accessors. Credentials, visibility, origin, custom reasoning profiles,
+and native web-search policy remain host settings rather than model specifications.
+
+Bundle the unmodified `https://models.dev/api.json` response as `ModelCatalog.json`.
+`ModelCatalogOverrides.json` uses the same provider-to-model dictionary structure.
+Optional `ModelCatalogPolicy.json` contains
+`{"hiddenFromAssistant":[{"provider":"openai","modelID":"review-model"}]}` for
+host-specific picker policy. Model listings stay authoritative and continue to use
+the configured endpoint, not models.dev at runtime.
+
+`catalogMetadata.source` and `sha256` identify the snapshot actually loaded;
+`package` is `models.dev`, `version` is its SHA-256, and `commit` is empty because
+the API does not claim a Git revision. Legacy `PiModelCatalog.json` and old overrides
+remain readable when migrating existing hosts. New snapshots take precedence.
 
 Live and buffered responses share per-request parsing and SSE framing. To replace the provider
 layer entirely, implement `AgentModelStreaming`; `AgentModelCompleting` supports tool-free features

@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// Which fields a `/models` response actually carried for one row. Resolution
@@ -11,6 +12,9 @@ public nonisolated struct ReportedFields: OptionSet, Sendable {
     public static let input = ReportedFields(rawValue: 1 << 1)
     public static let output = ReportedFields(rawValue: 1 << 2)
     public static let abilities = ReportedFields(rawValue: 1 << 3)
+    public static let toolCall = ReportedFields(rawValue: 1 << 4)
+    public static let reasoning = ReportedFields(rawValue: 1 << 5)
+    public static let structuredOutput = ReportedFields(rawValue: 1 << 6)
 }
 
 /// Resolves both model capabilities and reasoning-effort behavior.
@@ -18,7 +22,7 @@ public nonisolated struct ReportedFields: OptionSet, Sendable {
 /// Resolution order is deliberately narrow and deterministic:
 ///
 /// 1. Fields explicitly reported by `/models` are preserved.
-/// 2. A matching record in the bundled Pi catalog fills missing fields.
+/// 2. A matching record in the bundled model catalog fills missing fields.
 /// 3. Unknown/custom models use conservative family heuristics.
 ///
 /// A model's manual `reasoningProfile` replaces only the effort mapping. The
@@ -50,7 +54,7 @@ public nonisolated enum ModelCapabilityResolver {
         }
     }
 
-    public struct CatalogSource: Hashable, Sendable {
+    public struct CatalogSource: Codable, Hashable, Sendable {
         public init(
             provider: String,
             modelID: String
@@ -80,7 +84,7 @@ public nonisolated enum ModelCapabilityResolver {
             return wireValues[effort] ?? (effort == .off ? nil : effort.wireName)
         }
 
-        /// Pi-compatible clamp: prefer the next stronger supported level, then
+        /// Clamp: prefer the next stronger supported level, then
         /// walk downward when no stronger level exists.
         public func clamp(_ requested: ReasoningEffort) -> ReasoningEffort {
             if supported.contains(requested) { return requested }
@@ -104,18 +108,24 @@ public nonisolated enum ModelCapabilityResolver {
             package: String,
             version: String,
             commit: String,
-            modelCount: Int
+            modelCount: Int,
+            source: String? = nil,
+            sha256: String? = nil
         ) {
             self.package = package
             self.version = version
             self.commit = commit
             self.modelCount = modelCount
+            self.source = source
+            self.sha256 = sha256
         }
 
         public var package: String
         public var version: String
         public var commit: String
         public var modelCount: Int
+        public var source: String?
+        public var sha256: String?
     }
 
     public static var catalogMetadata: CatalogMetadata? {
@@ -136,16 +146,21 @@ public nonisolated enum ModelCapabilityResolver {
         model: AIModel,
         provider: ModelProvider,
         reported: ReportedFields = [],
-        catalogData: Data
+        catalogData: Data,
+        overridesData: Data? = nil,
+        policyData: Data? = nil
     ) -> Resolution {
-        resolve(model: model, provider: provider, reported: reported, catalog: PiModelCatalog.load(data: catalogData))
+        resolve(
+            model: model, provider: provider, reported: reported,
+            catalog: BundledModelCatalog.load(data: catalogData, overridesData: overridesData, policyData: policyData)
+        )
     }
 
     private static func resolve(
         model: AIModel,
         provider: ModelProvider,
         reported: ReportedFields,
-        catalog: PiModelCatalog
+        catalog: BundledModelCatalog
     ) -> Resolution {
         let record = catalog.record(modelID: model.id, provider: provider)
         let resolvedModel: AIModel
@@ -170,7 +185,9 @@ public nonisolated enum ModelCapabilityResolver {
         reasoning(
             model: model,
             provider: provider,
-            record: catalog.record(modelID: model.id, provider: provider)
+            record: model.specification.reasoningOptions != nil
+                ? model.specification.catalogRecord(provider: model.ownedBy, id: model.id)
+                : catalog.record(modelID: model.id, provider: provider)
         )
     }
 
@@ -191,6 +208,20 @@ public nonisolated enum ModelCapabilityResolver {
         from record: CatalogRecord
     ) -> AIModel {
         var result = model
+        if let specification = record.specification {
+            // Preserve host/endpoint values while filling metadata the old model
+            // shape could not carry. Nested limits retain input as well as output.
+            result.specification = specification
+            for (key, value) in model.specification.fields {
+                if let existing = result.specification.fields[key]?.objectValue,
+                    let incoming = value.objectValue
+                {
+                    result.specification.fields[key] = .object(existing.merging(incoming) { _, new in new })
+                } else {
+                    result.specification.fields[key] = value
+                }
+            }
+        }
         if result.displayName.isEmpty { result.displayName = record.name }
         if result.ownedBy.isEmpty { result.ownedBy = record.provider }
         if !reported.contains(.kind) { result.kind = record.kind }
@@ -215,8 +246,7 @@ public nonisolated enum ModelCapabilityResolver {
             }
         }
         // Outside every branch above, and that is the point. Server-side search
-        // is not treated as a headline capability by anyone: no `/models`
-        // payload reports it and Pi's catalog has no field for it, so "the
+        // is not consistently reported by `/models` or model catalogs, so "the
         // source listed abilities" never means "the source ruled search out".
         // Gating this on silence about *other* abilities would leave it off for
         // exactly the well-described models most likely to have it.
@@ -224,12 +254,31 @@ public nonisolated enum ModelCapabilityResolver {
         // Additive only. It can turn the ability on from the model id; it never
         // takes away one the payload actually asserted.
         if result.kind == .chat, Fallback.hasWebSearch(model.id) { result.abilities.insert(.webSearch) }
-        if result.kind == .chat, Fallback.hasStructuredOutput(model.id) {
+        if result.kind == .chat,
+            !reported.contains(.structuredOutput),
+            reported.contains(.abilities) || record.structuredOutput == nil,
+            Fallback.hasStructuredOutput(model.id)
+        {
             result.abilities.insert(.structuredOutput)
         }
         if result.contextLength == nil { result.contextLength = record.contextWindow }
         if result.maxOutputTokens == nil, let maxOutputTokens = record.maxOutputTokens {
             result.maxOutputTokens = maxOutputTokens
+        }
+        if let specification = record.specification {
+            if !reported.contains(.kind) { result.specification.type = specification.type }
+            if !reported.contains(.abilities) {
+                result.specification.toolCall = specification.toolCall
+                result.specification.reasoning = specification.reasoning
+                if let structuredOutput = specification.structuredOutput {
+                    result.specification.structuredOutput = structuredOutput
+                }
+            }
+        }
+        if reported.contains(.toolCall) { result.specification.toolCall = model.specification.toolCall }
+        if reported.contains(.reasoning) { result.specification.reasoning = model.specification.reasoning }
+        if reported.contains(.structuredOutput) {
+            result.specification.structuredOutput = model.specification.structuredOutput
         }
         if let showInAssistant = record.showInAssistant {
             result.isShownInAssistant = showInAssistant
@@ -284,16 +333,16 @@ public nonisolated enum ModelCapabilityResolver {
 
         var supported: [ReasoningEffort]
         if let declared = record.supportedEfforts {
-            let declaredSet = Set(declared.compactMap(ReasoningEffort.init(piName:)))
+            let declaredSet = Set(declared.compactMap(ReasoningEffort.init(catalogName:)))
             supported = ReasoningEffort.allCases.filter(declaredSet.contains)
         } else {
             let unsupported = Set(
-                (record.unsupportedEfforts ?? []).compactMap(ReasoningEffort.init(piName:))
+                (record.unsupportedEfforts ?? []).compactMap(ReasoningEffort.init(catalogName:))
             )
             supported = ReasoningEffort.allCases.filter { effort in
                 if unsupported.contains(effort) { return false }
                 if effort == .xHigh || effort == .max {
-                    return record.effortWireValues[effort.piName] != nil
+                    return record.effortWireValues[effort.catalogName] != nil
                 }
                 return true
             }
@@ -302,7 +351,7 @@ public nonisolated enum ModelCapabilityResolver {
 
         var values: [ReasoningEffort: String] = [:]
         for (name, value) in record.effortWireValues {
-            if let effort = ReasoningEffort(piName: name), supported.contains(effort) {
+            if let effort = ReasoningEffort(catalogName: name), supported.contains(effort) {
                 values[effort] = value
             }
         }
@@ -316,43 +365,64 @@ public nonisolated enum ModelCapabilityResolver {
         provider.apiFormat == .generateContent ? effort.wireName.uppercased() : effort.wireName
     }
 
-    // MARK: - Bundled Pi catalog
+    // MARK: - Bundled model catalog
 
-    private static let catalog = PiModelCatalog.load()
+    private static let catalog = BundledModelCatalog.load()
 
-    private struct PiModelCatalog: Sendable {
+    struct BundledModelCatalog: Sendable {
         var recordsByKey: [String: CatalogRecord]
         var recordsByID: [String: [CatalogRecord]]
         var metadata: CatalogMetadata?
 
-        static func load() -> PiModelCatalog {
-            let bundles = [Bundle.main, Bundle(for: BundleToken.self)]
-            let piURL = bundles.lazy.compactMap {
-                $0.url(forResource: "PiModelCatalog", withExtension: "json")
-                    ?? $0.url(
-                        forResource: "PiModelCatalog",
-                        withExtension: "json",
-                        subdirectory: "Resources"
-                    )
-            }.first
-            guard let piURL, let data = try? Data(contentsOf: piURL) else {
-                return PiModelCatalog(recordsByKey: [:], recordsByID: [:], metadata: nil)
-            }
-
-            let overridesURL = bundles.lazy.compactMap {
-                $0.url(forResource: "ModelCatalogOverrides", withExtension: "json")
-                    ?? $0.url(
-                        forResource: "ModelCatalogOverrides",
-                        withExtension: "json",
-                        subdirectory: "Resources"
-                    )
-            }.first
-            return load(data: data, overridesData: overridesURL.flatMap { try? Data(contentsOf: $0) })
+        static func load() -> BundledModelCatalog {
+            load(bundles: [Bundle.main, Bundle(for: BundleToken.self)])
         }
 
-        static func load(data: Data, overridesData: Data? = nil) -> PiModelCatalog {
-            guard let payload = try? JSONDecoder().decode(PiCatalogPayload.self, from: data) else {
-                return PiModelCatalog(recordsByKey: [:], recordsByID: [:], metadata: nil)
+        static func load(bundles: [Bundle]) -> BundledModelCatalog {
+            func resourceURL(_ name: String) -> URL? {
+                bundles.lazy.compactMap {
+                    $0.url(forResource: name, withExtension: "json")
+                        ?? $0.url(forResource: name, withExtension: "json", subdirectory: "Resources")
+                }.first
+            }
+            // Prefer the new resource across all bundles. A malformed new snapshot
+            // must not silently resurrect a stale Pi snapshot.
+            let catalogURL = resourceURL("ModelCatalog") ?? resourceURL("PiModelCatalog")
+            let overridesURL = resourceURL("ModelCatalogOverrides")
+            let policyURL = resourceURL("ModelCatalogPolicy")
+            return load(
+                data: catalogURL.flatMap { try? Data(contentsOf: $0) } ?? Data(),
+                overridesData: overridesURL.flatMap { try? Data(contentsOf: $0) },
+                policyData: policyURL.flatMap { try? Data(contentsOf: $0) }
+            )
+        }
+
+        static func load(data: Data, overridesData: Data? = nil, policyData: Data? = nil) -> BundledModelCatalog {
+            let decoder = JSONDecoder()
+            let records: [CatalogRecord]
+            let metadata: CatalogMetadata?
+            if let providers = try? decoder.decode([String: ModelsDevProvider].self, from: data),
+                !providers.isEmpty, providers.values.allSatisfy({ $0.fields["models"]?.objectValue != nil })
+            {
+                records = providers.sorted { $0.key < $1.key }.flatMap { providerID, provider in
+                    provider.models.sorted { $0.key < $1.key }.compactMap { modelID, model in
+                        model.catalogRecord(provider: providerID, id: modelID)
+                    }
+                }
+                let digest = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+                metadata = CatalogMetadata(
+                    package: "models.dev", version: digest, commit: "", modelCount: records.count,
+                    source: "https://models.dev/api.json", sha256: digest
+                )
+            } else if let legacy = try? decoder.decode(LegacyCatalogPayload.self, from: data) {
+                records = legacy.models
+                metadata = CatalogMetadata(
+                    package: legacy.package, version: legacy.version, commit: legacy.commit,
+                    modelCount: records.count, source: legacy.source
+                )
+            } else {
+                records = []
+                metadata = nil
             }
 
             var byKey: [String: CatalogRecord] = [:]
@@ -367,35 +437,38 @@ public nonisolated enum ModelCapabilityResolver {
                 byID[normalizedID, default: []].append(record)
             }
 
-            for record in payload.models {
+            for record in records {
                 upsert(record)
             }
 
-            if let overridesData,
-                let overrides = try? JSONDecoder().decode(
-                    CatalogOverridesPayload.self,
-                    from: overridesData
-                )
-            {
-                for record in overrides.models {
+            if let overridesData {
+                let native = load(data: overridesData)
+                let records =
+                    native.metadata != nil
+                    ? Array(native.recordsByKey.values)
+                    : (try? decoder.decode(CatalogOverridesPayload.self, from: overridesData).models) ?? []
+                for record in records {
                     upsert(record)
                 }
             }
-            return PiModelCatalog(
+            if let policyData, let policy = try? decoder.decode(CatalogPolicyPayload.self, from: policyData) {
+                for source in policy.hiddenFromAssistant {
+                    if var record = byKey[key(provider: source.provider, modelID: source.modelID)] {
+                        record.showInAssistant = false
+                        upsert(record)
+                    }
+                }
+            }
+            return BundledModelCatalog(
                 recordsByKey: byKey,
                 recordsByID: byID,
-                metadata: CatalogMetadata(
-                    package: payload.package,
-                    version: payload.version,
-                    commit: payload.commit,
-                    modelCount: payload.models.count
-                )
+                metadata: metadata
             )
         }
 
         func record(modelID: String, provider: ModelProvider) -> CatalogRecord? {
             let normalizedID = Self.normalized(modelID)
-            let preferredProvider = Self.piProviderID(for: provider)
+            let preferredProvider = Self.catalogProviderID(for: provider)
 
             if let preferredProvider,
                 let exact = recordsByKey[Self.key(provider: preferredProvider, modelID: normalizedID)]
@@ -439,22 +512,30 @@ public nonisolated enum ModelCapabilityResolver {
             }.first
         }
 
-        private static func piProviderID(for provider: ModelProvider) -> String? {
+        private static func catalogProviderID(for provider: ModelProvider) -> String? {
             // Either address names the host; `baseURL` is blank for a caller
             // that never lists models, so fall through to the endpoint.
             let url =
                 (provider.baseURL.isEmpty ? provider.inferenceURL : provider.baseURL)
                 .lowercased()
+            let host = URL(string: url)?.host ?? ""
             let hosts: [(String, String)] = [
                 ("api.openai.com", "openai"),
+                ("api.anthropic.com", "anthropic"),
                 ("openrouter.ai", "openrouter"),
                 ("api.deepseek.com", "deepseek"),
                 ("api.groq.com", "groq"),
                 ("api.mistral.ai", "mistral"),
                 ("api.x.ai", "xai"),
                 ("api.moonshot.ai", "moonshotai"),
+                ("api.moonshot.cn", "moonshotai-cn"),
+                ("ai-gateway.vercel.sh", "vercel"),
+                ("api.together.xyz", "togetherai"),
+                ("api.together.ai", "togetherai"),
+                ("api.z.ai", "zai"),
+                ("open.bigmodel.cn", "zhipuai"),
             ]
-            if let match = hosts.first(where: { url.contains($0.0) }) { return match.1 }
+            if let match = hosts.first(where: { host == $0.0 }) { return match.1 }
             // Falling back on the API format is a guess, and a narrow one: it
             // is only right where a shape has effectively one first party.
             // Chat Completions and Responses have dozens, so they answer `nil`
@@ -476,10 +557,11 @@ public nonisolated enum ModelCapabilityResolver {
         }
     }
 
-    private struct PiCatalogPayload: Decodable, Sendable {
+    private struct LegacyCatalogPayload: Decodable, Sendable {
         var package: String
         var version: String
         var commit: String
+        var source: String?
         var models: [CatalogRecord]
     }
 
@@ -487,7 +569,11 @@ public nonisolated enum ModelCapabilityResolver {
         var models: [CatalogRecord]
     }
 
-    private struct CatalogRecord: Decodable, Sendable {
+    private struct CatalogPolicyPayload: Decodable {
+        var hiddenFromAssistant: [CatalogSource]
+    }
+
+    struct CatalogRecord: Decodable, Sendable {
         var provider: String
         var id: String
         var name: String
@@ -496,6 +582,8 @@ public nonisolated enum ModelCapabilityResolver {
         var input: [String]
         var output: [String]
         var abilities: [String]?
+        var structuredOutput: Bool?
+        var specification: ModelsDevModel?
         var contextWindow: Int?
         var maxOutputTokens: Int?
         var showInAssistant: Bool?
@@ -537,15 +625,17 @@ public nonisolated enum ModelCapabilityResolver {
             }
             if !reported.contains(.input), vision.matches(id) { result.input.insert(.image) }
             if !reported.contains(.abilities) {
-                if tools.matches(id) { result.abilities.insert(.toolCall) }
-                if reasoning.matches(id) { result.abilities.insert(.reasoning) }
+                if !reported.contains(.toolCall), tools.matches(id) { result.abilities.insert(.toolCall) }
+                if !reported.contains(.reasoning), reasoning.matches(id) { result.abilities.insert(.reasoning) }
             }
             // Outside the guard, for the reason given in `fill`. It sits after
             // the embedding and image-generation returns above rather than
             // before them, so neither can pick up a search ability on its way
             // out.
             if webSearch.matches(id) { result.abilities.insert(.webSearch) }
-            if structuredOutput.matches(id) { result.abilities.insert(.structuredOutput) }
+            if !reported.contains(.structuredOutput), structuredOutput.matches(id) {
+                result.abilities.insert(.structuredOutput)
+            }
             return result
         }
 
@@ -626,8 +716,8 @@ public nonisolated enum ModelCapabilityResolver {
 }
 
 extension ReasoningEffort {
-    fileprivate nonisolated init?(piName: String) {
-        switch piName {
+    fileprivate nonisolated init?(catalogName: String) {
+        switch catalogName {
         case "off": self = .off
         case "minimal": self = .minimal
         case "low": self = .low
@@ -639,9 +729,40 @@ extension ReasoningEffort {
         }
     }
 
-    fileprivate nonisolated var piName: String {
+    fileprivate nonisolated var catalogName: String {
         self == .xHigh ? "xhigh" : rawValue
     }
 
-    fileprivate nonisolated var wireName: String { piName }
+    fileprivate nonisolated var wireName: String { catalogName }
+}
+
+extension ModelsDevModel {
+    fileprivate func catalogRecord(provider: String, id: String) -> ModelCapabilityResolver.CatalogRecord {
+        let kind = AIModel.Kind(modelsDevType: type)
+        var abilities: [String] = []
+        if toolCall == true { abilities.append(AIModel.Ability.toolCall.rawValue) }
+        if reasoning == true { abilities.append(AIModel.Ability.reasoning.rawValue) }
+        if structuredOutput == true { abilities.append(AIModel.Ability.structuredOutput.rawValue) }
+        let effortOptions = reasoningOptions?.filter { $0.type == "effort" } ?? []
+        var wireValues: [String: String] = [:]
+        for value in effortOptions.flatMap({ $0.values ?? [] }) {
+            let name = value == "none" ? "off" : value
+            if ReasoningEffort(catalogName: name) != nil {
+                wireValues[name] = value
+            }
+        }
+        let supported = ReasoningEffort.allCases.map(\.catalogName).filter { wireValues[$0] != nil }
+        var specification = self
+        specification.id = id
+        return ModelCapabilityResolver.CatalogRecord(
+            provider: provider, id: id, name: name ?? id, type: kind.rawValue,
+            reasoning: reasoning,
+            input: modalities.input ?? ["text"], output: modalities.output ?? ["text"],
+            abilities: abilities, structuredOutput: structuredOutput, specification: specification,
+            contextWindow: limit.context.flatMap { $0 > 0 ? $0 : nil },
+            maxOutputTokens: limit.output.flatMap { $0 > 0 ? $0 : nil },
+            supportedEfforts: effortOptions.isEmpty ? nil : supported,
+            effortWireValues: wireValues
+        )
+    }
 }

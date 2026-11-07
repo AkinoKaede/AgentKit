@@ -254,6 +254,20 @@ nonisolated private struct DataEnvelope<Row: Decodable>: Decodable {
 /// The alias sets exist because the three vendors spell the same two numbers
 /// three ways, and gateways pick whichever they grew up with.
 nonisolated private struct CatalogRow: Decodable {
+    private var legacy: LegacyCatalogRow
+    private var specification: ModelsDevModel
+
+    init(from decoder: any Decoder) throws {
+        legacy = try LegacyCatalogRow(from: decoder)
+        specification = try ModelsDevModel(from: decoder)
+    }
+
+    func model(origin: AIModel.Origin, provider: ModelProvider) -> AIModel {
+        legacy.model(origin: origin, provider: provider, specification: specification)
+    }
+}
+
+nonisolated private struct LegacyCatalogRow: Decodable {
     var id: String
     var name: String?
     var displayName: String?
@@ -295,21 +309,29 @@ nonisolated private struct CatalogRow: Decodable {
     /// `reported` is assembled as it goes, so a server that sent `modalities`
     /// keeps exactly what it sent and a server that sent nothing gets the full
     /// guess. That distinction is the whole reason `ReportedFields` exists.
-    func model(origin: AIModel.Origin, provider: ModelProvider) -> AIModel {
+    func model(origin: AIModel.Origin, provider: ModelProvider, specification: ModelsDevModel) -> AIModel {
         var reported: ReportedFields = []
         var model = AIModel(id: id)
+        // Keep native metadata and future fields instead of flattening the row.
+        model.specification = specification
 
         model.displayName = name ?? displayName ?? ""
         model.ownedBy = ownedBy ?? ""
         model.iconHint = icon ?? ""
         model.createdAt = created.map { Date(timeIntervalSince1970: $0) }
         model.origin = origin
-        model.contextLength = contextLength ?? maxInputTokens ?? inputTokenLimit
-        model.maxOutputTokens = maxOutputTokens ?? maxTokens ?? outputTokenLimit
+        model.contextLength = specification.limit.context ?? contextLength ?? maxInputTokens ?? inputTokenLimit
+        model.maxOutputTokens = specification.limit.output ?? maxOutputTokens ?? maxTokens ?? outputTokenLimit
 
-        if let kind = AIModel.Kind(reportedType: type) {
+        if specification.fields["limit"] != nil, let type = specification.type {
+            reported.insert(.kind)
+            model.kind = AIModel.Kind(modelsDevType: type)
+            model.specification.type = type
+        } else if let kind = AIModel.Kind(reportedType: type) {
             reported.insert(.kind)
             model.kind = kind
+        } else {
+            model.kind = .chat
         }
 
         if let input = modalities?.input {
@@ -321,6 +343,9 @@ nonisolated private struct CatalogRow: Decodable {
             model.output = Self.modalitySet(output)
         }
 
+        if specification.toolCall != nil { reported.insert(.toolCall) }
+        if specification.reasoning != nil { reported.insert(.reasoning) }
+        if specification.structuredOutput != nil { reported.insert(.structuredOutput) }
         if let capabilities {
             reported.insert(.abilities)
             if Self.flag(capabilities, "tool_call", "tools", "function_call", "function_calling") {

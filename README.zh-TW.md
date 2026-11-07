@@ -16,7 +16,7 @@
 加入套件相依項目：
 
 ```swift
-.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.0.0")
+.package(url: "https://github.com/AkinoKaede/AgentKit.git", from: "4.1.0")
 ```
 
 接著將核心產品加入目標：
